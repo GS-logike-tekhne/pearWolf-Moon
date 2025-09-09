@@ -1,0 +1,27 @@
+{
+  "expo": {
+    "name": "PEAR - Eco Cleaning Platform",
+    "slug": "pear-eco-cleaning",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#f0fdf4"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.pear.ecocleaningplatform"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#f0fdf4"
+      },
+      "package": "com.pear.ecocleaningplatform"
+    },
+    "plugins": []
+  }
+}
