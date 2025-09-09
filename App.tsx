@@ -243,3 +243,7 @@ export default function App(): JSX.Element {
     </AuthProvider>
   );
 }
+
+
+
+console console.log(AppLoaded);
