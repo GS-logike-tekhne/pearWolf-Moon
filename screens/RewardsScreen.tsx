@@ -8,7 +8,28 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-const RewardsScreen = ({ navigation }) => {
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+
+type Reward = {
+  id: number;
+  title: string;
+  points: number;
+  icon: string;
+  category: string;
+};
+
+type Achievement = {
+  title: string;
+  description: string;
+  icon: string;
+  earned: boolean;
+};
+
+type RewardsScreenProps = {
+  navigation: NativeStackNavigationProp<any>;
+};
+
+const RewardsScreen: React.FC<RewardsScreenProps> = ({ navigation }) => {
   const rewards = [
     { id: 1, title: 'Coffee Shop Voucher', points: 250, icon: 'cafe', category: 'food' },
     { id: 2, title: 'Eco-Friendly Water Bottle', points: 500, icon: 'water', category: 'gear' },
@@ -23,7 +44,7 @@ const RewardsScreen = ({ navigation }) => {
     { title: 'Eco Champion', description: 'Collected 1000kg of trash', icon: 'star', earned: false },
   ];
 
-  const RewardCard = ({ reward }) => (
+  const RewardCard: React.FC<{ reward: Reward }> = ({ reward }) => (
     <TouchableOpacity style={styles.rewardCard}>
       <View style={styles.rewardIcon}>
         <Ionicons name={reward.icon} size={24} color="#10b981" />
@@ -32,13 +53,13 @@ const RewardsScreen = ({ navigation }) => {
         <Text style={styles.rewardTitle}>{reward.title}</Text>
         <Text style={styles.rewardPoints}>{reward.points} points</Text>
       </View>
-      <TouchableOpacity style={styles.redeemButton}>
+      <View style={styles.redeemButton}>
         <Text style={styles.redeemButtonText}>Redeem</Text>
-      </TouchableOpacity>
+      </View>
     </TouchableOpacity>
   );
 
-  const AchievementCard = ({ achievement }) => (
+  const AchievementCard: React.FC<{ achievement: Achievement }> = ({ achievement }) => (
     <View style={[styles.achievementCard, !achievement.earned && styles.achievementLocked]}>
       <View style={[styles.achievementIcon, !achievement.earned && styles.achievementIconLocked]}>
         <Ionicons 

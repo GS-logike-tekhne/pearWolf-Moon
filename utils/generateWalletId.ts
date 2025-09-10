@@ -1,16 +1,16 @@
 // utils/generateWalletId.ts
+import { UserRole, normalizeRole } from '../types/roles';
 
-export type UserRole = 'trash-hero' | 'impact-warrior' | 'business' | 'admin';
-
-export function generateWalletId(userId: number, role: UserRole): string {
+export function generateWalletId(userId: number, role: UserRole | string): string {
+  const normalizedRole = normalizeRole(role);
   const rolePrefixes: Record<UserRole, string> = {
-    'trash-hero': 'TH',
-    'impact-warrior': 'IW',
-    'business': 'ED', // EcoDefender
-    'admin': 'AD',
+    'TRASH_HERO': 'TH',
+    'IMPACT_WARRIOR': 'IW',
+    'ECO_DEFENDER': 'ED',
+    'ADMIN': 'AD',
   };
 
-  const prefix = rolePrefixes[role] || 'PEAR';
+  const prefix = rolePrefixes[normalizedRole] || 'PEAR';
   const formattedUserId = userId.toString().padStart(8, '0');
 
   return `${prefix}-${formattedUserId}`;

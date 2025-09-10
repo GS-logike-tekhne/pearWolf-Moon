@@ -1,18 +1,11 @@
 // Centralized role color utility to ensure consistency across the app
-export const getRoleColor = (role: string): string => {
-  switch (role) {
-    case 'admin':
-      return '#ea580c'; // Orange - matches ThemeContext
-    case 'business':
-      return '#007bff'; // Blue - matches ThemeContext  
-    case 'trash-hero':
-      return '#28A745'; // Green - matches ThemeContext
-    case 'impact-warrior':
-      return '#dc2626'; // Red - matches ThemeContext
-    default:
-      return '#007bff'; // Default to business blue
-  }
+// This file is now deprecated - use types/roles.ts instead
+import { UserRole, getRoleColor as getRoleColorFromTypes, normalizeRole } from '../types/roles';
+
+export const getRoleColor = (role: string | UserRole): string => {
+  const normalizedRole = normalizeRole(role);
+  return getRoleColorFromTypes(normalizedRole);
 };
 
-// Role type for better type safety
-export type UserRole = 'admin' | 'business' | 'trash-hero' | 'impact-warrior';
+// Re-export for backward compatibility
+export type { UserRole } from '../types/roles';

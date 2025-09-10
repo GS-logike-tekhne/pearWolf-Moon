@@ -5,9 +5,9 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  SafeAreaView,
   Dimensions,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { getRoleColor } from '../utils/roleColors';
 import { useTheme } from '../context/ThemeContext';
@@ -95,15 +95,15 @@ const TrashHeroEarnings: React.FC<TrashHeroEarningsProps> = ({ navigation }) => 
   
   // Earnings summary
   const earningsSummary = {
-    totalEarnings: earnings.reduce((sum, earning) => sum + earning.amount + (earning.bonuses?.reduce((bonusSum, bonus) => bonusSum + bonus.amount, 0) || 0), 0),
-    pendingPayments: earnings.filter(e => e.status === 'pending' || e.status === 'processing').reduce((sum, earning) => sum + earning.amount + (earning.bonuses?.reduce((bonusSum, bonus) => bonusSum + bonus.amount, 0) || 0), 0),
+    totalEarnings: earnings.reduce((sum, earning) => sum + (earning.amount || 0) + (earning.bonuses?.reduce((bonusSum, bonus) => bonusSum + (bonus.amount || 0), 0) || 0), 0),
+    pendingPayments: earnings.filter(e => e.status === 'pending' || e.status === 'processing').reduce((sum, earning) => sum + (earning.amount || 0) + (earning.bonuses?.reduce((bonusSum, bonus) => bonusSum + (bonus.amount || 0), 0) || 0), 0),
     thisMonthEarnings: 470, // Current month
-    totalHours: earnings.reduce((sum, earning) => sum + earning.hours, 0),
+    totalHours: earnings.reduce((sum, earning) => sum + (earning.hours || 0), 0),
     averageHourlyRate: 0,
     completedJobs: earnings.length,
   };
   
-  earningsSummary.averageHourlyRate = earningsSummary.totalEarnings / earningsSummary.totalHours;
+  earningsSummary.averageHourlyRate = earningsSummary.totalHours > 0 ? earningsSummary.totalEarnings / earningsSummary.totalHours : 0;
 
   const monthlyData = [
     { month: 'Jan', earnings: 890, jobs: 8, hours: 32 },
@@ -152,7 +152,7 @@ const TrashHeroEarnings: React.FC<TrashHeroEarningsProps> = ({ navigation }) => 
         {subtitle && (
           <Text style={[styles.earningsSubtitle, { color: theme.secondaryText }]}>{subtitle}</Text>
         )}
-        {trend && (
+        {trend !== undefined && trend !== null && (
           <View style={styles.trendContainer}>
             <Ionicons 
               name={trend > 0 ? "trending-up" : "trending-down"} 
@@ -169,7 +169,7 @@ const TrashHeroEarnings: React.FC<TrashHeroEarningsProps> = ({ navigation }) => 
   );
 
   const EarningItem = ({ earning }: { earning: Earning }) => {
-    const totalAmount = earning.amount + (earning.bonuses?.reduce((sum, bonus) => sum + bonus.amount, 0) || 0);
+    const totalAmount = (earning.amount || 0) + (earning.bonuses?.reduce((sum, bonus) => sum + (bonus.amount || 0), 0) || 0);
     
     return (
       <View style={[styles.earningItem, { backgroundColor: theme.cardBackground }]}>
@@ -181,7 +181,7 @@ const TrashHeroEarnings: React.FC<TrashHeroEarningsProps> = ({ navigation }) => 
             </Text>
           </View>
           <View style={styles.earningAmount}>
-            <Text style={[styles.amount, { color: trashHeroColor }]}>${totalAmount}</Text>
+            <Text style={[styles.amount, { color: trashHeroColor }]}>${totalAmount || 0}</Text>
             <View style={[styles.statusBadge, { backgroundColor: getStatusColor(earning.status) }]}>
               <Text style={styles.statusText}>{earning.status}</Text>
             </View>
@@ -200,13 +200,13 @@ const TrashHeroEarnings: React.FC<TrashHeroEarningsProps> = ({ navigation }) => 
           <View style={styles.metaItem}>
             <Ionicons name="calendar" size={14} color={theme.secondaryText} />
             <Text style={[styles.metaText, { color: theme.secondaryText }]}>
-              {new Date(earning.completedDate).toLocaleDateString()}
+              {new Date(earning.completedDate).toLocaleDateString() || earning.completedDate}
             </Text>
           </View>
           <View style={styles.metaItem}>
             <Ionicons name="cash" size={14} color={theme.secondaryText} />
             <Text style={[styles.metaText, { color: theme.secondaryText }]}>
-              ${(earning.amount / earning.hours).toFixed(0)}/h
+              ${earning.hours > 0 ? (earning.amount / earning.hours).toFixed(0) : '0'}/h
             </Text>
           </View>
         </View>
@@ -217,7 +217,7 @@ const TrashHeroEarnings: React.FC<TrashHeroEarningsProps> = ({ navigation }) => 
             {earning.bonuses.map((bonus, index) => (
               <View key={index} style={styles.bonusItem}>
                 <Text style={[styles.bonusType, { color: theme.secondaryText }]}>{bonus.type}</Text>
-                <Text style={[styles.bonusAmount, { color: trashHeroColor }]}>+${bonus.amount}</Text>
+                <Text style={[styles.bonusAmount, { color: trashHeroColor }]}>+${bonus.amount || 0}</Text>
               </View>
             ))}
           </View>
@@ -284,7 +284,7 @@ const TrashHeroEarnings: React.FC<TrashHeroEarningsProps> = ({ navigation }) => 
           <View style={styles.summaryGrid}>
             <EarningsCard
               title="Total Earnings"
-              value={`$${earningsSummary.totalEarnings.toLocaleString()}`}
+              value={`$${(earningsSummary.totalEarnings || 0).toLocaleString()}`}
               subtitle="All time"
               icon="wallet"
               color={trashHeroColor}
@@ -292,7 +292,7 @@ const TrashHeroEarnings: React.FC<TrashHeroEarningsProps> = ({ navigation }) => 
             />
             <EarningsCard
               title="Pending Payments"
-              value={`$${earningsSummary.pendingPayments.toLocaleString()}`}
+              value={`$${(earningsSummary.pendingPayments || 0).toLocaleString()}`}
               subtitle="Processing"
               icon="hourglass"
               color="#ffc107"
@@ -300,7 +300,7 @@ const TrashHeroEarnings: React.FC<TrashHeroEarningsProps> = ({ navigation }) => 
             />
             <EarningsCard
               title="This Month"
-              value={`$${earningsSummary.thisMonthEarnings}`}
+              value={`$${earningsSummary.thisMonthEarnings || 0}`}
               subtitle="Current earnings"
               icon="calendar"
               color="#007bff"
@@ -308,7 +308,7 @@ const TrashHeroEarnings: React.FC<TrashHeroEarningsProps> = ({ navigation }) => 
             />
             <EarningsCard
               title="Hourly Rate"
-              value={`$${earningsSummary.averageHourlyRate.toFixed(0)}`}
+              value={`$${Math.round(earningsSummary.averageHourlyRate || 0)}`}
               subtitle="Average rate"
               icon="time"
               color="#8b5cf6"

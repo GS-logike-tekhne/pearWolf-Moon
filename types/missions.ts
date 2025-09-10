@@ -1,6 +1,7 @@
+import { UserRole } from './roles';
+
 export type MissionType = 'Quick Clean' | 'Timed Mission' | 'Community Quest' | 'Business Mission';
 export type MissionStatus = 'available' | 'active' | 'completed' | 'expired';
-export type UserRole = 'TRASH_HERO' | 'VOLUNTEER' | 'BUSINESS';
 
 export interface MissionReward {
   xp: number;

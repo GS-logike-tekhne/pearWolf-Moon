@@ -5,9 +5,9 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  SafeAreaView,
   Dimensions,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { getRoleColor } from '../utils/roleColors';
 import { useTheme } from '../context/ThemeContext';
@@ -20,9 +20,25 @@ const { width } = Dimensions.get('window');
 
 const WalletScreen = ({ navigation, route }: any) => {
   const { theme } = useTheme();
-  const { user } = useAuth();
+  const { user, currentRole } = useAuth();
   const [showMenu, setShowMenu] = useState(false);
-  const userRole = route?.params?.role || 'trash-hero';
+  
+  // Use current role from auth context, fallback to route params, then to user role
+  const userRole = route?.params?.role || 
+                   (currentRole ? currentRole.toLowerCase().replace('_', '-') : 'trash-hero') ||
+                   (user?.role ? user.role.toLowerCase().replace('_', '-') : 'trash-hero');
+
+  // Debug logging to help identify the issue
+  console.log('WalletScreen Debug:', {
+    routeParams: route?.params?.role,
+    currentRole,
+    userRole: user?.role,
+    finalUserRole: userRole
+  });
+
+  // Generate wallet ID based on current user and role
+  const walletId = generateWalletId(user?.id || 1, userRole);
+  console.log('Generated Wallet ID:', walletId, 'for user:', user?.id, 'role:', userRole);
 
   // Get role-specific configuration
   const getRoleConfig = () => {
@@ -124,11 +140,6 @@ const WalletScreen = ({ navigation, route }: any) => {
   const roleConfig = getRoleConfig();
   const transactions = getTransactions();
 
-  // Generate PEAR Wallet ID using utility function
-  const walletId = generateWalletId(
-    user?.id || 1, 
-    userRole as UserRole
-  );
 
   const getTransactionColor = (type: string) => {
     switch (type) {
@@ -199,6 +210,7 @@ const WalletScreen = ({ navigation, route }: any) => {
               <View style={styles.cardTitle}>
                 <Text style={styles.cardTitleText}>{roleConfig.title}</Text>
                 <Text style={styles.cardSubtitleText}>{roleConfig.subtitle}</Text>
+                <Text style={styles.walletIdText}>ID: {walletId}</Text>
               </View>
               <View style={styles.cardIcon}>
                 <Ionicons name={roleConfig.icon as any} size={24} color="white" />
@@ -345,6 +357,11 @@ const styles = StyleSheet.create({
   cardSubtitleText: {
     color: 'rgba(255,255,255,0.8)',
     fontSize: 14,
+  },
+  walletIdText: {
+    color: 'rgba(255,255,255,0.6)',
+    fontSize: 12,
+    marginTop: 2,
   },
   cardIcon: {
     width: 40,

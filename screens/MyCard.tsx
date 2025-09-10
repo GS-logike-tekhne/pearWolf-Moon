@@ -5,14 +5,16 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  SafeAreaView,
   Dimensions,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { getRoleColor } from '../utils/roleColors';
 import { isUserVerified, getVerificationBadgeText } from '../utils/verification';
 import { useTheme } from '../context/ThemeContext';
 import { useXP } from '../context/XPContext';
+import { useXP as useXPHook } from '../hooks/useXP';
+import { XPProgressBar } from '../components/XPProgressBar';
 import { useAuth } from '../context/AuthContext';
 
 const { width } = Dimensions.get('window');
@@ -28,6 +30,19 @@ const MyCard: React.FC<MyCardProps> = ({ navigation, route }) => {
   const { user } = useAuth();
   const role = route?.params?.role || 'business';
   const [selectedAttribute, setSelectedAttribute] = useState<string | null>(null);
+  
+  // Initialize XP system with role-specific starting XP
+  const getInitialXP = () => {
+    switch (role) {
+      case 'trash-hero': return 2450;
+      case 'impact-warrior': return 1680;
+      case 'business': return 3450;
+      case 'admin': return 5200;
+      default: return 1000;
+    }
+  };
+  
+  const { level, xp, progress, nextXP, gainXP } = useXPHook(getInitialXP());
   
   // Role configuration with exact colors and data
   const getRoleConfig = () => {
@@ -278,34 +293,46 @@ const MyCard: React.FC<MyCardProps> = ({ navigation, route }) => {
             
           </View>
           
-          {/* Progress Section */}
-          {roleConfig.progress < 100 && (
-            <View style={styles.progressSection}>
-              <View style={styles.progressHeader}>
-                <Text style={[styles.progressTitle, { color: theme.textColor }]}>
-                  Progress to 🏆 {roleConfig.nextRank}
-                </Text>
-                <View style={[styles.evolutionBadge, { backgroundColor: '#007bff' }]}>
-                  <Ionicons name="trending-up" size={12} color="white" />
-                  <Text style={styles.evolutionText}>Evolution</Text>
-                </View>
-              </View>
-              
-              <View style={[styles.progressBarContainer, { backgroundColor: 'rgba(0,123,255,0.2)' }]}>
-                <View
-                  style={[
-                    styles.progressBarFill,
-                    { backgroundColor: '#007bff', width: `${roleConfig.progress}%` }
-                  ]}
-                />
-              </View>
-              
-              <View style={styles.progressFooter}>
-                <Text style={[styles.progressPercentage, { color: theme.textColor }]}>{roleConfig.progress}%</Text>
-                <Text style={[styles.progressRemaining, { color: theme.secondaryText }]}>{roleConfig.nextLevelPoints} pts to go</Text>
+          {/* XP Progress Section */}
+          <View style={styles.progressSection}>
+            <View style={styles.progressHeader}>
+              <Text style={[styles.progressTitle, { color: theme.textColor }]}>
+                Progress to 🏆 {roleConfig.nextRank}
+              </Text>
+              <View style={[styles.evolutionBadge, { backgroundColor: roleConfig.color }]}>
+                <Ionicons name="trending-up" size={12} color="white" />
+                <Text style={styles.evolutionText}>Evolution</Text>
               </View>
             </View>
-          )}
+            
+            <XPProgressBar 
+              progress={progress} 
+              level={level} 
+              nextXP={nextXP}
+              color={roleConfig.color}
+              showLabel={false}
+              showXPText={true}
+            />
+            
+            <View style={styles.progressFooter}>
+              <Text style={[styles.progressPercentage, { color: theme.textColor }]}>
+                {Math.round(progress * 100)}%
+              </Text>
+              <Text style={[styles.progressRemaining, { color: theme.secondaryText }]}>
+                {nextXP - Math.floor(progress * nextXP)} XP to go
+              </Text>
+            </View>
+            
+            {/* Demo XP Gain Button */}
+            <TouchableOpacity 
+              style={[styles.xpButton, { backgroundColor: roleConfig.color }]}
+              onPress={() => gainXP(50)}
+              activeOpacity={0.8}
+            >
+              <Ionicons name="add-circle" size={16} color="white" />
+              <Text style={styles.xpButtonText}>Gain 50 XP</Text>
+            </TouchableOpacity>
+          </View>
           
           {/* Dynamic Attributes Section */}
           <View style={styles.attributesSection}>
@@ -710,6 +737,21 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     marginLeft: 4,
+  },
+  xpButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    marginTop: 12,
+    gap: 6,
+  },
+  xpButtonText: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: '600',
   },
 });
 

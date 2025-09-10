@@ -8,21 +8,21 @@ import {
   Alert,
   ScrollView,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { getRoleColor } from '../utils/roleColors';
+import { useAuth } from '../context/AuthContext';
 
 const LoginScreen = ({ navigation }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const { login, isLoading } = useAuth();
 
-  const handleLogin = () => {
-    if (username === 'admin' && password === 'admin123') {
-      navigation.navigate('AdminDashboard');
-    } else if (username === 'jjmoore254' && password === 'business123') {
-      navigation.navigate('EcoDefenderDashboard');
-    } else if (username === 'testuser' && password === 'password123') {
-      navigation.navigate('UnifiedHeroDashboard');
-    } else {
+  const handleLogin = async () => {
+    try {
+      await login(username, password);
+      // Navigation will happen automatically when user state changes
+    } catch (error) {
       Alert.alert('Error', 'Invalid credentials. Please try again.');
     }
   };
@@ -40,7 +40,8 @@ const LoginScreen = ({ navigation }) => {
   );
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <SafeAreaView style={styles.container}>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
       {/* PEAR Logo and Title */}
       <View style={styles.logoSection}>
         <View style={styles.logoContainer}>
@@ -74,8 +75,14 @@ const LoginScreen = ({ navigation }) => {
           />
         </View>
 
-        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-          <Text style={styles.loginButtonText}>Sign In</Text>
+        <TouchableOpacity 
+          style={[styles.loginButton, isLoading && styles.loginButtonDisabled]} 
+          onPress={handleLogin}
+          disabled={isLoading}
+        >
+          <Text style={styles.loginButtonText}>
+            {isLoading ? 'Signing In...' : 'Sign In'}
+          </Text>
         </TouchableOpacity>
       </View>
 
@@ -121,14 +128,18 @@ const LoginScreen = ({ navigation }) => {
       <View style={styles.footer}>
         <Text style={styles.footerText}>Protecting our planet, one cleanup at a time</Text>
       </View>
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
+    flex: 1,
     backgroundColor: '#f8fdf9',
+  },
+  scrollContent: {
+    flexGrow: 1,
     paddingHorizontal: 20,
     paddingVertical: 40,
   },
@@ -202,6 +213,9 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 18,
     fontWeight: '600',
+  },
+  loginButtonDisabled: {
+    opacity: 0.6,
   },
   testSection: {
     marginBottom: 30,

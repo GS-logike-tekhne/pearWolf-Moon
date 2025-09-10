@@ -1,11 +1,12 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { UserRole, normalizeRole, canSwitchRole, getAvailableRoles } from '../types/roles';
 
 interface User {
   id: number;
   username: string;
   name: string;
   email: string;
-  role: 'TRASH_HERO' | 'VOLUNTEER' | 'BUSINESS' | 'ADMIN';
+  role: UserRole;
   avatar?: string;
   city?: string;
   state?: string;
@@ -21,12 +22,14 @@ interface AuthContextType {
   user: User | null;
   isLoading: boolean;
   isAuthenticated: boolean;
-  currentRole: 'TRASH_HERO' | 'VOLUNTEER' | 'BUSINESS' | 'ADMIN';
+  currentRole: UserRole;
   login: (username: string, password: string) => Promise<void>;
   signup: (userData: SignupData) => Promise<void>;
   logout: () => Promise<void>;
   checkAuth: () => Promise<boolean>;
-  setCurrentRole: (role: 'TRASH_HERO' | 'VOLUNTEER' | 'BUSINESS' | 'ADMIN') => void;
+  setCurrentRole: (role: UserRole) => void;
+  getAvailableRoles: () => UserRole[];
+  canSwitchToRole: (role: UserRole) => boolean;
 }
 
 interface SignupData {
@@ -34,7 +37,7 @@ interface SignupData {
   username: string;
   email: string;
   password: string;
-  role: 'TRASH_HERO' | 'VOLUNTEER' | 'BUSINESS';
+  role: UserRole;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -44,7 +47,7 @@ const API_BASE_URL = process.env.NODE_ENV === 'production' ? '' : 'http://localh
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [currentRole, setCurrentRoleState] = useState<'TRASH_HERO' | 'VOLUNTEER' | 'BUSINESS' | 'ADMIN'>('TRASH_HERO');
+  const [currentRole, setCurrentRoleState] = useState<UserRole>('TRASH_HERO');
   
   const isAuthenticated = user !== null;
 
@@ -52,26 +55,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       console.log('Checking authentication status...');
       
-      // For React Native, we'll simulate a successful auth check
+      // For demo purposes, check if there's a stored session
       // In a real app, you'd make an API call to validate the session
-      const mockUser: User = {
-        id: 1,
-        username: 'demo_user',
-        name: 'Demo User',
-        email: 'demo@pearapp.com',
-        role: 'TRASH_HERO',
-        ecoPoints: 1250,
-        kycVerified: true,
-        backgroundCheckVerified: true,
-        verificationLevel: 'background_check',
-        kycVerifiedAt: new Date(),
-        backgroundCheckVerifiedAt: new Date(),
-      };
-      
-      setUser(mockUser);
-      setCurrentRoleState(mockUser.role);
-      console.log('Authentication successful (demo mode):', mockUser);
-      return true;
+      // For now, we'll start with no user to show the login screen
+      setUser(null);
+      setCurrentRoleState('TRASH_HERO');
+      console.log('No authenticated user found - showing login screen');
+      return false;
     } catch (error) {
       console.error('Authentication check error:', error);
       setUser(null);
@@ -89,16 +79,54 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       setIsLoading(true);
       
-      // For demo purposes, simulate login
-      // In a real app, you'd make API calls to your backend
-      const mockUser: User = {
-        id: 1,
-        username,
-        name: username.charAt(0).toUpperCase() + username.slice(1),
-        email: `${username}@pearapp.com`,
-        role: 'TRASH_HERO',
-        ecoPoints: 1250,
-      };
+      // Demo login logic based on credentials
+      let mockUser: User;
+      
+      if (username === 'admin' && password === 'admin123') {
+        mockUser = {
+          id: 1,
+          username: 'admin',
+          name: 'Admin User',
+          email: 'admin@pearapp.com',
+          role: 'ADMIN',
+          ecoPoints: 5000,
+          kycVerified: true,
+          backgroundCheckVerified: true,
+          verificationLevel: 'background_check',
+          kycVerifiedAt: new Date(),
+          backgroundCheckVerifiedAt: new Date(),
+        };
+      } else if (username === 'jjmoore254' && password === 'business123') {
+        mockUser = {
+          id: 2,
+          username: 'jjmoore254',
+          name: 'JJ Moore',
+          email: 'jj@pearapp.com',
+          role: 'ECO_DEFENDER',
+          ecoPoints: 3450,
+          kycVerified: true,
+          backgroundCheckVerified: true,
+          verificationLevel: 'background_check',
+          kycVerifiedAt: new Date(),
+          backgroundCheckVerifiedAt: new Date(),
+        };
+      } else if (username === 'testuser' && password === 'password123') {
+        mockUser = {
+          id: 3,
+          username: 'testuser',
+          name: 'Test User',
+          email: 'test@pearapp.com',
+          role: 'TRASH_HERO',
+          ecoPoints: 1250,
+          kycVerified: true,
+          backgroundCheckVerified: true,
+          verificationLevel: 'background_check',
+          kycVerifiedAt: new Date(),
+          backgroundCheckVerifiedAt: new Date(),
+        };
+      } else {
+        throw new Error('Invalid credentials');
+      }
       
       setUser(mockUser);
       setCurrentRoleState(mockUser.role);
@@ -130,9 +158,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       const { user: newUser, token } = await response.json();
       
-      // Store session token
+      // Store session token (React Native uses AsyncStorage instead of localStorage)
       if (token) {
-        localStorage.setItem('session_token', token);
+        // In React Native, you'd use AsyncStorage.setItem('session_token', token)
+        console.log('Session token received:', token);
       }
       setUser(newUser);
       
@@ -160,16 +189,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const setCurrentRole = (role: 'TRASH_HERO' | 'VOLUNTEER' | 'BUSINESS' | 'ADMIN') => {
-    // Only allow switching between TRASH_HERO and VOLUNTEER for unified heroes
-    if (user && (user.role === 'TRASH_HERO' || user.role === 'VOLUNTEER')) {
-      if (role === 'TRASH_HERO' || role === 'VOLUNTEER') {
-        setCurrentRoleState(role);
-      }
+  const setCurrentRole = (role: UserRole) => {
+    const normalizedRole = normalizeRole(role);
+    console.log('setCurrentRole called with:', role, 'normalized to:', normalizedRole);
+    console.log('User role:', user?.role, 'Can switch:', user ? canSwitchRole(user.role, normalizedRole) : false);
+    if (user && canSwitchRole(user.role, normalizedRole)) {
+      console.log('Setting current role to:', normalizedRole);
+      setCurrentRoleState(normalizedRole);
     } else {
       // For other roles, keep their original role
+      console.log('Cannot switch, keeping original role:', user?.role || 'TRASH_HERO');
       setCurrentRoleState(user?.role || 'TRASH_HERO');
     }
+  };
+
+  const getAvailableRolesForUser = (): UserRole[] => {
+    return user ? getAvailableRoles(user.role) : ['TRASH_HERO'];
+  };
+
+  const canSwitchToRole = (role: UserRole): boolean => {
+    return user ? canSwitchRole(user.role, normalizeRole(role)) : false;
   };
 
   const value: AuthContextType = {
@@ -182,6 +221,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     logout,
     checkAuth,
     setCurrentRole,
+    getAvailableRoles: getAvailableRolesForUser,
+    canSwitchToRole,
   };
 
   return (

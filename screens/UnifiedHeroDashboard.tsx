@@ -5,9 +5,9 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  SafeAreaView,
   Dimensions,
 } from "react-native";
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from "@expo/vector-icons";
 import { getRoleColor } from '../utils/roleColors';
 import { useTheme } from "../context/ThemeContext";
@@ -32,17 +32,21 @@ const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({
   
   // Sync theme with current role from auth context
   useEffect(() => {
-    const themeRole = currentRole === 'TRASH_HERO' ? 'trash-hero' : 
-                     currentRole === 'VOLUNTEER' ? 'impact-warrior' :
-                     currentRole === 'BUSINESS' ? 'business' : 'admin';
+    const themeRole = currentRole === 'TRASH_HERO' ? 'TRASH_HERO' : 
+                     currentRole === 'IMPACT_WARRIOR' ? 'IMPACT_WARRIOR' :
+                     currentRole === 'ECO_DEFENDER' ? 'ECO_DEFENDER' : 'ADMIN';
     setTheme(themeRole);
   }, [currentRole, setTheme]);
   
-  // Toggle between TRASH_HERO and VOLUNTEER
+  // Toggle between TRASH_HERO and IMPACT_WARRIOR
   const toggleRole = () => {
-    if (user && (user.role === 'TRASH_HERO' || user.role === 'VOLUNTEER')) {
-      const newRole = currentRole === 'TRASH_HERO' ? 'VOLUNTEER' : 'TRASH_HERO';
+    console.log('Toggle clicked! Current role:', currentRole, 'User role:', user?.role);
+    if (user && (user.role === 'TRASH_HERO' || user.role === 'IMPACT_WARRIOR')) {
+      const newRole = currentRole === 'TRASH_HERO' ? 'IMPACT_WARRIOR' : 'TRASH_HERO';
+      console.log('Switching to role:', newRole);
       setCurrentRole(newRole);
+    } else {
+      console.log('Cannot switch roles - user role:', user?.role);
     }
   };
   
@@ -156,20 +160,20 @@ const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({
     switch (activeRole) {
       case 'TRASH_HERO':
         return [
-          { title: 'Find Jobs', icon: 'search', color: '#28A745', onPress: () => navigation.navigate('TrashHeroMissions') },
+          { title: 'Find Jobs', icon: 'search', color: '#28A745', onPress: () => navigation.navigate('MainTabs', { screen: 'Missions' }) },
           { title: 'My Earnings', icon: 'wallet', color: '#ffc107', onPress: () => navigation.navigate('TrashHeroEarnings') },
           { title: 'Performance', icon: 'analytics', color: '#007bff', onPress: () => navigation.navigate('TrashHeroEarnings') },
           { title: 'Map View', icon: 'map', color: '#17a2b8', onPress: () => navigation.navigate('MapScreen') },
           { title: 'My Badges', icon: 'medal', color: '#8b5cf6', onPress: () => navigation.navigate('BadgeSystem', { userRole: 'TRASH_HERO' }) },
           { title: 'Profile', icon: 'person', color: '#6c757d', onPress: () => navigation.navigate('ProfileScreen', { role: 'trash-hero' }) },
         ];
-      case 'VOLUNTEER':
+      case 'IMPACT_WARRIOR':
         return [
-          { title: 'Join Mission', icon: 'leaf', color: '#dc3545', onPress: () => navigation.navigate('ImpactWarriorMissions') },
+          { title: 'Join Mission', icon: 'leaf', color: '#dc3545', onPress: () => navigation.navigate('MainTabs', { screen: 'Missions' }) },
           { title: 'My Impact', icon: 'analytics', color: '#28A745', onPress: () => navigation.navigate('ImpactWarriorImpact') },
           { title: 'PEAR Verified Missions', icon: 'people', color: '#007bff', onPress: () => navigation.navigate('PearVerifiedMissions') },
           { title: 'Map View', icon: 'map', color: '#17a2b8', onPress: () => navigation.navigate('MapScreen') },
-          { title: 'My Badges', icon: 'medal', color: '#8b5cf6', onPress: () => navigation.navigate('BadgeSystem', { userRole: 'VOLUNTEER' }) },
+          { title: 'My Badges', icon: 'medal', color: '#8b5cf6', onPress: () => navigation.navigate('BadgeSystem', { userRole: 'IMPACT_WARRIOR' }) },
           { title: 'Profile', icon: 'person', color: '#6c757d', onPress: () => navigation.navigate('ProfileScreen', { role: 'impact-warrior' }) },
         ];
       case 'BUSINESS':
@@ -349,8 +353,8 @@ const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({
             </View>
           </View>
           
-          {/* Role Toggle Section - Only show for TRASH_HERO/VOLUNTEER users */}
-          {(user && (user.role === 'TRASH_HERO' || user.role === 'VOLUNTEER')) && (
+          {/* Role Toggle Section - Only show for TRASH_HERO/IMPACT_WARRIOR users */}
+          {(user && (user.role === 'TRASH_HERO' || user.role === 'IMPACT_WARRIOR')) && (
             <View style={styles.toggleSection}>
               <View style={styles.toggleContainer}>
                 <Text style={[
@@ -363,7 +367,7 @@ const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({
                 <TouchableOpacity
                   style={[
                     styles.toggleSwitch,
-                    { backgroundColor: activeRole === 'VOLUNTEER' ? '#dc3545' : '#28A745' }
+                    { backgroundColor: activeRole === 'IMPACT_WARRIOR' ? '#dc3545' : '#28A745' }
                   ]}
                   onPress={toggleRole}
                   activeOpacity={0.8}
@@ -373,7 +377,7 @@ const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({
                     { 
                       backgroundColor: 'white',
                       transform: [{ 
-                        translateX: activeRole === 'VOLUNTEER' ? 22 : 2 
+                        translateX: activeRole === 'IMPACT_WARRIOR' ? 22 : 2 
                       }]
                     }
                   ]} />
@@ -381,7 +385,7 @@ const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({
                 
                 <Text style={[
                   styles.toggleLabel, 
-                  { color: activeRole === 'VOLUNTEER' ? '#dc3545' : theme.secondaryText }
+                  { color: activeRole === 'IMPACT_WARRIOR' ? '#dc3545' : theme.secondaryText }
                 ]}>
                   Impact Warrior
                 </Text>

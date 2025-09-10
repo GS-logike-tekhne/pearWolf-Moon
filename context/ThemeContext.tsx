@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
+import { UserRole, getRoleColor, normalizeRole } from '../types/roles';
 
 interface Theme {
   primary: string;
@@ -16,13 +17,13 @@ interface Theme {
 
 interface ThemeContextType {
   theme: Theme;
-  userRole: string;
-  setUserRole: (role: string) => void;
-  setTheme: (role: string) => void;
+  userRole: UserRole;
+  setUserRole: (role: UserRole) => void;
+  setTheme: (role: UserRole) => void;
 }
 
-const themes: Record<string, Theme> = {
-  admin: {
+const themes: Record<UserRole, Theme> = {
+  ADMIN: {
     primary: '#ea580c',
     secondary: '#f97316', 
     accent: '#fed7aa',
@@ -35,7 +36,7 @@ const themes: Record<string, Theme> = {
     warning: '#f59e0b',
     error: '#ef4444',
   },
-  business: {
+  ECO_DEFENDER: {
     primary: '#007bff',
     secondary: '#3b82f6',
     accent: '#dbeafe',
@@ -48,7 +49,7 @@ const themes: Record<string, Theme> = {
     warning: '#f59e0b',
     error: '#ef4444',
   },
-  'trash-hero': {
+  TRASH_HERO: {
     primary: '#28A745',
     secondary: '#15803d',
     accent: '#d1fae5',
@@ -61,7 +62,7 @@ const themes: Record<string, Theme> = {
     warning: '#28A745',
     error: '#ef4444',
   },
-  'impact-warrior': {
+  IMPACT_WARRIOR: {
     primary: '#dc2626',
     secondary: '#991b1b',
     accent: '#fecaca',
@@ -83,12 +84,12 @@ interface ThemeProviderProps {
 }
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
-  const [userRole, setUserRole] = useState<string>('trash-hero');
+  const [userRole, setUserRole] = useState<UserRole>('TRASH_HERO');
   
-  const theme = themes[userRole] || themes.admin;
+  const theme = themes[userRole] || themes.TRASH_HERO;
 
-  const setTheme = (role: string) => {
-    setUserRole(role);
+  const setTheme = (role: UserRole) => {
+    setUserRole(normalizeRole(role));
   };
 
   const value: ThemeContextType = {
