@@ -12,6 +12,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { getRoleColor } from '../utils/roleColors';
 import { useTheme } from "../context/ThemeContext";
 import { useAuth } from "../context/AuthContext";
+import { useRoleManager } from "../hooks/useRoleManager";
 import UnifiedHeader from "../components/UnifiedHeader";
 import MenuModal from "../components/MenuModal";
 
@@ -24,99 +25,22 @@ interface UnifiedHeroDashboardProps {
 
 const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({ 
   navigation, 
-  userRole = 'BUSINESS' 
+  userRole = 'TRASH_HERO' 
 }) => {
-  const { theme, setTheme } = useTheme();
-  const { currentRole, setCurrentRole, user, isAuthenticated } = useAuth();
+  const { theme } = useTheme();
+  const { user, isAuthenticated } = useAuth();
+  const { currentRole, toggleHeroRoles, getRoleConfig } = useRoleManager();
   const [showMenu, setShowMenu] = useState(false);
   
-  // Sync theme with current role from auth context
-  useEffect(() => {
-    const themeRole = currentRole === 'TRASH_HERO' ? 'TRASH_HERO' : 
-                     currentRole === 'IMPACT_WARRIOR' ? 'IMPACT_WARRIOR' :
-                     currentRole === 'ECO_DEFENDER' ? 'ECO_DEFENDER' : 'ADMIN';
-    setTheme(themeRole);
-  }, [currentRole, setTheme]);
-  
-  // Toggle between TRASH_HERO and IMPACT_WARRIOR
-  const toggleRole = () => {
-    console.log('Toggle clicked! Current role:', currentRole, 'User role:', user?.role);
-    if (user && (user.role === 'TRASH_HERO' || user.role === 'IMPACT_WARRIOR')) {
-      const newRole = currentRole === 'TRASH_HERO' ? 'IMPACT_WARRIOR' : 'TRASH_HERO';
-      console.log('Switching to role:', newRole);
-      setCurrentRole(newRole);
-    } else {
-      console.log('Cannot switch roles - user role:', user?.role);
-    }
-  };
-  
-  // Use current role from auth context for display logic
+  // Use current role from role manager
   const activeRole = currentRole;
   
-  // Role configuration with correct colors
-  const getRoleConfig = () => {
-    switch (activeRole) {
-      case 'TRASH_HERO':
-        return {
-          title: 'TrashHero Pro',
-          subtitle: 'Professional Cleaner',
-          color: getRoleColor('trash-hero'),
-          level: 6,
-          points: 2450,
-          progress: 85,
-          nextLevelPoints: 150,
-          badge: 'Elite Cleaner',
-          badgeIcon: '🎯',
-        };
-      case 'VOLUNTEER':
-        return {
-          title: 'Impact Warrior',
-          subtitle: 'Community Volunteer',
-          color: getRoleColor('impact-warrior'),
-          level: 4,
-          points: 1680,
-          progress: 72,
-          nextLevelPoints: 320,
-          badge: 'Community Champion',
-          badgeIcon: '❤️',
-        };
-      case 'BUSINESS':
-        return {
-          title: 'EcoDefender Corp',
-          subtitle: 'EcoDefender',
-          color: getRoleColor('business'),
-          level: 6,
-          points: 3450,
-          progress: 93,
-          nextLevelPoints: 150,
-          badge: 'Green Pioneer',
-          badgeIcon: '🌱',
-        };
-      case 'ADMIN':
-        return {
-          title: 'Platform Admin',
-          subtitle: 'System Administrator',
-          color: getRoleColor('admin'),
-          level: 8,
-          points: 5200,
-          progress: 100,
-          nextLevelPoints: 0,
-          badge: 'Platform Guardian',
-          badgeIcon: '🛡️',
-        };
-      default:
-        return {
-          title: 'User',
-          subtitle: 'Platform User',
-          color: theme.primary,
-          level: 1,
-          points: 0,
-          progress: 0,
-          nextLevelPoints: 100,
-          badge: 'Beginner',
-          badgeIcon: '⭐',
-        };
-    }
+  // Get role configuration from role manager
+  const roleConfig = getRoleConfig();
+  
+  // Toggle between roles using role manager
+  const toggleRole = () => {
+    toggleHeroRoles();
   };
 
   // Role-specific key metrics

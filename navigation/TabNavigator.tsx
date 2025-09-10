@@ -7,6 +7,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { UserRole, getRoleColor, getRoleIcon } from '../types/roles';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
+import { useRoleManager } from '../hooks/useRoleManager';
 
 // Import screens
 import UnifiedHeroDashboard from '../screens/UnifiedHeroDashboard';
@@ -23,8 +24,11 @@ import UserManagement from '../screens/UserManagement';
 
 const TabNavigator: React.FC = () => {
   const { theme } = useTheme();
-  const { currentRole: userRole } = useAuth();
   const insets = useSafeAreaInsets();
+  const { currentRole, getNavigationConfig } = useRoleManager();
+  
+  // Get role-specific navigation configuration
+  const navConfig = getNavigationConfig();
 
   const getTabBarIcon = (routeName: string, focused: boolean, color: string, size: number) => {
     let iconName: string;
@@ -59,11 +63,11 @@ const TabNavigator: React.FC = () => {
   };
 
   const getTabBarColor = () => {
-    return getRoleColor(userRole);
+    return navConfig.tabBarColor;
   };
 
   const getMissionsScreen = () => {
-    switch (userRole) {
+    switch (currentRole) {
       case 'TRASH_HERO':
         return TrashHeroMissions;
       case 'IMPACT_WARRIOR':
@@ -78,7 +82,7 @@ const TabNavigator: React.FC = () => {
   };
 
   const getDashboardScreen = () => {
-    switch (userRole) {
+    switch (currentRole) {
       case 'TRASH_HERO':
       case 'IMPACT_WARRIOR':
         return UnifiedHeroDashboard;
@@ -94,7 +98,7 @@ const TabNavigator: React.FC = () => {
   const getTabBarLabel = (routeName: string) => {
     switch (routeName) {
       case 'Missions':
-        if (userRole === 'ADMIN') return 'Users';
+        if (currentRole === 'ADMIN') return 'Users';
         return 'Missions';
       default:
         return routeName;

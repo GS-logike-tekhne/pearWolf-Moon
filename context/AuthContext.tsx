@@ -124,6 +124,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           kycVerifiedAt: new Date(),
           backgroundCheckVerifiedAt: new Date(),
         };
+      } else if (username === 'volunteer' && password === 'volunteer123') {
+        mockUser = {
+          id: 4,
+          username: 'volunteer',
+          name: 'Sarah Johnson',
+          email: 'sarah@pearapp.com',
+          role: 'IMPACT_WARRIOR',
+          ecoPoints: 1680,
+          kycVerified: true,
+          backgroundCheckVerified: true,
+          verificationLevel: 'background_check',
+          kycVerifiedAt: new Date(),
+          backgroundCheckVerifiedAt: new Date(),
+        };
       } else {
         throw new Error('Invalid credentials');
       }
