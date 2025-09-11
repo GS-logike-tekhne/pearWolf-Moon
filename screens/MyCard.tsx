@@ -20,6 +20,7 @@ import { useAuth } from '../context/AuthContext';
 import LabProgressCard from '../components/LabProgressCard';
 import { formatCO2Offset } from '../utils/weightUtils';
 import { getUserStatsByRole } from '../utils/mockData';
+import { EvolutionAnimation } from '../components/EvolutionAnimation';
 
 const { width } = Dimensions.get('window');
 
@@ -46,7 +47,38 @@ const MyCard: React.FC<MyCardProps> = ({ navigation, route }) => {
     }
   };
   
-  const { level, xp, progress, nextXP, gainXP } = useXPHook(getInitialXP());
+  // Use the new enhanced XP system
+  const enhancedXP = useXPHook(getInitialXP());
+  const { 
+    currentLevel, 
+    nextLevel, 
+    xpToNext, 
+    progressPercent, 
+    addXP, 
+    getXPSummary,
+    levelUpHistory 
+  } = enhancedXP;
+  
+  // Evolution animation state
+  const [showEvolutionAnimation, setShowEvolutionAnimation] = useState(false);
+  const [evolutionData, setEvolutionData] = useState<{
+    currentLevel: any;
+    newLevel: any;
+  } | null>(null);
+
+  // Check for level up and trigger animation
+  useEffect(() => {
+    if (levelUpHistory.length > 0) {
+      const latestLevelUp = levelUpHistory[levelUpHistory.length - 1];
+      const previousLevel = levelUpHistory.length > 1 ? levelUpHistory[levelUpHistory.length - 2] : currentLevel;
+      
+      setEvolutionData({
+        currentLevel: previousLevel,
+        newLevel: latestLevelUp,
+      });
+      setShowEvolutionAnimation(true);
+    }
+  }, [levelUpHistory]);
   
   // Role configuration with exact colors and data
   const getRoleConfig = () => {
@@ -312,9 +344,10 @@ const MyCard: React.FC<MyCardProps> = ({ navigation, route }) => {
             </View>
             
             <XPProgressBar 
-              progress={progress} 
-              level={level} 
-              nextXP={nextXP}
+              progress={progressPercent / 100} 
+              level={currentLevel.level}
+              levelTitle={currentLevel.title}
+              nextXP={xpToNext}
               color={roleConfig.color}
               showLabel={false}
               showXPText={true}
@@ -322,17 +355,17 @@ const MyCard: React.FC<MyCardProps> = ({ navigation, route }) => {
             
             <View style={styles.progressFooter}>
               <Text style={[styles.progressPercentage, { color: theme.textColor }]}>
-                {Math.round(progress * 100)}%
+                {progressPercent}%
               </Text>
               <Text style={[styles.progressRemaining, { color: theme.secondaryText }]}>
-                {nextXP - Math.floor(progress * nextXP)} XP to go
+                {xpToNext} XP to {nextLevel?.title || 'Max Level'}
               </Text>
             </View>
             
             {/* Demo XP Gain Button */}
             <TouchableOpacity 
               style={[styles.xpButton, { backgroundColor: roleConfig.color }]}
-              onPress={() => gainXP(50)}
+              onPress={() => addXP(50, 'demo_gain')}
               activeOpacity={0.8}
             >
               <Ionicons name="add-circle" size={16} color="white" />
@@ -437,6 +470,17 @@ const MyCard: React.FC<MyCardProps> = ({ navigation, route }) => {
 
         <View style={styles.bottomSpacing} />
       </ScrollView>
+
+      {/* Evolution Animation */}
+      {evolutionData && (
+        <EvolutionAnimation
+          visible={showEvolutionAnimation}
+          currentLevel={evolutionData.currentLevel}
+          newLevel={evolutionData.newLevel}
+          onComplete={() => setShowEvolutionAnimation(false)}
+          roleColor={roleConfig.color}
+        />
+      )}
     </ScreenLayout>
   );
 };

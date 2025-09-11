@@ -1,30 +1,7 @@
 import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-// XP thresholds for each level
-const XP_LEVELS: number[] = [
-  0,     // Level 0
-  100,   // Level 1
-  250,   // Level 2
-  450,   // Level 3
-  700,   // Level 4
-  1000,  // Level 5
-  1350,  // Level 6
-  1750,  // Level 7
-  2200,  // Level 8
-  2700,  // Level 9
-  3250,  // Level 10
-  3850,  // Level 11
-  4500,  // Level 12
-  5200,  // Level 13
-  5950,  // Level 14
-  6750,  // Level 15
-  7600,  // Level 16
-  8500,  // Level 17
-  9450,  // Level 18
-  10450, // Level 19
-  11500, // Level 20
-];
+import { PEAR_LEVELS, getLevelProgress, Level } from '../data/levels';
+import { useXP as useNewXP } from '../hooks/useXP';
 
 // XP rewards for different actions
 export const XP_REWARDS = {
@@ -63,8 +40,10 @@ interface Achievement {
 interface XPState {
   totalXP: number;
   currentLevel: number;
+  levelTitle: string;
   xpForNextLevel: number;
   xpInCurrentLevel: number;
+  progressPercent: number;
   badges: Badge[];
   achievements: Achievement[];
   weeklyXP: number;
@@ -73,6 +52,7 @@ interface XPState {
   streak: number;
   showLevelUpModal: boolean;
   newLevel?: number;
+  newLevelTitle?: string;
 }
 
 interface XPContextType {
@@ -105,29 +85,36 @@ const xpReducer = (state: XPState, action: XPAction): XPState => {
     
     case 'ADD_XP': {
       const newTotalXP = state.totalXP + action.payload.amount;
-      const newLevel = calculateLevel(newTotalXP);
-      const showLevelUpModal = newLevel > state.currentLevel;
+      const levelProgress = getLevelProgress(newTotalXP);
+      const showLevelUpModal = levelProgress.currentLevel.level > state.currentLevel;
       
       return {
         ...state,
         totalXP: newTotalXP,
-        currentLevel: newLevel,
-        xpForNextLevel: calculateXPForNextLevel(newLevel),
-        xpInCurrentLevel: calculateXPInCurrentLevel(newTotalXP, newLevel),
+        currentLevel: levelProgress.currentLevel.level,
+        levelTitle: levelProgress.currentLevel.title,
+        xpForNextLevel: levelProgress.xpToNext,
+        xpInCurrentLevel: newTotalXP - levelProgress.currentLevel.xp,
+        progressPercent: levelProgress.progressPercent,
         weeklyXP: state.weeklyXP + action.payload.amount,
         monthlyXP: state.monthlyXP + action.payload.amount,
         showLevelUpModal,
-        newLevel: showLevelUpModal ? newLevel : state.newLevel,
+        newLevel: showLevelUpModal ? levelProgress.currentLevel.level : state.newLevel,
+        newLevelTitle: showLevelUpModal ? levelProgress.currentLevel.title : state.newLevelTitle,
       };
     }
     
-    case 'LEVEL_UP':
+    case 'LEVEL_UP': {
+      const levelProgress = getLevelProgress(state.totalXP);
       return {
         ...state,
-        currentLevel: action.payload.newLevel,
+        currentLevel: levelProgress.currentLevel.level,
+        levelTitle: levelProgress.currentLevel.title,
         showLevelUpModal: true,
-        newLevel: action.payload.newLevel,
+        newLevel: levelProgress.currentLevel.level,
+        newLevelTitle: levelProgress.currentLevel.title,
       };
+    }
     
     case 'EARN_BADGE': {
       const updatedBadges = state.badges.map(badge =>
@@ -160,6 +147,7 @@ const xpReducer = (state: XPState, action: XPAction): XPState => {
         ...state,
         showLevelUpModal: false,
         newLevel: undefined,
+        newLevelTitle: undefined,
       };
     
     case 'RESET_XP':
@@ -170,32 +158,18 @@ const xpReducer = (state: XPState, action: XPAction): XPState => {
   }
 };
 
-const calculateLevel = (totalXP: number): number => {
-  for (let i = XP_LEVELS.length - 1; i >= 0; i--) {
-    if (totalXP >= XP_LEVELS[i]) {
-      return i;
-    }
-  }
-  return 0;
-};
-
-const calculateXPForNextLevel = (currentLevel: number): number => {
-  if (currentLevel >= XP_LEVELS.length - 1) {
-    return 0; // Max level reached
-  }
-  return XP_LEVELS[currentLevel + 1];
-};
-
-const calculateXPInCurrentLevel = (totalXP: number, currentLevel: number): number => {
-  const currentLevelXP = XP_LEVELS[currentLevel];
-  return totalXP - currentLevelXP;
+// Helper functions now use the new leveling system
+const getLevelData = (totalXP: number) => {
+  return getLevelProgress(totalXP);
 };
 
 const initialXPState: XPState = {
   totalXP: 0,
-  currentLevel: 0,
-  xpForNextLevel: XP_LEVELS[1],
+  currentLevel: 1,
+  levelTitle: 'Sprouting Hero',
+  xpForNextLevel: 250,
   xpInCurrentLevel: 0,
+  progressPercent: 0,
   badges: [
     {
       id: 'first-cleanup',

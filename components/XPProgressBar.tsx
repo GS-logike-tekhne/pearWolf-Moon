@@ -4,6 +4,7 @@ import { View, Text, StyleSheet, Animated } from 'react-native';
 type Props = {
   progress: number; // between 0 and 1
   level: number;
+  levelTitle?: string;
   nextXP: number;
   color?: string;
   showLabel?: boolean;
@@ -13,6 +14,7 @@ type Props = {
 export const XPProgressBar = ({ 
   progress, 
   level, 
+  levelTitle,
   nextXP, 
   color = '#4CAF50',
   showLabel = true,
@@ -36,7 +38,9 @@ export const XPProgressBar = ({
   return (
     <View style={styles.container}>
       {showLabel && (
-        <Text style={styles.label}>Level {level}</Text>
+        <Text style={styles.label}>
+          Level {level} {levelTitle && `- ${levelTitle}`}
+        </Text>
       )}
       <View style={styles.barBackground}>
         <Animated.View 
