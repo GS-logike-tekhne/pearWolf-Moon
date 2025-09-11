@@ -1,8 +1,9 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import MissionFeed from '../components/MissionFeed';
 import { useTheme } from '../context/ThemeContext';
+import { THEME } from '../styles/theme';
+import ScreenLayout from '../components/ScreenLayout';
 
 interface MissionFeedScreenProps {
   navigation: any;
@@ -14,12 +15,12 @@ const MissionFeedScreen: React.FC<MissionFeedScreenProps> = ({ navigation, route
   const params = route.params || {};
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+    <ScreenLayout>
       <MissionFeed 
         {...params}
         onBack={() => navigation.goBack()}
       />
-    </SafeAreaView>
+    </ScreenLayout>
   );
 };
 

@@ -1,13 +1,14 @@
 import React from 'react';
+import ScreenLayout from '../components/ScreenLayout';
 import {
   View,
   Text,
   StyleSheet,
-  ScrollView,
   TouchableOpacity,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-
+import { useTheme } from '../context/ThemeContext';
+import { THEME } from '../styles/theme';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 type Reward = {
@@ -30,6 +31,8 @@ type RewardsScreenProps = {
 };
 
 const RewardsScreen: React.FC<RewardsScreenProps> = ({ navigation }) => {
+  const { theme } = useTheme();
+  
   const rewards = [
     { id: 1, title: 'Coffee Shop Voucher', points: 250, icon: 'cafe', category: 'food' },
     { id: 2, title: 'Eco-Friendly Water Bottle', points: 500, icon: 'water', category: 'gear' },
@@ -45,53 +48,67 @@ const RewardsScreen: React.FC<RewardsScreenProps> = ({ navigation }) => {
   ];
 
   const RewardCard: React.FC<{ reward: Reward }> = ({ reward }) => (
-    <TouchableOpacity style={styles.rewardCard}>
-      <View style={styles.rewardIcon}>
-        <Ionicons name={reward.icon} size={24} color="#10b981" />
+    <TouchableOpacity style={[styles.rewardCard, { backgroundColor: theme.cardBackground }]}>
+      <View style={[styles.rewardIcon, { backgroundColor: theme.primary + '20' }]}>
+        <Ionicons name={reward.icon} size={24} color={theme.primary} />
       </View>
       <View style={styles.rewardInfo}>
-        <Text style={styles.rewardTitle}>{reward.title}</Text>
-        <Text style={styles.rewardPoints}>{reward.points} points</Text>
+        <Text style={[styles.rewardTitle, { color: theme.textColor }]}>{reward.title}</Text>
+        <Text style={[styles.rewardPoints, { color: theme.secondaryText }]}>{reward.points} points</Text>
       </View>
-      <View style={styles.redeemButton}>
-        <Text style={styles.redeemButtonText}>Redeem</Text>
+      <View style={[styles.redeemButton, { backgroundColor: theme.primary }]}>
+        <Text style={[styles.redeemButtonText, { color: theme.background }]}>Redeem</Text>
       </View>
     </TouchableOpacity>
   );
 
   const AchievementCard: React.FC<{ achievement: Achievement }> = ({ achievement }) => (
-    <View style={[styles.achievementCard, !achievement.earned && styles.achievementLocked]}>
-      <View style={[styles.achievementIcon, !achievement.earned && styles.achievementIconLocked]}>
+    <View style={[
+      styles.achievementCard, 
+      { backgroundColor: theme.cardBackground },
+      !achievement.earned && styles.achievementLocked
+    ]}>
+      <View style={[
+        styles.achievementIcon, 
+        { backgroundColor: achievement.earned ? theme.warning + '20' : theme.background },
+        !achievement.earned && styles.achievementIconLocked
+      ]}>
         <Ionicons 
           name={achievement.icon} 
           size={24} 
-          color={achievement.earned ? "#f59e0b" : "#9ca3af"} 
+          color={achievement.earned ? theme.warning : theme.secondaryText} 
         />
       </View>
       <View style={styles.achievementInfo}>
-        <Text style={[styles.achievementTitle, !achievement.earned && styles.achievementTitleLocked]}>
+        <Text style={[
+          styles.achievementTitle, 
+          { color: theme.textColor },
+          !achievement.earned && styles.achievementTitleLocked
+        ]}>
           {achievement.title}
         </Text>
-        <Text style={styles.achievementDescription}>{achievement.description}</Text>
+        <Text style={[styles.achievementDescription, { color: theme.secondaryText }]}>
+          {achievement.description}
+        </Text>
       </View>
       {achievement.earned && (
-        <Ionicons name="checkmark-circle" size={20} color="#10b981" />
+        <Ionicons name="checkmark-circle" size={20} color={theme.success} />
       )}
     </View>
   );
 
   return (
-    <ScrollView style={styles.container}>
+    <ScreenLayout>
       {/* Points Header */}
-      <View style={styles.pointsHeader}>
-        <Text style={styles.pointsLabel}>Available Points</Text>
-        <Text style={styles.pointsAmount}>1,240</Text>
-        <Text style={styles.pointsSubtext}>Keep cleaning to earn more!</Text>
+      <View style={[styles.pointsHeader, { backgroundColor: theme.background }]}>
+        <Text style={[styles.pointsLabel, { color: theme.secondaryText }]}>Available Points</Text>
+        <Text style={[styles.pointsAmount, { color: theme.primary }]}>1,240</Text>
+        <Text style={[styles.pointsSubtext, { color: theme.secondaryText }]}>Keep cleaning to earn more!</Text>
       </View>
 
       {/* Rewards Section */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Redeem Rewards</Text>
+        <Text style={[styles.sectionTitle, { color: theme.textColor }]}>Redeem Rewards</Text>
         {rewards.map((reward) => (
           <RewardCard key={reward.id} reward={reward} />
         ))}
@@ -99,109 +116,87 @@ const RewardsScreen: React.FC<RewardsScreenProps> = ({ navigation }) => {
 
       {/* Achievements Section */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Achievements</Text>
+        <Text style={[styles.sectionTitle, { color: theme.textColor }]}>Achievements</Text>
         {achievements.map((achievement, index) => (
           <AchievementCard key={index} achievement={achievement} />
         ))}
       </View>
-    </ScrollView>
+    </ScreenLayout>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f9fafb',
-  },
   pointsHeader: {
-    backgroundColor: 'white',
     alignItems: 'center',
-    padding: 24,
-    marginBottom: 20,
+    padding: THEME.SPACING.lg,
+    marginBottom: THEME.SPACING.md,
+    borderRadius: THEME.BORDER_RADIUS.lg,
+    ...THEME.SHADOWS.md,
   },
   pointsLabel: {
-    fontSize: 16,
-    color: '#6b7280',
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
+    fontWeight: THEME.TYPOGRAPHY.fontWeight.medium,
   },
   pointsAmount: {
-    fontSize: 48,
-    fontWeight: 'bold',
-    color: '#10b981',
-    marginTop: 8,
+    fontSize: THEME.TYPOGRAPHY.fontSize["4xl"],
+    fontWeight: THEME.TYPOGRAPHY.fontWeight.bold,
+    marginTop: THEME.SPACING.sm,
   },
   pointsSubtext: {
-    fontSize: 14,
-    color: '#9ca3af',
-    marginTop: 4,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
+    marginTop: THEME.SPACING.xs,
   },
   section: {
-    paddingHorizontal: 20,
-    marginBottom: 20,
+    marginBottom: THEME.SPACING.lg,
   },
   sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#1f2937',
-    marginBottom: 16,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xl,
+    fontWeight: THEME.TYPOGRAPHY.fontWeight.bold,
+    marginBottom: THEME.SPACING.md,
   },
   rewardCard: {
-    backgroundColor: 'white',
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    padding: THEME.SPACING.md,
+    borderRadius: THEME.BORDER_RADIUS.lg,
+    marginBottom: THEME.SPACING.sm,
+    ...THEME.SHADOWS.md,
   },
   rewardIcon: {
     width: 48,
     height: 48,
-    borderRadius: 24,
-    backgroundColor: '#dcfce7',
+    borderRadius: THEME.BORDER_RADIUS.lg,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 12,
+    marginRight: THEME.SPACING.md,
   },
   rewardInfo: {
     flex: 1,
   },
   rewardTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#1f2937',
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
+    fontWeight: THEME.TYPOGRAPHY.fontWeight.semibold,
   },
   rewardPoints: {
-    fontSize: 14,
-    color: '#6b7280',
-    marginTop: 2,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
+    marginTop: THEME.SPACING.xs,
   },
   redeemButton: {
-    backgroundColor: '#10b981',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 8,
+    paddingHorizontal: THEME.SPACING.md,
+    paddingVertical: THEME.SPACING.sm,
+    borderRadius: THEME.BORDER_RADIUS.md,
   },
   redeemButtonText: {
-    color: 'white',
-    fontSize: 14,
-    fontWeight: '600',
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
+    fontWeight: THEME.TYPOGRAPHY.fontWeight.semibold,
   },
   achievementCard: {
-    backgroundColor: 'white',
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    padding: THEME.SPACING.md,
+    borderRadius: THEME.BORDER_RADIUS.lg,
+    marginBottom: THEME.SPACING.sm,
+    ...THEME.SHADOWS.md,
   },
   achievementLocked: {
     opacity: 0.6,
@@ -209,30 +204,27 @@ const styles = StyleSheet.create({
   achievementIcon: {
     width: 48,
     height: 48,
-    borderRadius: 24,
-    backgroundColor: '#fef3c7',
+    borderRadius: THEME.BORDER_RADIUS.lg,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 12,
+    marginRight: THEME.SPACING.md,
   },
   achievementIconLocked: {
-    backgroundColor: '#f3f4f6',
+    // Will be overridden by theme colors
   },
   achievementInfo: {
     flex: 1,
   },
   achievementTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#1f2937',
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
+    fontWeight: THEME.TYPOGRAPHY.fontWeight.semibold,
   },
   achievementTitleLocked: {
-    color: '#9ca3af',
+    // Will be overridden by theme colors
   },
   achievementDescription: {
-    fontSize: 14,
-    color: '#6b7280',
-    marginTop: 2,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
+    marginTop: THEME.SPACING.xs,
   },
 });
 

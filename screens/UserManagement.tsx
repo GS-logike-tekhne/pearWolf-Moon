@@ -8,10 +8,11 @@ import {
   TextInput,
   Alert,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { getRoleColor } from '../utils/roleColors';
 import { useTheme } from '../context/ThemeContext';
+import { THEME } from '../styles/theme';
+import ScreenLayout from '../components/ScreenLayout';
 
 interface User {
   id: string;
@@ -192,7 +193,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ navigation }) => {
   );
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+    <ScreenLayout>
       {/* Header */}
       <View style={[styles.header, { backgroundColor: theme.cardBackground }]}>
         <TouchableOpacity
@@ -222,7 +223,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ navigation }) => {
           />
         </View>
         
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filtersContainer}>
+        <ScrollView {...({ horizontal: true } as any)} showsHorizontalScrollIndicator={false} style={styles.filtersContainer}>
           {['all', 'active', 'pending', 'suspended', 'TRASH_HERO', 'VOLUNTEER', 'BUSINESS'].map(filter => (
             <TouchableOpacity
               key={filter}
@@ -252,7 +253,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ navigation }) => {
         </View>
         <View style={styles.bottomSpacing} />
       </ScrollView>
-    </SafeAreaView>
+    </ScreenLayout>
   );
 };
 
@@ -264,49 +265,49 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    paddingTop: 8,
+    paddingHorizontal: THEME.SPACING.md,
+    paddingVertical: THEME.SPACING.sm + 4,
+    paddingTop: THEME.SPACING.sm,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255,255,255,0.1)',
   },
   backButton: {
-    padding: 8,
+    padding: THEME.SPACING.sm,
   },
   headerTitle: {
-    fontSize: 18,
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
     fontWeight: '700',
   },
   addButton: {
-    padding: 8,
+    padding: THEME.SPACING.sm,
   },
   searchSection: {
-    padding: 16,
+    padding: THEME.SPACING.md,
   },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderRadius: 12,
-    marginBottom: 12,
+    paddingHorizontal: THEME.SPACING.md,
+    paddingVertical: THEME.SPACING.sm + 4,
+    borderRadius: THEME.BORDER_RADIUS.lg,
+    marginBottom: THEME.SPACING.sm + 4,
   },
   searchInput: {
     flex: 1,
-    marginLeft: 8,
-    fontSize: 16,
+    marginLeft: THEME.SPACING.sm,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
   },
   filtersContainer: {
     flexDirection: 'row',
   },
   filterButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingHorizontal: THEME.SPACING.md,
+    paddingVertical: THEME.SPACING.sm,
     borderRadius: 20,
-    marginRight: 8,
+    marginRight: THEME.SPACING.sm,
   },
   filterText: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '500',
     textTransform: 'capitalize',
   },
@@ -314,12 +315,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   usersContainer: {
-    paddingHorizontal: 16,
+    paddingHorizontal: THEME.SPACING.md,
   },
   userCard: {
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 12,
+    padding: THEME.SPACING.md,
+    borderRadius: THEME.BORDER_RADIUS.lg,
+    marginBottom: THEME.SPACING.sm + 4,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -330,44 +331,44 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 12,
+    marginBottom: THEME.SPACING.sm + 4,
   },
   userInfo: {
     flex: 1,
   },
   userName: {
-    fontSize: 16,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
     fontWeight: '600',
-    marginBottom: 4,
+    marginBottom: THEME.SPACING.xs,
   },
   userEmail: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
   },
   badges: {
     alignItems: 'flex-end',
     gap: 4,
   },
   roleBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
+    paddingHorizontal: THEME.SPACING.sm,
+    paddingVertical: THEME.SPACING.xs,
+    borderRadius: THEME.BORDER_RADIUS.lg,
   },
   statusBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
+    paddingHorizontal: THEME.SPACING.sm,
+    paddingVertical: THEME.SPACING.xs,
+    borderRadius: THEME.BORDER_RADIUS.lg,
   },
   badgeText: {
-    color: 'white',
-    fontSize: 10,
+    // color: theme.background,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '600',
     textTransform: 'uppercase',
   },
   userStats: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginBottom: 16,
-    paddingVertical: 12,
+    marginBottom: THEME.SPACING.md,
+    paddingVertical: THEME.SPACING.sm + 4,
     borderTopWidth: 1,
     borderBottomWidth: 1,
     borderColor: 'rgba(255,255,255,0.1)',
@@ -376,12 +377,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   statValue: {
-    fontSize: 16,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
     fontWeight: '700',
     marginBottom: 2,
   },
   statLabel: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
   },
   userActions: {
     flexDirection: 'row',
@@ -393,14 +394,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 8,
+    paddingVertical: THEME.SPACING.sm,
+    paddingHorizontal: THEME.SPACING.sm + 4,
+    borderRadius: THEME.BORDER_RADIUS.md,
     gap: 4,
   },
   actionButtonText: {
-    color: 'white',
-    fontSize: 12,
+    // color: theme.background,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '600',
   },
   bottomSpacing: {

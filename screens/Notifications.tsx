@@ -9,6 +9,8 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { getRoleColor } from '../utils/roleColors';
 import { useTheme } from '../context/ThemeContext';
+import { THEME } from '../styles/theme';
+import ScreenLayout from '../components/ScreenLayout';
 import UnifiedHeader from '../components/UnifiedHeader';
 import MenuModal from '../components/MenuModal';
 
@@ -158,51 +160,51 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    paddingTop: 8,
+    paddingHorizontal: THEME.SPACING.md,
+    paddingVertical: THEME.SPACING.sm + 4,
+    paddingTop: THEME.SPACING.sm,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255,255,255,0.1)',
   },
   backButton: {},
   headerTitle: {
-    fontSize: 18,
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
     fontWeight: '700',
   },
   content: {
     flex: 1,
-    padding: 20,
+    padding: THEME.SPACING.md + 4,
   },
   headerSection: {
-    marginBottom: 24,
+    marginBottom: THEME.SPACING.lg,
   },
   titleContainer: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   titleText: {
-    marginLeft: 12,
+    marginLeft: THEME.SPACING.sm + 4,
     flex: 1,
   },
   screenTitle: {
-    fontSize: 24,
+    fontSize: THEME.TYPOGRAPHY.fontSize["2xl"],
     fontWeight: 'bold',
-    marginBottom: 4,
+    marginBottom: THEME.SPACING.xs,
   },
   screenSubtitle: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '500',
   },
   notificationsSection: {
-    marginBottom: 20,
+    marginBottom: THEME.SPACING.md + 4,
   },
   notificationCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 16,
-    borderRadius: 16,
+    padding: THEME.SPACING.md,
+    borderRadius: THEME.BORDER_RADIUS.xl,
     borderWidth: 1,
-    marginBottom: 12,
+    marginBottom: THEME.SPACING.sm + 4,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -212,27 +214,27 @@ const styles = StyleSheet.create({
   notificationIcon: {
     width: 48,
     height: 48,
-    borderRadius: 24,
+    borderRadius: THEME.BORDER_RADIUS["2xl"],
     backgroundColor: 'rgba(0,0,0,0.05)',
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 12,
+    marginRight: THEME.SPACING.sm + 4,
   },
   notificationContent: {
     flex: 1,
   },
   notificationTitle: {
-    fontSize: 16,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
     fontWeight: 'bold',
-    marginBottom: 4,
+    marginBottom: THEME.SPACING.xs,
   },
   notificationMessage: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '500',
-    marginBottom: 4,
+    marginBottom: THEME.SPACING.xs,
   },
   notificationTime: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '500',
   },
   unreadDot: {

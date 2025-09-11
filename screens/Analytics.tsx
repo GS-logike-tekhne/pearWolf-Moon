@@ -11,6 +11,8 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { getRoleColor } from '../utils/roleColors';
 import { useTheme } from '../context/ThemeContext';
+import { THEME } from '../styles/theme';
+import ScreenLayout from '../components/ScreenLayout';
 import UnifiedHeader from '../components/UnifiedHeader';
 import MenuModal from '../components/MenuModal';
 
@@ -262,7 +264,7 @@ const Analytics = ({ navigation }: { navigation: any }) => {
         styles.periodButton,
         { 
           backgroundColor: selectedPeriod === period ? theme.primary : theme.cardBackground,
-          borderColor: theme.borderColor 
+          borderColor: theme.borderColor, 
         }
       ]}
       onPress={() => setSelectedPeriod(period)}
@@ -427,26 +429,26 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    paddingTop: 8,
+    paddingHorizontal: THEME.SPACING.md,
+    paddingVertical: THEME.SPACING.sm + 4,
+    paddingTop: THEME.SPACING.sm,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255,255,255,0.1)',
   },
   backButton: {},
   headerTitle: {
-    fontSize: 18,
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
     fontWeight: '700',
   },
   content: {
     flex: 1,
-    padding: 20,
+    padding: THEME.SPACING.md + 4,
   },
   headerSection: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: THEME.SPACING.lg,
   },
   titleContainer: {
     flexDirection: 'row',
@@ -454,54 +456,54 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   titleText: {
-    marginLeft: 12,
+    marginLeft: THEME.SPACING.sm + 4,
     flex: 1,
   },
   screenTitle: {
-    fontSize: 24,
+    fontSize: THEME.TYPOGRAPHY.fontSize["2xl"],
     fontWeight: '700',
-    marginBottom: 4,
+    marginBottom: THEME.SPACING.xs,
   },
   screenSubtitle: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '500',
   },
   exportButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
+    paddingHorizontal: THEME.SPACING.md,
     paddingVertical: 10,
-    borderRadius: 12,
+    borderRadius: THEME.BORDER_RADIUS.lg,
   },
   exportButtonText: {
-    color: 'white',
+    // color: theme.background,
     fontWeight: '600',
     marginLeft: 6,
   },
   periodSelector: {
-    marginBottom: 24,
+    marginBottom: THEME.SPACING.lg,
   },
   periodButtons: {
     flexDirection: 'row',
     gap: 8,
   },
   periodButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingHorizontal: THEME.SPACING.md,
+    paddingVertical: THEME.SPACING.sm,
     borderRadius: 20,
     borderWidth: 1,
   },
   periodText: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '600',
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
     fontWeight: '600',
-    marginBottom: 16,
+    marginBottom: THEME.SPACING.md,
   },
   metricsSection: {
-    marginBottom: 24,
+    marginBottom: THEME.SPACING.lg,
   },
   metricsGrid: {
     flexDirection: 'row',
@@ -510,10 +512,10 @@ const styles = StyleSheet.create({
   },
   metricCard: {
     width: (width - 50) / 2,
-    padding: 16,
-    borderRadius: 16,
+    padding: THEME.SPACING.md,
+    borderRadius: THEME.BORDER_RADIUS.xl,
     borderWidth: 1,
-    marginBottom: 12,
+    marginBottom: THEME.SPACING.sm + 4,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -524,7 +526,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: THEME.SPACING.sm + 4,
   },
   metricIcon: {
     width: 40,
@@ -534,31 +536,31 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   metricChange: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: 'bold',
   },
   metricValue: {
-    fontSize: 20,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xl,
     fontWeight: 'bold',
-    marginBottom: 4,
+    marginBottom: THEME.SPACING.xs,
   },
   metricLabel: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '600',
-    marginBottom: 4,
+    marginBottom: THEME.SPACING.xs,
   },
   metricDetail: {
-    fontSize: 10,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '500',
   },
   businessSection: {
-    marginBottom: 24,
+    marginBottom: THEME.SPACING.lg,
   },
   businessCard: {
-    padding: 16,
-    borderRadius: 16,
+    padding: THEME.SPACING.md,
+    borderRadius: THEME.BORDER_RADIUS.xl,
     borderWidth: 1,
-    marginBottom: 12,
+    marginBottom: THEME.SPACING.sm + 4,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -566,40 +568,40 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   businessSectionTitle: {
-    fontSize: 16,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
     fontWeight: 'bold',
-    marginBottom: 12,
+    marginBottom: THEME.SPACING.sm + 4,
   },
   businessMetricRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 8,
+    paddingVertical: THEME.SPACING.sm,
   },
   businessMetricInfo: {
     flex: 1,
   },
   businessMetricLabel: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '500',
     marginBottom: 2,
   },
   businessMetricPeriod: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '500',
   },
   businessMetricValue: {
-    fontSize: 16,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
     fontWeight: 'bold',
   },
   userAnalyticsSection: {
-    marginBottom: 24,
+    marginBottom: THEME.SPACING.lg,
   },
   userRoleCard: {
-    padding: 16,
-    borderRadius: 16,
+    padding: THEME.SPACING.md,
+    borderRadius: THEME.BORDER_RADIUS.xl,
     borderWidth: 1,
-    marginBottom: 12,
+    marginBottom: THEME.SPACING.sm + 4,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -609,7 +611,7 @@ const styles = StyleSheet.create({
   userRoleHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: THEME.SPACING.sm + 4,
   },
   userRoleIcon: {
     width: 50,
@@ -617,23 +619,23 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 12,
+    marginRight: THEME.SPACING.sm + 4,
   },
   userRoleCount: {
-    color: 'white',
-    fontSize: 16,
+    // color: theme.background,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
     fontWeight: 'bold',
   },
   userRoleInfo: {
     flex: 1,
   },
   userRoleName: {
-    fontSize: 16,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
     fontWeight: 'bold',
     marginBottom: 2,
   },
   userRolePercentage: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '500',
   },
   userRoleMetrics: {
@@ -644,16 +646,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   userRoleMetricLabel: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '500',
-    marginBottom: 4,
+    marginBottom: THEME.SPACING.xs,
   },
   userRoleMetricValue: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: 'bold',
   },
   environmentalSection: {
-    marginBottom: 24,
+    marginBottom: THEME.SPACING.lg,
   },
   environmentalGrid: {
     flexDirection: 'row',
@@ -662,11 +664,11 @@ const styles = StyleSheet.create({
   },
   environmentalCard: {
     width: (width - 50) / 2,
-    padding: 16,
-    borderRadius: 16,
+    padding: THEME.SPACING.md,
+    borderRadius: THEME.BORDER_RADIUS.xl,
     borderWidth: 1,
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: THEME.SPACING.sm + 4,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
@@ -674,24 +676,24 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   environmentalValue: {
-    fontSize: 18,
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
     fontWeight: 'bold',
-    marginTop: 8,
-    marginBottom: 4,
+    marginTop: THEME.SPACING.sm,
+    marginBottom: THEME.SPACING.xs,
   },
   environmentalLabel: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '500',
     textAlign: 'center',
   },
   geographicSection: {
-    marginBottom: 24,
+    marginBottom: THEME.SPACING.lg,
   },
   geographicCard: {
-    padding: 16,
-    borderRadius: 16,
+    padding: THEME.SPACING.md,
+    borderRadius: THEME.BORDER_RADIUS.xl,
     borderWidth: 1,
-    marginBottom: 12,
+    marginBottom: THEME.SPACING.sm + 4,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -699,9 +701,9 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   geographicRegion: {
-    fontSize: 16,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
     fontWeight: 'bold',
-    marginBottom: 12,
+    marginBottom: THEME.SPACING.sm + 4,
   },
   geographicMetrics: {
     flexDirection: 'row',
@@ -711,20 +713,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   geographicMetricValue: {
-    fontSize: 16,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
     fontWeight: 'bold',
-    marginBottom: 4,
+    marginBottom: THEME.SPACING.xs,
   },
   geographicMetricLabel: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '500',
   },
   systemHealthSection: {
-    marginBottom: 24,
+    marginBottom: THEME.SPACING.lg,
   },
   systemHealthCard: {
-    padding: 20,
-    borderRadius: 16,
+    padding: THEME.SPACING.md + 4,
+    borderRadius: THEME.BORDER_RADIUS.xl,
     borderWidth: 1,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -735,12 +737,12 @@ const styles = StyleSheet.create({
   systemHealthHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: THEME.SPACING.md,
   },
   systemHealthTitle: {
-    fontSize: 16,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
     fontWeight: 'bold',
-    marginLeft: 8,
+    marginLeft: THEME.SPACING.sm,
   },
   systemHealthMetrics: {
     flexDirection: 'row',
@@ -749,15 +751,15 @@ const styles = StyleSheet.create({
   },
   systemHealthItem: {
     width: (width - 80) / 2,
-    marginBottom: 12,
+    marginBottom: THEME.SPACING.sm + 4,
   },
   systemHealthLabel: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '500',
-    marginBottom: 4,
+    marginBottom: THEME.SPACING.xs,
   },
   systemHealthValue: {
-    fontSize: 16,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
     fontWeight: 'bold',
   },
   bottomSpacing: {

@@ -1,4 +1,5 @@
 import React from 'react';
+import ScreenLayout from '../components/ScreenLayout';
 import { UserRole } from '../types/roles';
 import { getRoleColor } from '../utils/roleColors';
 import RoleDashboardLayout from '../components/RoleDashboardLayout';
@@ -35,9 +36,9 @@ const EcoDefenderDashboardRefactored: React.FC<EcoDefenderDashboardProps> = ({ n
     { title: 'Post New Job', icon: 'add-circle', color: getRoleColor('business'), onPress: () => navigation.navigate('PostJob') },
     { title: 'Manage Missions', icon: 'list', color: getRoleColor('trash-hero'), onPress: () => navigation.navigate('EcoDefenderMissions') },
     { title: 'Eco Missions', icon: 'rocket', color: '#8b5cf6', onPress: () => navigation.navigate('EcoDefenderMissions') },
-    { title: 'Fund Wallet', icon: 'card', color: '#ffc107', onPress: () => navigation.navigate('WalletScreen', { role: 'business' }) },
+    { title: 'Fund Wallet', icon: 'card', color: theme.warning, onPress: () => navigation.navigate('WalletScreen', { role: 'business' }) },
     { title: 'View Impact', icon: 'analytics', color: getRoleColor('admin'), onPress: () => navigation.navigate('EcoDefenderImpact') },
-    { title: 'View Map', icon: 'map', color: '#17a2b8', onPress: () => navigation.navigate('MapScreen') },
+    { title: 'View Map', icon: 'map', color: theme.primary, onPress: () => navigation.navigate('MapScreen') },
   ];
 
   // Recent activity
@@ -58,7 +59,7 @@ const EcoDefenderDashboardRefactored: React.FC<EcoDefenderDashboardProps> = ({ n
       status: 'Active',
       time: '1 day ago',
       icon: 'add-circle',
-      color: '#007bff',
+      color: theme.primary,
     },
     {
       id: '3',

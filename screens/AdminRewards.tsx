@@ -9,10 +9,12 @@ import {
   Alert,
   Modal,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { getRoleColor } from '../utils/roleColors';
 import { useTheme } from '../context/ThemeContext';
+import { THEME } from '../styles/theme';
+import ScreenLayout from '../components/ScreenLayout';
+import { RoleGuard } from '../components/RoleGuard';
 
 interface Reward {
   id: string;
@@ -233,7 +235,7 @@ const AdminRewards: React.FC<AdminRewardsProps> = ({ navigation }) => {
   );
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+    <ScreenLayout>
       {/* Header */}
       <View style={[styles.header, { backgroundColor: theme.cardBackground }]}>
         <TouchableOpacity
@@ -270,7 +272,7 @@ const AdminRewards: React.FC<AdminRewardsProps> = ({ navigation }) => {
         presentationStyle="pageSheet"
         onRequestClose={() => setShowAddModal(false)}
       >
-        <SafeAreaView style={[styles.modalContainer, { backgroundColor: theme.background }]}>
+        <ScreenLayout>
           <View style={[styles.modalHeader, { backgroundColor: theme.cardBackground }]}>
             <TouchableOpacity onPress={() => setShowAddModal(false)}>
               <Text style={[styles.modalButton, { color: theme.textColor }]}>Cancel</Text>
@@ -316,7 +318,7 @@ const AdminRewards: React.FC<AdminRewardsProps> = ({ navigation }) => {
                 onChangeText={(text) => setNewReward({ ...newReward, cost: text })}
                 placeholder="Enter cost in eco points"
                 placeholderTextColor={theme.secondaryText}
-                keyboardType="numeric"
+                {...({ keyboardType: "numeric" } as any)}
               />
             </View>
 
@@ -328,7 +330,7 @@ const AdminRewards: React.FC<AdminRewardsProps> = ({ navigation }) => {
                 onChangeText={(text) => setNewReward({ ...newReward, totalAvailable: text })}
                 placeholder="Enter total available quantity"
                 placeholderTextColor={theme.secondaryText}
-                keyboardType="numeric"
+                {...({ keyboardType: "numeric" } as any)}
               />
             </View>
 
@@ -359,9 +361,9 @@ const AdminRewards: React.FC<AdminRewardsProps> = ({ navigation }) => {
               </View>
             </View>
           </ScrollView>
-        </SafeAreaView>
+        </ScreenLayout>
       </Modal>
-    </SafeAreaView>
+    </ScreenLayout>
   );
 };
 
@@ -373,33 +375,33 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    paddingTop: 8,
+    paddingHorizontal: THEME.SPACING.md,
+    paddingVertical: THEME.SPACING.sm + 4,
+    paddingTop: THEME.SPACING.sm,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255,255,255,0.1)',
   },
   backButton: {
-    padding: 8,
+    padding: THEME.SPACING.sm,
   },
   headerTitle: {
-    fontSize: 18,
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
     fontWeight: '700',
   },
   addButton: {
-    padding: 8,
+    padding: THEME.SPACING.sm,
   },
   content: {
     flex: 1,
   },
   rewardsContainer: {
-    paddingHorizontal: 16,
-    paddingTop: 16,
+    paddingHorizontal: THEME.SPACING.md,
+    paddingTop: THEME.SPACING.md,
   },
   rewardCard: {
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 12,
+    padding: THEME.SPACING.md,
+    borderRadius: THEME.BORDER_RADIUS.lg,
+    marginBottom: THEME.SPACING.sm + 4,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -410,19 +412,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 12,
+    marginBottom: THEME.SPACING.sm + 4,
   },
   rewardInfo: {
     flex: 1,
-    marginRight: 12,
+    marginRight: THEME.SPACING.sm + 4,
   },
   rewardTitle: {
-    fontSize: 16,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
     fontWeight: '600',
-    marginBottom: 4,
+    marginBottom: THEME.SPACING.xs,
   },
   rewardDescription: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     lineHeight: 20,
   },
   badges: {
@@ -430,26 +432,26 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   categoryBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
+    paddingHorizontal: THEME.SPACING.sm,
+    paddingVertical: THEME.SPACING.xs,
+    borderRadius: THEME.BORDER_RADIUS.lg,
   },
   statusBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
+    paddingHorizontal: THEME.SPACING.sm,
+    paddingVertical: THEME.SPACING.xs,
+    borderRadius: THEME.BORDER_RADIUS.lg,
   },
   badgeText: {
-    color: 'white',
-    fontSize: 10,
+    // color: theme.background,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '600',
     textTransform: 'capitalize',
   },
   rewardStats: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginBottom: 16,
-    paddingVertical: 12,
+    marginBottom: THEME.SPACING.md,
+    paddingVertical: THEME.SPACING.sm + 4,
     borderTopWidth: 1,
     borderBottomWidth: 1,
     borderColor: 'rgba(255,255,255,0.1)',
@@ -458,12 +460,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   statValue: {
-    fontSize: 16,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
     fontWeight: '700',
     marginBottom: 2,
   },
   statLabel: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
   },
   rewardActions: {
     flexDirection: 'row',
@@ -475,14 +477,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 8,
+    paddingVertical: THEME.SPACING.sm,
+    paddingHorizontal: THEME.SPACING.sm + 4,
+    borderRadius: THEME.BORDER_RADIUS.md,
     gap: 4,
   },
   actionButtonText: {
-    color: 'white',
-    fontSize: 12,
+    // color: theme.background,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '600',
   },
   bottomSpacing: {
@@ -496,43 +498,43 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: THEME.SPACING.md,
+    paddingVertical: THEME.SPACING.sm + 4,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255,255,255,0.1)',
   },
   modalButton: {
-    fontSize: 16,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
     fontWeight: '600',
   },
   modalTitle: {
-    fontSize: 18,
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
     fontWeight: '700',
   },
   modalContent: {
     flex: 1,
-    paddingHorizontal: 16,
-    paddingTop: 16,
+    paddingHorizontal: THEME.SPACING.md,
+    paddingTop: THEME.SPACING.md,
   },
   formGroup: {
-    marginBottom: 20,
+    marginBottom: THEME.SPACING.md + 4,
   },
   label: {
-    fontSize: 16,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
     fontWeight: '600',
-    marginBottom: 8,
+    marginBottom: THEME.SPACING.sm,
   },
   input: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderRadius: 8,
-    fontSize: 16,
+    paddingHorizontal: THEME.SPACING.md,
+    paddingVertical: THEME.SPACING.sm + 4,
+    borderRadius: THEME.BORDER_RADIUS.md,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
   },
   textArea: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderRadius: 8,
-    fontSize: 16,
+    paddingHorizontal: THEME.SPACING.md,
+    paddingVertical: THEME.SPACING.sm + 4,
+    borderRadius: THEME.BORDER_RADIUS.md,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
     minHeight: 80,
     textAlignVertical: 'top',
   },
@@ -542,12 +544,12 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   categoryButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingHorizontal: THEME.SPACING.md,
+    paddingVertical: THEME.SPACING.sm,
     borderRadius: 20,
   },
   categoryButtonText: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '500',
     textTransform: 'capitalize',
   },

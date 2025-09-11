@@ -26,6 +26,8 @@ const LinearGradient: React.FC<{
   );
 };
 import { useTheme } from '../context/ThemeContext';
+import { THEME } from '../styles/theme';
+import ScreenLayout from '../components/ScreenLayout';
 import { useXP } from '../context/XPContext';
 import { useMissionContext } from '../context/MissionContext';
 
@@ -318,8 +320,8 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingTop: StatusBar.currentHeight ? StatusBar.currentHeight + 20 : 50,
-    paddingBottom: 20,
-    paddingHorizontal: 20,
+    paddingBottom: THEME.SPACING.md + 4,
+    paddingHorizontal: THEME.SPACING.md + 4,
   },
   headerContent: {
     flexDirection: 'row',
@@ -327,19 +329,19 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   backButton: {
-    padding: 8,
+    padding: THEME.SPACING.sm,
   },
   headerCenter: {
     flex: 1,
     alignItems: 'center',
   },
   headerTitle: {
-    fontSize: 20,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xl,
     fontWeight: '700',
-    color: 'white',
+    // color: theme.background,
   },
   headerSubtitle: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     color: 'rgba(255,255,255,0.8)',
     marginTop: 2,
   },
@@ -347,14 +349,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   levelText: {
-    fontSize: 16,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
     fontWeight: '600',
-    color: 'white',
+    // color: theme.background,
   },
   progressContainer: {
-    margin: 20,
-    padding: 20,
-    borderRadius: 16,
+    margin: THEME.SPACING.md + 4,
+    padding: THEME.SPACING.md + 4,
+    borderRadius: THEME.BORDER_RADIUS.xl,
     elevation: 2,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -362,14 +364,14 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
   },
   progressHeader: {
-    marginBottom: 12,
+    marginBottom: THEME.SPACING.sm + 4,
   },
   progressTitle: {
-    fontSize: 16,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
     fontWeight: '600',
   },
   progressSubtitle: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     marginTop: 2,
   },
   progressBar: {
@@ -386,7 +388,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingHorizontal: 20,
+    paddingHorizontal: THEME.SPACING.md + 4,
   },
   questCard: {
     borderRadius: 20,
@@ -402,7 +404,7 @@ const styles = StyleSheet.create({
   },
   questGradient: {
     flex: 1,
-    padding: 20,
+    padding: THEME.SPACING.md + 4,
     position: 'relative',
   },
   lockOverlay: {
@@ -417,35 +419,35 @@ const styles = StyleSheet.create({
     zIndex: 2,
   },
   lockText: {
-    color: 'white',
-    fontSize: 16,
+    // color: theme.background,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
     fontWeight: '600',
-    marginTop: 8,
+    marginTop: THEME.SPACING.sm,
   },
   questHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: THEME.SPACING.sm + 4,
   },
   questIconContainer: {
     width: 48,
     height: 48,
     backgroundColor: 'rgba(255,255,255,0.2)',
-    borderRadius: 24,
+    borderRadius: THEME.BORDER_RADIUS["2xl"],
     justifyContent: 'center',
     alignItems: 'center',
   },
   questHeaderText: {
     flex: 1,
-    marginLeft: 12,
+    marginLeft: THEME.SPACING.sm + 4,
   },
   questTitle: {
-    fontSize: 18,
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
     fontWeight: '700',
-    color: 'white',
+    // color: theme.background,
   },
   questDifficulty: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     color: 'rgba(255,255,255,0.8)',
     marginTop: 2,
   },
@@ -453,19 +455,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   questStatNumber: {
-    fontSize: 20,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xl,
     fontWeight: '700',
-    color: 'white',
+    // color: theme.background,
   },
   questStatLabel: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     color: 'rgba(255,255,255,0.8)',
   },
   questDescription: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     color: 'rgba(255,255,255,0.9)',
     lineHeight: 20,
-    marginBottom: 16,
+    marginBottom: THEME.SPACING.md,
   },
   questFooter: {
     flexDirection: 'row',
@@ -482,9 +484,9 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   rewardText: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '600',
-    color: 'white',
+    // color: theme.background,
   },
   questTime: {
     flexDirection: 'row',
@@ -492,21 +494,21 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   timeText: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     color: 'rgba(255,255,255,0.8)',
   },
   difficultyBadge: {
     position: 'absolute',
     top: 15,
     right: 15,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
+    paddingHorizontal: THEME.SPACING.sm,
+    paddingVertical: THEME.SPACING.xs,
+    borderRadius: THEME.BORDER_RADIUS.lg,
   },
   difficultyText: {
-    fontSize: 10,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '600',
-    color: 'white',
+    // color: theme.background,
   },
   activeMissionsIndicator: {
     position: 'absolute',
@@ -516,14 +518,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
+    paddingVertical: THEME.SPACING.sm + 4,
+    paddingHorizontal: THEME.SPACING.md + 4,
     borderRadius: 25,
     gap: 8,
   },
   activeMissionsText: {
-    color: 'white',
-    fontSize: 14,
+    // color: theme.background,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '600',
   },
 });

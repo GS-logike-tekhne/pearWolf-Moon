@@ -7,10 +7,11 @@ import {
   TouchableOpacity,
   Dimensions,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { getRoleColor } from '../utils/roleColors';
 import { useTheme } from '../context/ThemeContext';
+import { THEME } from '../styles/theme';
+import ScreenLayout from '../components/ScreenLayout';
 import CustomBarChart from '../components/CustomBarChart';
 import CustomLineChart from '../components/CustomLineChart';
 
@@ -236,7 +237,7 @@ const TrashHeroEarnings: React.FC<TrashHeroEarningsProps> = ({ navigation }) => 
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+    <ScreenLayout>
       {/* Header */}
       <View style={[styles.header, { backgroundColor: theme.cardBackground }]}>
         <TouchableOpacity
@@ -409,7 +410,7 @@ const TrashHeroEarnings: React.FC<TrashHeroEarningsProps> = ({ navigation }) => 
 
         <View style={styles.bottomSpacing} />
       </ScrollView>
-    </SafeAreaView>
+    </ScreenLayout>
   );
 };
 
@@ -421,48 +422,48 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    paddingTop: 8,
+    paddingHorizontal: THEME.SPACING.md,
+    paddingVertical: THEME.SPACING.sm + 4,
+    paddingTop: THEME.SPACING.sm,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255,255,255,0.1)',
   },
   backButton: {},
   headerTitle: {
-    fontSize: 18,
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
     fontWeight: '700',
   },
   withdrawButton: {
-    padding: 8,
+    padding: THEME.SPACING.sm,
   },
   timeframeContainer: {
     flexDirection: 'row',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: THEME.SPACING.md,
+    paddingVertical: THEME.SPACING.sm + 4,
     gap: 8,
   },
   timeframeButton: {
     flex: 1,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 8,
+    paddingVertical: THEME.SPACING.sm,
+    paddingHorizontal: THEME.SPACING.sm + 4,
+    borderRadius: THEME.BORDER_RADIUS.md,
     alignItems: 'center',
   },
   timeframeText: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '600',
   },
   content: {
     flex: 1,
   },
   summarySection: {
-    marginVertical: 12,
-    paddingHorizontal: 16,
+    marginVertical: THEME.SPACING.sm + 4,
+    paddingHorizontal: THEME.SPACING.md,
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
     fontWeight: '700',
-    marginBottom: 12,
+    marginBottom: THEME.SPACING.sm + 4,
   },
   summaryGrid: {
     flexDirection: 'row',
@@ -474,8 +475,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flex: 1,
     minWidth: '45%',
-    padding: 12,
-    borderRadius: 12,
+    padding: THEME.SPACING.sm + 4,
+    borderRadius: THEME.BORDER_RADIUS.lg,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -488,24 +489,24 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 12,
+    marginRight: THEME.SPACING.sm + 4,
   },
   earningsContent: {
     flex: 1,
   },
   earningsValue: {
-    fontSize: 16,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
     fontWeight: '700',
     marginBottom: 2,
   },
   earningsTitle: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '600',
     marginBottom: 2,
   },
   earningsSubtitle: {
-    fontSize: 10,
-    marginBottom: 4,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
+    marginBottom: THEME.SPACING.xs,
   },
   trendContainer: {
     flexDirection: 'row',
@@ -517,12 +518,12 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   chartSection: {
-    marginVertical: 12,
-    paddingHorizontal: 16,
+    marginVertical: THEME.SPACING.sm + 4,
+    paddingHorizontal: THEME.SPACING.md,
   },
   chartContainer: {
-    borderRadius: 12,
-    padding: 16,
+    borderRadius: THEME.BORDER_RADIUS.lg,
+    padding: THEME.SPACING.md,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -530,8 +531,8 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   metricsSection: {
-    marginVertical: 12,
-    paddingHorizontal: 16,
+    marginVertical: THEME.SPACING.sm + 4,
+    paddingHorizontal: THEME.SPACING.md,
   },
   metricsGrid: {
     flexDirection: 'row',
@@ -540,28 +541,28 @@ const styles = StyleSheet.create({
   metricCard: {
     flex: 1,
     alignItems: 'center',
-    paddingVertical: 16,
-    borderRadius: 8,
+    paddingVertical: THEME.SPACING.md,
+    borderRadius: THEME.BORDER_RADIUS.md,
   },
   metricValue: {
-    fontSize: 16,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
     fontWeight: '700',
-    marginVertical: 4,
+    marginVertical: THEME.SPACING.xs,
   },
   metricLabel: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     textAlign: 'center',
   },
   earningsSection: {
-    marginVertical: 12,
-    paddingHorizontal: 16,
+    marginVertical: THEME.SPACING.sm + 4,
+    paddingHorizontal: THEME.SPACING.md,
   },
   earningsList: {
     gap: 12,
   },
   earningItem: {
-    padding: 16,
-    borderRadius: 12,
+    padding: THEME.SPACING.md,
+    borderRadius: THEME.BORDER_RADIUS.lg,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -572,19 +573,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 8,
+    marginBottom: THEME.SPACING.sm,
   },
   earningInfo: {
     flex: 1,
-    marginRight: 12,
+    marginRight: THEME.SPACING.sm + 4,
   },
   earningTitle: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '600',
-    marginBottom: 4,
+    marginBottom: THEME.SPACING.xs,
   },
   earningLocation: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -592,18 +593,18 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   amount: {
-    fontSize: 16,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
     fontWeight: '700',
-    marginBottom: 4,
+    marginBottom: THEME.SPACING.xs,
   },
   statusBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
+    paddingHorizontal: THEME.SPACING.sm,
+    paddingVertical: THEME.SPACING.xs,
+    borderRadius: THEME.BORDER_RADIUS.lg,
   },
   statusText: {
-    color: 'white',
-    fontSize: 10,
+    // color: theme.background,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '600',
     textTransform: 'uppercase',
   },
@@ -611,7 +612,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 12,
-    marginBottom: 8,
+    marginBottom: THEME.SPACING.sm,
   },
   metaItem: {
     flexDirection: 'row',
@@ -623,15 +624,15 @@ const styles = StyleSheet.create({
     textTransform: 'capitalize',
   },
   bonusSection: {
-    marginVertical: 8,
-    paddingVertical: 8,
+    marginVertical: THEME.SPACING.sm,
+    paddingVertical: THEME.SPACING.sm,
     borderTopWidth: 1,
     borderTopColor: 'rgba(255,255,255,0.1)',
   },
   bonusLabel: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '600',
-    marginBottom: 4,
+    marginBottom: THEME.SPACING.xs,
   },
   bonusItem: {
     flexDirection: 'row',
@@ -650,15 +651,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    marginTop: 8,
+    marginTop: THEME.SPACING.sm,
   },
   paymentText: {
     fontSize: 11,
   },
   actionSection: {
     flexDirection: 'row',
-    paddingHorizontal: 16,
-    paddingVertical: 20,
+    paddingHorizontal: THEME.SPACING.md,
+    paddingVertical: THEME.SPACING.md + 4,
     gap: 12,
   },
   actionButton: {
@@ -666,14 +667,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 8,
+    paddingVertical: THEME.SPACING.sm + 4,
+    paddingHorizontal: THEME.SPACING.md,
+    borderRadius: THEME.BORDER_RADIUS.md,
     gap: 8,
   },
   actionButtonText: {
-    color: 'white',
-    fontSize: 14,
+    // color: theme.background,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '600',
   },
   bottomSpacing: {

@@ -7,10 +7,11 @@ import {
   TouchableOpacity,
   Dimensions,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { getRoleColor } from '../utils/roleColors';
 import { useTheme } from '../context/ThemeContext';
+import { THEME } from '../styles/theme';
+import ScreenLayout from '../components/ScreenLayout';
 import { useAuth } from '../context/AuthContext';
 import UnifiedHeader from '../components/UnifiedHeader';
 import MenuModal from '../components/MenuModal';
@@ -168,7 +169,7 @@ const EcoNewsScreen = ({ navigation, route }: any) => {
   );
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+    <ScreenLayout>
       <UnifiedHeader
         onMenuPress={() => setShowMenu(true)}
         role={userRole}
@@ -232,7 +233,7 @@ const EcoNewsScreen = ({ navigation, route }: any) => {
           navigation.navigate('Login');
         }}
       />
-    </SafeAreaView>
+    </ScreenLayout>
   );
 };
 
@@ -247,22 +248,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    paddingTop: 8,
+    paddingHorizontal: THEME.SPACING.md,
+    paddingVertical: THEME.SPACING.sm + 4,
+    paddingTop: THEME.SPACING.sm,
   },
   backButton: {},
   headerTitle: {
-    fontSize: 18,
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
     fontWeight: '700',
     flex: 1,
     textAlign: 'center',
-    marginRight: 32, // Compensate for news icon
+    marginRight: THEME.SPACING.xl, // Compensate for news icon
   },
   newsIcon: {
     width: 32,
     height: 32,
-    borderRadius: 16,
+    borderRadius: THEME.BORDER_RADIUS.xl,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -272,26 +273,26 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    marginBottom: 16,
+    paddingHorizontal: THEME.SPACING.md,
+    marginBottom: THEME.SPACING.md,
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
     fontWeight: '700',
   },
   viewAll: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '600',
   },
 
   // Articles Section
   articlesList: {
-    paddingHorizontal: 16,
+    paddingHorizontal: THEME.SPACING.md,
   },
   newsCard: {
-    padding: 16,
-    borderRadius: 16,
-    marginBottom: 16,
+    padding: THEME.SPACING.md,
+    borderRadius: THEME.BORDER_RADIUS.xl,
+    marginBottom: THEME.SPACING.md,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -302,19 +303,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: THEME.SPACING.sm + 4,
   },
   categoryBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
+    paddingHorizontal: THEME.SPACING.sm,
+    paddingVertical: THEME.SPACING.xs,
+    borderRadius: THEME.BORDER_RADIUS.lg,
     gap: 4,
   },
   categoryText: {
-    color: 'white',
-    fontSize: 10,
+    // color: theme.background,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '600',
   },
   articleMeta: {
@@ -322,21 +323,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   articleDate: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
   },
   readTime: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
   },
   articleTitle: {
-    fontSize: 18,
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
     fontWeight: '700',
-    marginBottom: 8,
+    marginBottom: THEME.SPACING.sm,
     lineHeight: 24,
   },
   articleSummary: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     lineHeight: 20,
-    marginBottom: 16,
+    marginBottom: THEME.SPACING.md,
   },
   cardFooter: {
     flexDirection: 'row',
@@ -344,13 +345,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   readButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 8,
+    paddingHorizontal: THEME.SPACING.md,
+    paddingVertical: THEME.SPACING.sm,
+    borderRadius: THEME.BORDER_RADIUS.md,
   },
   readButtonText: {
-    color: 'white',
-    fontSize: 14,
+    // color: theme.background,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '600',
   },
   readIndicator: {
@@ -359,7 +360,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   readText: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '500',
   },
   bottomSpacing: {

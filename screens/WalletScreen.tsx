@@ -7,18 +7,25 @@ import {
   TouchableOpacity,
   Dimensions,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { getRoleColor } from '../utils/roleColors';
 import { useTheme } from '../context/ThemeContext';
+import { THEME } from '../styles/theme';
+import ScreenLayout from '../components/ScreenLayout';
 import { useAuth } from '../context/AuthContext';
-import { generateWalletId, UserRole } from '../utils/generateWalletId';
+import { generateWalletId } from '../utils/generateWalletId';
+import { UserRole } from '../types/roles';
 import UnifiedHeader from '../components/UnifiedHeader';
 import MenuModal from '../components/MenuModal';
 
 const { width } = Dimensions.get('window');
 
-const WalletScreen = ({ navigation, route }: any) => {
+interface WalletScreenProps {
+  navigation: any;
+  route: any;
+}
+
+const WalletScreen: React.FC<WalletScreenProps> = ({ navigation, route }) => {
   const { theme } = useTheme();
   const { user, currentRole } = useAuth();
   const [showMenu, setShowMenu] = useState(false);
@@ -58,7 +65,7 @@ const WalletScreen = ({ navigation, route }: any) => {
         return {
           title: 'Impact Warrior',
           subtitle: 'Environmental Volunteer',
-          color: '#dc3545',
+          // color: theme.error,
           icon: 'heart',
           primaryBalance: '850',
           primaryLabel: 'Eco Points',
@@ -69,7 +76,7 @@ const WalletScreen = ({ navigation, route }: any) => {
         return {
           title: 'EcoDefender Corp',
           subtitle: 'Environmental Sponsor',
-          color: '#007bff',
+          color: theme.primary,
           icon: 'business',
           primaryBalance: '$12,450.00',
           primaryLabel: 'Business Wallet',
@@ -175,7 +182,7 @@ const WalletScreen = ({ navigation, route }: any) => {
   );
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+    <ScreenLayout>
       <UnifiedHeader
         onMenuPress={() => setShowMenu(true)}
         role={userRole}
@@ -287,7 +294,7 @@ const WalletScreen = ({ navigation, route }: any) => {
           navigation.navigate('Login');
         }}
       />
-    </SafeAreaView>
+    </ScreenLayout>
   );
 };
 
@@ -302,31 +309,31 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    paddingTop: 8,
+    paddingHorizontal: THEME.SPACING.md,
+    paddingVertical: THEME.SPACING.sm + 4,
+    paddingTop: THEME.SPACING.sm,
   },
   backButton: {},
   headerTitle: {
-    fontSize: 18,
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
     fontWeight: '700',
     flex: 1,
     textAlign: 'center',
-    marginRight: 32, // Compensate for wallet icon
+    marginRight: THEME.SPACING.xl, // Compensate for wallet icon
   },
   walletIcon: {
     width: 32,
     height: 32,
-    borderRadius: 16,
+    borderRadius: THEME.BORDER_RADIUS.xl,
     alignItems: 'center',
     justifyContent: 'center',
   },
 
   // Digital Wallet Card Styles (Similar to My Card Preview)
   walletCard: {
-    margin: 16,
-    marginTop: 8,
-    borderRadius: 16,
+    margin: THEME.SPACING.md,
+    marginTop: THEME.SPACING.sm,
+    borderRadius: THEME.BORDER_RADIUS.xl,
     overflow: 'hidden',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -335,7 +342,7 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   cardGradient: {
-    padding: 16,
+    padding: THEME.SPACING.md,
     minHeight: 200,
     position: 'relative',
   },
@@ -343,24 +350,24 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 16,
+    marginBottom: THEME.SPACING.md,
   },
   cardTitle: {
     flex: 1,
   },
   cardTitleText: {
-    color: 'white',
-    fontSize: 18,
+    // color: theme.background,
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
     fontWeight: '700',
     marginBottom: 2,
   },
   cardSubtitleText: {
     color: 'rgba(255,255,255,0.8)',
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
   },
   walletIdText: {
     color: 'rgba(255,255,255,0.6)',
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     marginTop: 2,
   },
   cardIcon: {
@@ -372,22 +379,22 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   cardBalance: {
-    marginBottom: 16,
+    marginBottom: THEME.SPACING.md,
   },
   balanceLabel: {
     color: 'rgba(255,255,255,0.8)',
-    fontSize: 14,
-    marginBottom: 8,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
+    marginBottom: THEME.SPACING.sm,
   },
   balanceAmount: {
-    color: 'white',
+    // color: theme.background,
     fontSize: 32,
     fontWeight: 'bold',
-    marginBottom: 8,
+    marginBottom: THEME.SPACING.sm,
   },
   secondaryBalance: {
     color: 'rgba(255,255,255,0.9)',
-    fontSize: 16,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
   },
   cardFooter: {
     flexDirection: 'row',
@@ -398,19 +405,19 @@ const styles = StyleSheet.create({
     width: 32,
     height: 24,
     backgroundColor: 'rgba(255,255,255,0.3)',
-    borderRadius: 4,
+    borderRadius: THEME.BORDER_RADIUS.sm,
   },
   cardNumber: {
     color: 'rgba(255,255,255,0.8)',
-    fontSize: 16,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
     fontWeight: '500',
   },
 
   // Quick Actions
   quickActions: {
     flexDirection: 'row',
-    paddingHorizontal: 16,
-    marginBottom: 24,
+    paddingHorizontal: THEME.SPACING.md,
+    marginBottom: THEME.SPACING.lg,
     gap: 8,
   },
   actionButton: {
@@ -418,8 +425,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 16,
-    borderRadius: 12,
+    paddingVertical: THEME.SPACING.md,
+    borderRadius: THEME.BORDER_RADIUS.lg,
     gap: 8,
   },
   secondaryAction: {
@@ -427,28 +434,28 @@ const styles = StyleSheet.create({
     borderWidth: 2,
   },
   actionText: {
-    fontSize: 16,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
     fontWeight: '600',
-    color: 'white',
+    // color: theme.background,
   },
 
   // Transactions Section
   transactionsSection: {
-    paddingHorizontal: 16,
-    marginBottom: 16,
+    paddingHorizontal: THEME.SPACING.md,
+    marginBottom: THEME.SPACING.md,
   },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: THEME.SPACING.md,
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
     fontWeight: '700',
   },
   viewAll: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '500',
   },
   transactionsList: {
@@ -457,10 +464,10 @@ const styles = StyleSheet.create({
   transactionCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 16,
-    paddingHorizontal: 16,
-    borderRadius: 12,
-    marginBottom: 8,
+    paddingVertical: THEME.SPACING.md,
+    paddingHorizontal: THEME.SPACING.md,
+    borderRadius: THEME.BORDER_RADIUS.lg,
+    marginBottom: THEME.SPACING.sm,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -473,21 +480,21 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 12,
+    marginRight: THEME.SPACING.sm + 4,
   },
   transactionDetails: {
     flex: 1,
   },
   transactionDescription: {
-    fontSize: 16,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
     fontWeight: '600',
     marginBottom: 2,
   },
   transactionDate: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
   },
   transactionAmount: {
-    fontSize: 16,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
     fontWeight: '600',
   },
   bottomSpacing: {

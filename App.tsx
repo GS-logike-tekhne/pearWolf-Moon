@@ -7,6 +7,7 @@ import { LocationProvider } from './context/LocationContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { XPProvider } from './context/XPContext';
 import { MissionProvider } from './context/MissionContext';
+import { NotificationsProvider } from './context/NotificationsContext';
 
 // Import navigation
 import AppNavigator from './navigation/AppNavigator';
@@ -22,15 +23,17 @@ export default function App(): JSX.Element {
         <LocationProvider>
           <XPProvider>
             <MissionProvider>
-              <ThemeProvider>
-                <ErrorBoundary>
-                  <OfflineIndicator />
-                  <NavigationContainer>
-                    <StatusBar style="auto" />
-                    <AppNavigator />
-                  </NavigationContainer>
-                </ErrorBoundary>
-              </ThemeProvider>
+              <NotificationsProvider>
+                <ThemeProvider>
+                  <ErrorBoundary>
+                    <OfflineIndicator />
+                    <NavigationContainer>
+                      <StatusBar style="auto" />
+                      <AppNavigator />
+                    </NavigationContainer>
+                  </ErrorBoundary>
+                </ThemeProvider>
+              </NotificationsProvider>
             </MissionProvider>
           </XPProvider>
         </LocationProvider>

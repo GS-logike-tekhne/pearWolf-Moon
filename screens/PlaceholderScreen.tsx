@@ -1,8 +1,9 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
+import { THEME } from '../styles/theme';
+import ScreenLayout from '../components/ScreenLayout';
 
 interface PlaceholderScreenProps {
   navigation: any;
@@ -14,7 +15,7 @@ const PlaceholderScreen: React.FC<PlaceholderScreenProps> = ({ navigation, route
   const screenName = route.name || 'Screen';
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+    <ScreenLayout>
       <View style={styles.header}>
         <TouchableOpacity 
           style={styles.backButton}
@@ -34,7 +35,7 @@ const PlaceholderScreen: React.FC<PlaceholderScreenProps> = ({ navigation, route
           This feature is under development and will be available in a future update.
         </Text>
       </View>
-    </SafeAreaView>
+    </ScreenLayout>
   );
 };
 
@@ -45,31 +46,31 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 16,
-    paddingTop: 8,
+    padding: THEME.SPACING.md,
+    paddingTop: THEME.SPACING.sm,
   },
   backButton: {
-    marginRight: 16,
+    marginRight: THEME.SPACING.md,
   },
   title: {
-    fontSize: 18,
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
     fontWeight: '600',
   },
   content: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 32,
+    padding: THEME.SPACING.xl,
   },
   message: {
-    fontSize: 24,
+    fontSize: THEME.TYPOGRAPHY.fontSize["2xl"],
     fontWeight: '600',
-    marginTop: 16,
-    marginBottom: 8,
+    marginTop: THEME.SPACING.md,
+    marginBottom: THEME.SPACING.sm,
     textAlign: 'center',
   },
   submessage: {
-    fontSize: 16,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
     textAlign: 'center',
     lineHeight: 24,
   },

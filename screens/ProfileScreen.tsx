@@ -6,10 +6,11 @@ import {
   ScrollView,
   TouchableOpacity,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { getRoleColor } from '../utils/roleColors';
 import { useTheme } from '../context/ThemeContext';
+import { THEME } from '../styles/theme';
+import ScreenLayout from '../components/ScreenLayout';
 import { useAuth } from '../context/AuthContext';
 import UnifiedHeader from '../components/UnifiedHeader';
 import MenuModal from '../components/MenuModal';
@@ -79,7 +80,7 @@ const ProfileScreen = ({ navigation, route }: { navigation: any; route: any }) =
   );
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+    <ScreenLayout>
       <UnifiedHeader
         onMenuPress={() => setShowMenu(true)}
         role={role === 'admin' ? 'ADMIN' : role === 'business' ? 'BUSINESS' : role === 'trash-hero' ? 'TRASH_HERO' : 'VOLUNTEER'}
@@ -189,7 +190,7 @@ const ProfileScreen = ({ navigation, route }: { navigation: any; route: any }) =
           }
         }}
       />
-    </SafeAreaView>
+    </ScreenLayout>
   );
 };
 
@@ -201,22 +202,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: THEME.SPACING.md,
+    paddingVertical: THEME.SPACING.sm + 4,
   },
   backButton: {},
   headerTitle: {
-    fontSize: 20,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xl,
     fontWeight: '700',
   },
   content: {
     flex: 1,
-    paddingHorizontal: 16,
+    paddingHorizontal: THEME.SPACING.md,
   },
   profileCard: {
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 24,
+    borderRadius: THEME.BORDER_RADIUS.xl,
+    padding: THEME.SPACING.md,
+    marginBottom: THEME.SPACING.lg,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -226,7 +227,7 @@ const styles = StyleSheet.create({
   profileHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingBottom: 16,
+    paddingBottom: THEME.SPACING.md,
     borderBottomWidth: 1,
   },
   avatarContainer: {
@@ -235,27 +236,27 @@ const styles = StyleSheet.create({
     borderRadius: 32,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 16,
+    marginRight: THEME.SPACING.md,
   },
   profileInfo: {
     flex: 1,
   },
   profileName: {
-    fontSize: 20,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xl,
     fontWeight: '700',
-    marginBottom: 4,
+    marginBottom: THEME.SPACING.xs,
   },
   profileRole: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '500',
   },
   sectionContainer: {
-    marginBottom: 24,
+    marginBottom: THEME.SPACING.lg,
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
     fontWeight: '600',
-    marginBottom: 16,
+    marginBottom: THEME.SPACING.md,
   },
   infoContainer: {
     gap: 12,
@@ -264,8 +265,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 16,
-    borderRadius: 12,
+    padding: THEME.SPACING.md,
+    borderRadius: THEME.BORDER_RADIUS.lg,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
@@ -283,31 +284,31 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 12,
+    marginRight: THEME.SPACING.sm + 4,
   },
   infoContent: {
     flex: 1,
   },
   infoLabel: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '500',
     marginBottom: 2,
   },
   infoValue: {
-    fontSize: 16,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
     fontWeight: '600',
   },
   statusBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
+    paddingHorizontal: THEME.SPACING.sm,
+    paddingVertical: THEME.SPACING.xs,
+    borderRadius: THEME.BORDER_RADIUS.lg,
     gap: 4,
   },
   statusText: {
-    color: 'white',
-    fontSize: 10,
+    // color: theme.background,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '600',
   },
   bottomSpacing: {

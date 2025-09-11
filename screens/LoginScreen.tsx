@@ -8,12 +8,17 @@ import {
   Alert,
   ScrollView,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { getRoleColor } from '../utils/roleColors';
 import { useAuth } from '../context/AuthContext';
+import ScreenLayout, { ScreenLayoutCentered } from '../components/ScreenLayout';
+import { THEME } from '../styles/theme';
 
-const LoginScreen = ({ navigation }) => {
+interface LoginScreenProps {
+  navigation: any;
+}
+
+const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const { login, isLoading } = useAuth();
@@ -27,7 +32,13 @@ const LoginScreen = ({ navigation }) => {
     }
   };
 
-  const TestCredentialButton = ({ icon, title, subtitle, onPress, color }) => (
+  const TestCredentialButton: React.FC<{
+    icon: string;
+    title: string;
+    subtitle: string;
+    onPress: () => void;
+    color: string;
+  }> = ({ icon, title, subtitle, onPress, color }) => (
     <TouchableOpacity style={[styles.testButton, { borderColor: color }]} onPress={onPress}>
       <View style={styles.testButtonContent}>
         <Ionicons name={icon} size={24} color={color} />
@@ -40,8 +51,7 @@ const LoginScreen = ({ navigation }) => {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+    <ScreenLayoutCentered>
       {/* PEAR Logo and Title */}
       <View style={styles.logoSection}>
         <View style={styles.logoContainer}>
@@ -60,7 +70,7 @@ const LoginScreen = ({ navigation }) => {
             placeholder="Username"
             value={username}
             onChangeText={setUsername}
-            autoCapitalize="none"
+            {...({ autoCapitalize: "none" } as any)}
           />
         </View>
 
@@ -71,7 +81,7 @@ const LoginScreen = ({ navigation }) => {
             placeholder="Password"
             value={password}
             onChangeText={setPassword}
-            secureTextEntry
+            {...({ secureTextEntry: true } as any)}
           />
         </View>
 
@@ -128,8 +138,7 @@ const LoginScreen = ({ navigation }) => {
       <View style={styles.footer}>
         <Text style={styles.footerText}>Protecting our planet, one cleanup at a time</Text>
       </View>
-      </ScrollView>
-    </SafeAreaView>
+    </ScreenLayoutCentered>
   );
 };
 
@@ -141,17 +150,17 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     paddingHorizontal: 20,
-    paddingVertical: 40,
+    paddingVertical: 8,
   },
   logoSection: {
     alignItems: 'center',
-    marginBottom: 40,
+    marginBottom: 8,
     marginTop: 20,
   },
   logoContainer: {
     width: 80,
     height: 80,
-    borderRadius: 40,
+    borderRadius: 8,
     backgroundColor: '#dcfce7',
     justifyContent: 'center',
     alignItems: 'center',
@@ -164,7 +173,7 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: 'bold',
     color: getRoleColor('trash-hero'),
-    marginBottom: 8,
+    marginBottom: 12,
   },
   subtitle: {
     fontSize: 14,
@@ -178,7 +187,7 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'white',
+    // backgroundColor: theme.background,
     borderRadius: 12,
     marginBottom: 16,
     paddingHorizontal: 16,
@@ -189,7 +198,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   inputIcon: {
-    marginRight: 12,
+    marginRight: 16,
   },
   input: {
     flex: 1,
@@ -202,7 +211,7 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     borderRadius: 12,
     alignItems: 'center',
-    marginTop: 8,
+    marginTop: 12,
     shadowColor: getRoleColor('trash-hero'),
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
@@ -210,7 +219,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   loginButtonText: {
-    color: 'white',
+    // color: theme.background,
     fontSize: 18,
     fontWeight: '600',
   },
@@ -228,10 +237,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   testButton: {
-    backgroundColor: 'white',
+    // backgroundColor: theme.background,
     borderRadius: 12,
     borderWidth: 2,
-    marginBottom: 12,
+    marginBottom: 16,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
@@ -244,7 +253,7 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   testButtonText: {
-    marginLeft: 12,
+    marginLeft: 16,
     flex: 1,
   },
   testButtonTitle: {

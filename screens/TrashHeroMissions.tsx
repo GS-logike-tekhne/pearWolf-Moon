@@ -8,11 +8,13 @@ import {
   TextInput,
   Dimensions,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { getRoleColor } from '../utils/roleColors';
 import { useTheme } from '../context/ThemeContext';
+import { THEME } from '../styles/theme';
 import MenuModal from '../components/MenuModal';
+import DailyQuests from '../components/DailyQuests';
+import ScreenLayout from '../components/ScreenLayout';
 
 const { width } = Dimensions.get('window');
 
@@ -106,7 +108,7 @@ const TrashHeroMissions = ({ navigation }: any) => {
         styles.missionCard, 
         { 
           backgroundColor: theme.cardBackground,
-          borderColor: theme.borderColor 
+          borderColor: theme.borderColor, 
         }
       ]}
     >
@@ -194,7 +196,7 @@ const TrashHeroMissions = ({ navigation }: any) => {
         { borderColor: theme.borderColor },
         selectedFilter === filter.id && { 
           backgroundColor: theme.primary,
-          borderColor: theme.primary 
+          borderColor: theme.primary, 
         }
       ]}
       onPress={() => setSelectedFilter(filter.id)}
@@ -207,7 +209,7 @@ const TrashHeroMissions = ({ navigation }: any) => {
       <Text style={[
         styles.filterText,
         { color: theme.secondaryText },
-        selectedFilter === filter.id && { color: 'white' }
+        selectedFilter === filter.id && { color: theme.background }
       ]}>
         {filter.label}
       </Text>
@@ -215,7 +217,7 @@ const TrashHeroMissions = ({ navigation }: any) => {
   );
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+    <ScreenLayout>
       {/* Unified Header */}
       <View style={[styles.header, { backgroundColor: theme.background }]}>
         <TouchableOpacity 
@@ -296,7 +298,7 @@ const TrashHeroMissions = ({ navigation }: any) => {
         {/* Filter Chips */}
         <View style={styles.filterContainer}>
           <ScrollView 
-            horizontal 
+            {...({ horizontal: true } as any)} 
             showsHorizontalScrollIndicator={false}
           >
           {filters.map(filter => (
@@ -304,6 +306,9 @@ const TrashHeroMissions = ({ navigation }: any) => {
           ))}
           </ScrollView>
         </View>
+
+        {/* Daily Quests */}
+        <DailyQuests />
 
         {/* Stats Banner */}
         <View style={[styles.statsBanner, { backgroundColor: theme.cardBackground }]}>
@@ -380,7 +385,7 @@ const TrashHeroMissions = ({ navigation }: any) => {
           navigation.navigate('Login');
         }}
       />
-    </SafeAreaView>
+    </ScreenLayout>
   );
 };
 
@@ -392,21 +397,21 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    paddingTop: 8,
+    paddingHorizontal: THEME.SPACING.md,
+    paddingVertical: THEME.SPACING.sm + 4,
+    paddingTop: THEME.SPACING.sm,
   },
   menuButton: {
-    padding: 8,
+    padding: THEME.SPACING.sm,
   },
   pearLogo: {
-    paddingHorizontal: 20,
-    paddingVertical: 8,
+    paddingHorizontal: THEME.SPACING.md + 4,
+    paddingVertical: THEME.SPACING.sm,
     borderRadius: 20,
   },
   pearText: {
-    color: 'white',
-    fontSize: 16,
+    // color: theme.background,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
     fontWeight: '700',
     letterSpacing: 1,
   },
@@ -421,34 +426,34 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   pointsText: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '600',
   },
   notificationButton: {
     position: 'relative',
-    padding: 8,
+    padding: THEME.SPACING.sm,
   },
   notificationBadge: {
     position: 'absolute',
     top: 4,
     right: 4,
     backgroundColor: getRoleColor('impact-warrior'),
-    borderRadius: 8,
+    borderRadius: THEME.BORDER_RADIUS.md,
     minWidth: 16,
     height: 16,
     alignItems: 'center',
     justifyContent: 'center',
   },
   notificationBadgeText: {
-    color: 'white',
-    fontSize: 10,
+    // color: theme.background,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '600',
   },
   profileButton: {
     position: 'relative',
     width: 32,
     height: 32,
-    borderRadius: 16,
+    borderRadius: THEME.BORDER_RADIUS.xl,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -457,15 +462,15 @@ const styles = StyleSheet.create({
     top: -2,
     right: -2,
     backgroundColor: '#28a745',
-    borderRadius: 8,
+    borderRadius: THEME.BORDER_RADIUS.md,
     minWidth: 16,
     height: 16,
     alignItems: 'center',
     justifyContent: 'center',
   },
   profileBadgeText: {
-    color: 'white',
-    fontSize: 10,
+    // color: theme.background,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '600',
   },
   content: {
@@ -474,8 +479,8 @@ const styles = StyleSheet.create({
   pageHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 16,
+    paddingHorizontal: THEME.SPACING.md,
+    paddingVertical: THEME.SPACING.md,
     gap: 16,
   },
   backButton: {
@@ -494,30 +499,30 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   title: {
-    fontSize: 24,
+    fontSize: THEME.TYPOGRAPHY.fontSize["2xl"],
     fontWeight: '700',
-    marginBottom: 4,
+    marginBottom: THEME.SPACING.xs,
   },
   subtitle: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
   },
   heroIcon: {
     width: 48,
     height: 48,
-    borderRadius: 24,
+    borderRadius: THEME.BORDER_RADIUS["2xl"],
     alignItems: 'center',
     justifyContent: 'center',
   },
   searchContainer: {
-    paddingHorizontal: 16,
-    marginBottom: 16,
+    paddingHorizontal: THEME.SPACING.md,
+    marginBottom: THEME.SPACING.md,
   },
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    borderRadius: THEME.BORDER_RADIUS.lg,
+    paddingHorizontal: THEME.SPACING.md,
+    paddingVertical: THEME.SPACING.sm + 4,
     gap: 12,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -527,32 +532,32 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    fontSize: 16,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
   },
   filterContainer: {
-    paddingHorizontal: 16,
-    marginBottom: 16,
+    paddingHorizontal: THEME.SPACING.md,
+    marginBottom: THEME.SPACING.md,
   },
   filterChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingHorizontal: THEME.SPACING.md,
+    paddingVertical: THEME.SPACING.sm,
     backgroundColor: 'transparent',
     borderRadius: 20,
-    marginRight: 12,
+    marginRight: THEME.SPACING.sm + 4,
     gap: 6,
     borderWidth: 1,
   },
   filterText: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '600',
   },
   statsBanner: {
     flexDirection: 'row',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 20,
+    borderRadius: THEME.BORDER_RADIUS.lg,
+    padding: THEME.SPACING.md,
+    marginBottom: THEME.SPACING.md + 4,
     alignItems: 'center',
     justifyContent: 'space-around',
     shadowColor: '#000',
@@ -566,24 +571,24 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   statNumber: {
-    fontSize: 20,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xl,
     fontWeight: '800',
-    marginBottom: 4,
+    marginBottom: THEME.SPACING.xs,
   },
   statLabel: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
   },
   statDivider: {
     width: 1,
     height: 32,
   },
   missionsList: {
-    paddingBottom: 20,
+    paddingBottom: THEME.SPACING.md + 4,
   },
   missionCard: {
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 16,
+    borderRadius: THEME.BORDER_RADIUS.xl,
+    padding: THEME.SPACING.md + 4,
+    marginBottom: THEME.SPACING.md,
     borderWidth: 1,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -592,7 +597,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   missionHeader: {
-    marginBottom: 12,
+    marginBottom: THEME.SPACING.sm + 4,
   },
   missionTitleSection: {
     flexDirection: 'row',
@@ -600,10 +605,10 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   missionTitle: {
-    fontSize: 18,
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
     fontWeight: '700',
     flex: 1,
-    marginRight: 12,
+    marginRight: THEME.SPACING.sm + 4,
   },
   badgeContainer: {
     gap: 6,
@@ -611,35 +616,35 @@ const styles = StyleSheet.create({
   cashBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    paddingHorizontal: THEME.SPACING.sm,
+    paddingVertical: THEME.SPACING.xs,
     borderRadius: 6,
     gap: 4,
   },
   cashBadgeText: {
-    fontSize: 10,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '700',
-    color: 'white',
+    // color: theme.background,
   },
   priorityBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    paddingHorizontal: THEME.SPACING.sm,
+    paddingVertical: THEME.SPACING.xs,
     borderRadius: 6,
     alignItems: 'center',
   },
   priorityBadgeText: {
-    fontSize: 10,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '700',
-    color: 'white',
+    // color: theme.background,
   },
   missionDescription: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     lineHeight: 20,
-    marginBottom: 16,
+    marginBottom: THEME.SPACING.md,
   },
   missionDetails: {
     gap: 8,
-    marginBottom: 12,
+    marginBottom: THEME.SPACING.sm + 4,
   },
   detailItem: {
     flexDirection: 'row',
@@ -647,20 +652,20 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   detailText: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
   },
   sponsorSection: {
-    marginBottom: 16,
-    paddingTop: 8,
+    marginBottom: THEME.SPACING.md,
+    paddingTop: THEME.SPACING.sm,
     borderTopWidth: 1,
     borderTopColor: '#f1f5f9',
   },
   sponsorLabel: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     marginBottom: 2,
   },
   sponsorName: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '600',
   },
   missionFooter: {
@@ -673,11 +678,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   missionPayment: {
-    fontSize: 18,
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
     fontWeight: '700',
   },
   missionDuration: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
   },
   actionButtons: {
     flexDirection: 'row',
@@ -685,54 +690,54 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   donateBtn: {
-    paddingHorizontal: 12,
+    paddingHorizontal: THEME.SPACING.sm + 4,
     paddingVertical: 6,
   },
   acceptButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 8,
+    paddingHorizontal: THEME.SPACING.md,
+    paddingVertical: THEME.SPACING.sm,
+    borderRadius: THEME.BORDER_RADIUS.md,
     gap: 6,
   },
   acceptButtonText: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '600',
-    color: 'white',
+    // color: theme.background,
   },
   emptyState: {
     alignItems: 'center',
     paddingVertical: 60,
   },
   emptyTitle: {
-    fontSize: 18,
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
     fontWeight: '600',
-    marginTop: 16,
-    marginBottom: 8,
+    marginTop: THEME.SPACING.md,
+    marginBottom: THEME.SPACING.sm,
   },
   emptyText: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     textAlign: 'center',
     lineHeight: 20,
     maxWidth: 280,
   },
   missionsContainer: {
-    paddingHorizontal: 16,
+    paddingHorizontal: THEME.SPACING.md,
   },
   emptyDescription: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     textAlign: 'center',
-    marginBottom: 20,
+    marginBottom: THEME.SPACING.md + 4,
   },
   refreshButton: {
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 24,
+    paddingHorizontal: THEME.SPACING.lg,
+    paddingVertical: THEME.SPACING.sm + 4,
+    borderRadius: THEME.BORDER_RADIUS["2xl"],
   },
   refreshButtonText: {
-    color: 'white',
-    fontSize: 14,
+    // color: theme.background,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '600',
   },
   bottomSpacing: {

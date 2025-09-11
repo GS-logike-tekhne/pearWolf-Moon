@@ -7,10 +7,11 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { getRoleColor } from '../utils/roleColors';
 import { useTheme } from '../context/ThemeContext';
+import { THEME } from '../styles/theme';
+import ScreenLayout from '../components/ScreenLayout';
 
 interface Mission {
   id: string;
@@ -139,9 +140,9 @@ const EcoDefenderMissions: React.FC<EcoDefenderMissionsProps> = ({ navigation })
   const getTypeConfig = (type: string) => {
     switch (type) {
       case 'cleanup': return { icon: 'trash-bin', color: '#28a745', label: 'Cleanup' };
-      case 'recycling': return { icon: 'refresh', color: '#17a2b8', label: 'Recycling' };
-      case 'education': return { icon: 'school', color: '#6f42c1', label: 'Education' };
-      case 'monitoring': return { icon: 'analytics', color: '#fd7e14', label: 'Monitoring' };
+      case 'recycling': return { icon: 'refresh', color: theme.primary, label: 'Recycling' };
+      case 'education': return { icon: 'school', color: theme.secondary, label: 'Education' };
+      case 'monitoring': return { icon: 'analytics', color: theme.warning, label: 'Monitoring' };
       default: return { icon: 'leaf', color: ecoDefenderColor, label: 'Mission' };
     }
   };
@@ -362,7 +363,7 @@ const EcoDefenderMissions: React.FC<EcoDefenderMissionsProps> = ({ navigation })
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+    <ScreenLayout>
       {/* Header */}
       <View style={[styles.header, { backgroundColor: theme.cardBackground }]}>
         <TouchableOpacity
@@ -391,7 +392,7 @@ const EcoDefenderMissions: React.FC<EcoDefenderMissionsProps> = ({ navigation })
           <Text style={[styles.summaryLabel, { color: theme.secondaryText }]}>Active</Text>
         </View>
         <View style={[styles.summaryCard, { backgroundColor: theme.cardBackground }]}>
-          <Text style={[styles.summaryValue, { color: '#ffc107' }]}>
+          <Text style={[styles.summaryValue, { color: theme.warning }]}>
             {missions.filter(m => m.status === 'in_progress').length}
           </Text>
           <Text style={[styles.summaryLabel, { color: theme.secondaryText }]}>In Progress</Text>
@@ -403,7 +404,7 @@ const EcoDefenderMissions: React.FC<EcoDefenderMissionsProps> = ({ navigation })
           <Text style={[styles.summaryLabel, { color: theme.secondaryText }]}>Completed</Text>
         </View>
         <View style={[styles.summaryCard, { backgroundColor: theme.cardBackground }]}>
-          <Text style={[styles.summaryValue, { color: '#6c757d' }]}>
+          <Text style={[styles.summaryValue, { color: theme.secondaryText }]}>
             {missions.filter(m => m.status === 'draft').length}
           </Text>
           <Text style={[styles.summaryLabel, { color: theme.secondaryText }]}>Drafts</Text>
@@ -411,7 +412,7 @@ const EcoDefenderMissions: React.FC<EcoDefenderMissionsProps> = ({ navigation })
       </View>
 
       {/* Filters */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filtersContainer}>
+      <ScrollView {...({ horizontal: true } as any)} showsHorizontalScrollIndicator={false} style={styles.filtersContainer}>
         {['all', 'active', 'in_progress', 'draft', 'completed', 'urgent', 'cleanup', 'monitoring'].map(filter => (
           <TouchableOpacity
             key={filter}
@@ -440,7 +441,7 @@ const EcoDefenderMissions: React.FC<EcoDefenderMissionsProps> = ({ navigation })
         </View>
         <View style={styles.bottomSpacing} />
       </ScrollView>
-    </SafeAreaView>
+    </ScreenLayout>
   );
 };
 
@@ -452,52 +453,52 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    paddingTop: 8,
+    paddingHorizontal: THEME.SPACING.md,
+    paddingVertical: THEME.SPACING.sm + 4,
+    paddingTop: THEME.SPACING.sm,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255,255,255,0.1)',
   },
   backButton: {},
   headerTitle: {
-    fontSize: 18,
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
     fontWeight: '700',
   },
   addButton: {
-    padding: 8,
+    padding: THEME.SPACING.sm,
   },
   summaryContainer: {
     flexDirection: 'row',
-    paddingHorizontal: 16,
-    paddingVertical: 16,
+    paddingHorizontal: THEME.SPACING.md,
+    paddingVertical: THEME.SPACING.md,
     gap: 8,
   },
   summaryCard: {
     flex: 1,
     alignItems: 'center',
-    paddingVertical: 12,
-    borderRadius: 8,
+    paddingVertical: THEME.SPACING.sm + 4,
+    borderRadius: THEME.BORDER_RADIUS.md,
   },
   summaryValue: {
-    fontSize: 18,
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
     fontWeight: '700',
     marginBottom: 2,
   },
   summaryLabel: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
   },
   filtersContainer: {
-    paddingHorizontal: 16,
-    paddingBottom: 16,
+    paddingHorizontal: THEME.SPACING.md,
+    paddingBottom: THEME.SPACING.md,
   },
   filterChip: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingHorizontal: THEME.SPACING.md,
+    paddingVertical: THEME.SPACING.sm,
     borderRadius: 20,
-    marginRight: 8,
+    marginRight: THEME.SPACING.sm,
   },
   filterText: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '500',
     textTransform: 'capitalize',
   },
@@ -505,12 +506,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   missionsContainer: {
-    paddingHorizontal: 16,
+    paddingHorizontal: THEME.SPACING.md,
   },
   missionCard: {
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 12,
+    padding: THEME.SPACING.md,
+    borderRadius: THEME.BORDER_RADIUS.lg,
+    marginBottom: THEME.SPACING.sm + 4,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -521,19 +522,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 8,
+    marginBottom: THEME.SPACING.sm,
   },
   missionInfo: {
     flex: 1,
-    marginRight: 12,
+    marginRight: THEME.SPACING.sm + 4,
   },
   missionTitle: {
-    fontSize: 16,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
     fontWeight: '600',
-    marginBottom: 4,
+    marginBottom: THEME.SPACING.xs,
   },
   missionLocation: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -544,47 +545,47 @@ const styles = StyleSheet.create({
   typeBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
+    paddingHorizontal: THEME.SPACING.sm,
+    paddingVertical: THEME.SPACING.xs,
+    borderRadius: THEME.BORDER_RADIUS.lg,
     gap: 4,
   },
   priorityBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
+    paddingHorizontal: THEME.SPACING.sm,
+    paddingVertical: THEME.SPACING.xs,
+    borderRadius: THEME.BORDER_RADIUS.lg,
   },
   statusBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
+    paddingHorizontal: THEME.SPACING.sm,
+    paddingVertical: THEME.SPACING.xs,
+    borderRadius: THEME.BORDER_RADIUS.lg,
   },
   badgeText: {
-    color: 'white',
-    fontSize: 10,
+    // color: theme.background,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '600',
     textTransform: 'uppercase',
   },
   missionDescription: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     lineHeight: 20,
-    marginBottom: 12,
+    marginBottom: THEME.SPACING.sm + 4,
   },
   progressSection: {
-    marginBottom: 12,
+    marginBottom: THEME.SPACING.sm + 4,
   },
   progressHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 4,
+    marginBottom: THEME.SPACING.xs,
   },
   progressLabel: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '600',
   },
   applicationsText: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '500',
   },
   progressBar: {
@@ -597,7 +598,7 @@ const styles = StyleSheet.create({
     borderRadius: 3,
   },
   missionMeta: {
-    marginBottom: 12,
+    marginBottom: THEME.SPACING.sm + 4,
     gap: 4,
   },
   metaRow: {
@@ -606,15 +607,15 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   metaText: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
   },
   requirementsSection: {
-    marginBottom: 16,
+    marginBottom: THEME.SPACING.md,
   },
   requirementsTitle: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '600',
-    marginBottom: 8,
+    marginBottom: THEME.SPACING.sm,
   },
   requirementsList: {
     flexDirection: 'row',
@@ -623,9 +624,9 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   requirementTag: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
+    paddingHorizontal: THEME.SPACING.sm,
+    paddingVertical: THEME.SPACING.xs,
+    borderRadius: THEME.BORDER_RADIUS.lg,
   },
   requirementText: {
     fontSize: 11,
@@ -643,16 +644,16 @@ const styles = StyleSheet.create({
   actionButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 8,
+    paddingVertical: THEME.SPACING.sm,
+    paddingHorizontal: THEME.SPACING.sm + 4,
+    borderRadius: THEME.BORDER_RADIUS.md,
     gap: 4,
     minWidth: 70,
     justifyContent: 'center',
   },
   actionButtonText: {
-    color: 'white',
-    fontSize: 12,
+    // color: theme.background,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '600',
   },
   bottomSpacing: {

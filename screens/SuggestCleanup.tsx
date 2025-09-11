@@ -9,13 +9,24 @@ import {
   Alert,
   Image,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { getRoleColor } from '../utils/roleColors';
 import * as ImagePicker from 'expo-image-picker';
 import { useTheme } from '../context/ThemeContext';
+import { THEME } from '../styles/theme';
+import ScreenLayout from '../components/ScreenLayout';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-const SuggestCleanup = ({ navigation, route }) => {
+type SuggestCleanupProps = {
+  navigation: NativeStackNavigationProp<any>;
+  route: {
+    params?: {
+      role?: string;
+    };
+  };
+};
+
+const SuggestCleanup: React.FC<SuggestCleanupProps> = ({ navigation, route }) => {
   const { theme } = useTheme();
   const role = route?.params?.role || 'impact-warrior';
   const [formData, setFormData] = useState({
@@ -25,7 +36,7 @@ const SuggestCleanup = ({ navigation, route }) => {
     urgency: 'medium',
     category: 'general',
   });
-  const [photo, setPhoto] = useState(null);
+  const [photo, setPhoto] = useState<ImagePicker.ImagePickerAsset | null>(null);
 
   const urgencyLevels = [
     { id: 'low', label: 'Low Priority', color: '#10b981', icon: 'leaf-outline' },
@@ -155,7 +166,7 @@ const SuggestCleanup = ({ navigation, route }) => {
               styles.categoryOption,
               { 
                 backgroundColor: formData.category === cat.id ? theme.primary : 'white',
-                borderColor: theme.primary 
+                borderColor: theme.primary, 
               }
             ]}
             onPress={() => setFormData(prev => ({ ...prev, category: cat.id }))}
@@ -178,11 +189,11 @@ const SuggestCleanup = ({ navigation, route }) => {
   );
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+    <ScreenLayout>
       {/* Header with Back Button */}
       <View style={[styles.header, { backgroundColor: theme.background }]}>
         <TouchableOpacity 
-          style={[styles.backButton, { backgroundColor: 'white' }]}
+          style={[styles.backButton, { backgroundColor: theme.background }]}
           onPress={handleBack}
         >
           <Ionicons name="arrow-back" size={24} color={getRoleColor(role)} />
@@ -271,7 +282,7 @@ const SuggestCleanup = ({ navigation, route }) => {
           {photo && (
             <View style={styles.photoPreviewContainer}>
               <Image 
-                source={{ uri: photo.uri }} 
+                source={{ uri: photo?.uri || '' }} 
                 style={styles.photoPreview} 
                 resizeMode="cover"
               />
@@ -300,7 +311,7 @@ const SuggestCleanup = ({ navigation, route }) => {
         {/* Bottom Spacing */}
         <View style={styles.bottomSpacing} />
       </ScrollView>
-    </SafeAreaView>
+    </ScreenLayout>
   );
 };
 
@@ -311,7 +322,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 20,
+    padding: THEME.SPACING.md + 4,
     paddingTop: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -325,7 +336,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 16,
+    marginRight: THEME.SPACING.md,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
@@ -336,21 +347,21 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerTitle: {
-    fontSize: 24,
+    fontSize: THEME.TYPOGRAPHY.fontSize["2xl"],
     fontWeight: '700',
   },
   headerSubtitle: {
-    fontSize: 16,
-    marginTop: 4,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
+    marginTop: THEME.SPACING.xs,
   },
   content: {
     flex: 1,
-    padding: 20,
+    padding: THEME.SPACING.md + 4,
   },
   introContainer: {
-    padding: 20,
-    borderRadius: 12,
-    marginBottom: 24,
+    padding: THEME.SPACING.md + 4,
+    borderRadius: THEME.BORDER_RADIUS.lg,
+    marginBottom: THEME.SPACING.lg,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -360,64 +371,64 @@ const styles = StyleSheet.create({
   introHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: THEME.SPACING.sm + 4,
   },
   introTitle: {
-    fontSize: 18,
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
     fontWeight: '600',
-    marginLeft: 12,
+    marginLeft: THEME.SPACING.sm + 4,
   },
   introText: {
-    fontSize: 16,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
     lineHeight: 24,
   },
   sectionContainer: {
-    marginBottom: 24,
+    marginBottom: THEME.SPACING.lg,
   },
   sectionTitle: {
-    fontSize: 20,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xl,
     fontWeight: '600',
-    marginBottom: 16,
+    marginBottom: THEME.SPACING.md,
   },
   inputContainer: {
-    marginBottom: 16,
+    marginBottom: THEME.SPACING.md,
   },
   inputLabel: {
-    fontSize: 16,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
     fontWeight: '500',
-    marginBottom: 8,
+    marginBottom: THEME.SPACING.sm,
   },
   textInput: {
     borderWidth: 1,
-    borderRadius: 8,
-    padding: 16,
-    fontSize: 16,
-    backgroundColor: 'white',
+    borderRadius: THEME.BORDER_RADIUS.md,
+    padding: THEME.SPACING.md,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
+    // backgroundColor: theme.background,
   },
   textArea: {
     borderWidth: 1,
-    borderRadius: 8,
-    padding: 16,
-    fontSize: 16,
-    backgroundColor: 'white',
+    borderRadius: THEME.BORDER_RADIUS.md,
+    padding: THEME.SPACING.md,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
+    // backgroundColor: theme.background,
     minHeight: 100,
   },
   photoUploadButton: {
     borderWidth: 2,
     borderStyle: 'dashed',
-    borderRadius: 12,
-    padding: 32,
+    borderRadius: THEME.BORDER_RADIUS.lg,
+    padding: THEME.SPACING.xl,
     alignItems: 'center',
-    backgroundColor: '#f8f9fa',
+    // backgroundColor: theme.background,
   },
   photoUploadText: {
-    fontSize: 16,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
     fontWeight: '600',
-    marginTop: 8,
+    marginTop: THEME.SPACING.sm,
   },
   photoUploadSubtext: {
-    fontSize: 14,
-    marginTop: 4,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
+    marginTop: THEME.SPACING.xs,
   },
   urgencyContainer: {
     gap: 12,
@@ -425,8 +436,8 @@ const styles = StyleSheet.create({
   urgencyOption: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 16,
-    borderRadius: 12,
+    padding: THEME.SPACING.md,
+    borderRadius: THEME.BORDER_RADIUS.lg,
     borderWidth: 2,
     borderColor: 'transparent',
   },
@@ -434,9 +445,9 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
   },
   urgencyText: {
-    fontSize: 16,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
     fontWeight: '600',
-    marginLeft: 12,
+    marginLeft: THEME.SPACING.sm + 4,
   },
   categoryContainer: {
     flexDirection: 'row',
@@ -446,48 +457,48 @@ const styles = StyleSheet.create({
   categoryOption: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 12,
-    borderRadius: 8,
+    padding: THEME.SPACING.sm + 4,
+    borderRadius: THEME.BORDER_RADIUS.md,
     borderWidth: 1,
     minWidth: '45%',
   },
   categoryText: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '500',
-    marginLeft: 8,
+    marginLeft: THEME.SPACING.sm,
   },
   submitButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 18,
-    borderRadius: 12,
-    marginTop: 8,
+    borderRadius: THEME.BORDER_RADIUS.lg,
+    marginTop: THEME.SPACING.sm,
   },
   submitButtonText: {
-    color: 'white',
-    fontSize: 18,
+    // color: theme.background,
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
     fontWeight: '700',
-    marginLeft: 8,
+    marginLeft: THEME.SPACING.sm,
   },
   bottomSpacing: {
     height: 40,
   },
   photoPreviewContainer: {
-    marginTop: 16,
+    marginTop: THEME.SPACING.md,
     position: 'relative',
   },
   photoPreview: {
     width: '100%',
     height: 200,
-    borderRadius: 12,
+    borderRadius: THEME.BORDER_RADIUS.lg,
   },
   removePhotoButton: {
     position: 'absolute',
     top: 8,
     right: 8,
-    backgroundColor: 'white',
-    borderRadius: 12,
+    // backgroundColor: theme.background,
+    borderRadius: THEME.BORDER_RADIUS.lg,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,

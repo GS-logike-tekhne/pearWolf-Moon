@@ -1,4 +1,5 @@
 import React from 'react';
+import ScreenLayout from '../components/ScreenLayout';
 import { UserRole } from '../types/roles';
 import { getRoleColor } from '../utils/roleColors';
 import RoleDashboardLayout from '../components/RoleDashboardLayout';
@@ -36,8 +37,8 @@ const AdminDashboardRefactored: React.FC<AdminDashboardProps> = ({ navigation })
     { title: 'Issue Resolution', icon: 'warning', color: getRoleColor('impact-warrior'), onPress: () => navigation.navigate('AdminIssueResolution') },
     { title: 'Mission Control', icon: 'desktop', color: getRoleColor('business'), onPress: () => navigation.navigate('AdminMissionControl') },
     { title: 'Analytics', icon: 'bar-chart', color: '#8b5cf6', onPress: () => navigation.navigate('Analytics') },
-    { title: 'Rewards System', icon: 'gift', color: '#ffc107', onPress: () => navigation.navigate('AdminRewards') },
-    { title: 'Suggested Spots', icon: 'location', color: '#17a2b8', onPress: () => navigation.navigate('AdminSuggestedSpots') },
+    { title: 'Rewards System', icon: 'gift', color: theme.warning, onPress: () => navigation.navigate('AdminRewards') },
+    { title: 'Suggested Spots', icon: 'location', color: theme.primary, onPress: () => navigation.navigate('AdminSuggestedSpots') },
   ];
 
   // Recent activity
@@ -58,7 +59,7 @@ const AdminDashboardRefactored: React.FC<AdminDashboardProps> = ({ navigation })
       status: 'Resolved',
       time: '3 hours ago',
       icon: 'bug',
-      color: '#007bff',
+      color: theme.primary,
     },
     {
       id: '3',

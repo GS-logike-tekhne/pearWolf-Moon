@@ -25,6 +25,8 @@ import AdminMissionControl from '../screens/AdminMissionControl';
 import AdminIssueResolution from '../screens/AdminIssueResolution';
 import AdminSuggestedSpots from '../screens/AdminSuggestedSpots';
 import Analytics from '../screens/Analytics';
+import AdminAnalytics from '../screens/AdminAnalytics';
+import CleanupSubmissionScreen from '../screens/CleanupSubmissionScreen';
 import UserManagement from '../screens/UserManagement';
 import MapScreen from '../screens/MapScreen';
 import WalletScreen from '../screens/WalletScreen';
@@ -67,6 +69,8 @@ const AppNavigator: React.FC = () => {
       <Stack.Screen name="WalletScreen" component={WalletScreen} />
       <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
       <Stack.Screen name="Analytics" component={Analytics} />
+      <Stack.Screen name="AdminAnalytics" component={AdminAnalytics} />
+      <Stack.Screen name="CleanupSubmission" component={CleanupSubmissionScreen} />
       <Stack.Screen name="UserManagement" component={UserManagement} />
       
       {/* Role-specific screens */}

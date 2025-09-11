@@ -11,6 +11,8 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { getRoleColor } from '../utils/roleColors';
 import { useTheme } from '../context/ThemeContext';
+import { THEME } from '../styles/theme';
+import ScreenLayout from '../components/ScreenLayout';
 import UnifiedHeader from '../components/UnifiedHeader';
 import MenuModal from '../components/MenuModal';
 
@@ -230,8 +232,7 @@ const JobListings = ({ navigation, route, onSignOut }: { navigation: any; route:
       
       <ScrollView 
         style={styles.scrollContainer}
-        contentContainerStyle={styles.contentContainer}
-        showsVerticalScrollIndicator={false}
+        {...({ contentContainerStyle: styles.contentContainer, showsVerticalScrollIndicator: false } as any)}
       >
         {/* Header */}
         <View style={[styles.header, { backgroundColor: theme.background }]}>
@@ -280,9 +281,8 @@ const JobListings = ({ navigation, route, onSignOut }: { navigation: any; route:
 
         {/* Filter Chips */}
         <ScrollView 
-          horizontal 
+          {...({ horizontal: true, showsHorizontalScrollIndicator: false } as any)}
           style={styles.filterContainer}
-          showsHorizontalScrollIndicator={false}
         >
           {filters.map(filter => (
             <FilterChip key={filter.id} filter={filter} />
@@ -355,46 +355,45 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   contentContainer: {
-    paddingHorizontal: 16,
-    paddingBottom: 16,
+    paddingHorizontal: THEME.SPACING.md,
+    paddingBottom: THEME.SPACING.md,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    paddingTop: 8,
+    paddingHorizontal: THEME.SPACING.md,
+    paddingVertical: THEME.SPACING.sm + 4,
+    paddingTop: THEME.SPACING.sm,
   },
   backButton: {},
   headerTitle: {
-    fontSize: 18,
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
     fontWeight: '700',
     flex: 1,
     textAlign: 'center',
-    marginRight: 32, // Compensate for opportunities badge
+    marginRight: THEME.SPACING.xl, // Compensate for opportunities badge
   },
   opportunitiesBadge: {
     width: 32,
     height: 32,
-    borderRadius: 16,
+    borderRadius: THEME.BORDER_RADIUS.xl,
     alignItems: 'center',
     justifyContent: 'center',
   },
   opportunitiesText: {
-    color: 'white',
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '700',
   },
   searchContainer: {
-    marginBottom: 16,
+    marginBottom: THEME.SPACING.md,
   },
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    borderRadius: THEME.BORDER_RADIUS.lg,
+    paddingHorizontal: THEME.SPACING.md,
+    paddingVertical: THEME.SPACING.sm + 4,
     gap: 12,
     borderWidth: 1,
     shadowColor: '#000',
@@ -408,32 +407,32 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    fontSize: 16,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
     fontWeight: '400',
   },
   filterContainer: {
-    marginBottom: 16,
+    marginBottom: THEME.SPACING.md,
   },
   filterChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingHorizontal: THEME.SPACING.md,
+    paddingVertical: THEME.SPACING.sm,
     borderRadius: 20,
-    marginRight: 12,
+    marginRight: THEME.SPACING.sm + 4,
     gap: 6,
     borderWidth: 1,
     minHeight: 44,
   },
   filterText: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '600',
   },
   statsBanner: {
     flexDirection: 'row',
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 16,
+    borderRadius: THEME.BORDER_RADIUS.xl,
+    padding: THEME.SPACING.md,
+    marginBottom: THEME.SPACING.md,
     alignItems: 'center',
     justifyContent: 'space-around',
     borderWidth: 1,
@@ -451,12 +450,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   statNumber: {
-    fontSize: 24,
+    fontSize: THEME.TYPOGRAPHY.fontSize["2xl"],
     fontWeight: '700',
     marginBottom: 2,
   },
   statLabel: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '600',
   },
   statDivider: {
@@ -464,12 +463,12 @@ const styles = StyleSheet.create({
     height: 32,
   },
   jobsList: {
-    paddingBottom: 20,
+    paddingBottom: THEME.SPACING.md + 4,
   },
   jobCard: {
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 16,
+    borderRadius: THEME.BORDER_RADIUS.xl,
+    padding: THEME.SPACING.md,
+    marginBottom: THEME.SPACING.md,
     borderWidth: 1,
     borderLeftWidth: 3,
     shadowColor: '#000',
@@ -482,7 +481,7 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   jobHeader: {
-    marginBottom: 16,
+    marginBottom: THEME.SPACING.md,
   },
   jobTitleSection: {
     flexDirection: 'row',
@@ -490,45 +489,43 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   jobTitle: {
-    fontSize: 18,
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
     fontWeight: '700',
     flex: 1,
-    marginRight: 12,
+    marginRight: THEME.SPACING.sm + 4,
   },
   badgeContainer: {
     gap: 6,
   },
   typeBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    paddingHorizontal: THEME.SPACING.sm,
+    paddingVertical: THEME.SPACING.xs,
     borderRadius: 6,
     alignItems: 'center',
   },
   typeBadgeText: {
-    fontSize: 10,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '700',
-    color: 'white',
   },
   priorityBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    paddingHorizontal: THEME.SPACING.sm,
+    paddingVertical: THEME.SPACING.xs,
     borderRadius: 6,
     alignItems: 'center',
   },
   priorityBadgeText: {
-    fontSize: 10,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '700',
-    color: 'white',
   },
   jobDescription: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '400',
     lineHeight: 20,
-    marginBottom: 16,
+    marginBottom: THEME.SPACING.md,
   },
   jobDetails: {
     gap: 8,
-    marginBottom: 16,
+    marginBottom: THEME.SPACING.md,
   },
   detailItem: {
     flexDirection: 'row',
@@ -536,7 +533,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   detailText: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '400',
   },
   jobFooter: {
@@ -549,39 +546,38 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   jobPayment: {
-    fontSize: 18,
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
     fontWeight: '700',
   },
   jobDuration: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '400',
   },
   applyButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 8,
+    paddingHorizontal: THEME.SPACING.md,
+    paddingVertical: THEME.SPACING.sm,
+    borderRadius: THEME.BORDER_RADIUS.md,
     gap: 6,
   },
   applyButtonText: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '600',
-    color: 'white',
   },
   emptyState: {
     alignItems: 'center',
     paddingVertical: 60,
   },
   emptyTitle: {
-    fontSize: 18,
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
     fontWeight: '700',
     color: '#64748b',
-    marginTop: 16,
-    marginBottom: 8,
+    marginTop: THEME.SPACING.md,
+    marginBottom: THEME.SPACING.sm,
   },
   emptyText: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     color: '#94a3b8',
     textAlign: 'center',
     lineHeight: 20,

@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 import { UserRole } from '../types/roles';
 import { getRoleColor } from '../utils/roleColors';
 import { useTheme } from '../context/ThemeContext';
+import { THEME } from '../styles/theme';
+import ScreenLayout from '../components/ScreenLayout';
 import { useAuth } from '../context/AuthContext';
 import RoleDashboardLayout from '../components/RoleDashboardLayout';
 
@@ -87,21 +89,21 @@ const UnifiedHeroDashboardRefactored: React.FC<UnifiedHeroDashboardProps> = ({
     switch (activeRole) {
       case 'TRASH_HERO':
         return [
-          { label: 'Jobs Completed', value: '47', icon: 'briefcase', color: '#007bff' },
-          { label: 'Total Earned', value: '$2,340', icon: 'card', color: '#007bff' },
-          { label: 'Success Rate', value: '97%', icon: 'shield-checkmark', color: '#28A745' },
+          { label: 'Jobs Completed', value: '47', icon: 'briefcase', color: theme.primary },
+          { label: 'Total Earned', value: '$2,340', icon: 'card', color: theme.primary },
+          { label: 'Success Rate', value: '97%', icon: 'shield-checkmark', color: theme.primary },
         ];
       case 'IMPACT_WARRIOR':
         return [
-          { label: 'Events Joined', value: '34', icon: 'people', color: '#007bff' },
-          { label: 'Impact Points', value: '1,680', icon: 'star', color: '#007bff' },
-          { label: 'Cleanups Led', value: '12', icon: 'people-circle', color: '#28A745' },
+          { label: 'Events Joined', value: '34', icon: 'people', color: theme.primary },
+          { label: 'Impact Points', value: '1,680', icon: 'star', color: theme.primary },
+          { label: 'Cleanups Led', value: '12', icon: 'people-circle', color: theme.primary },
         ];
       default:
         return [
-          { label: 'Jobs Completed', value: '47', icon: 'briefcase', color: '#007bff' },
-          { label: 'Total Earned', value: '$2,340', icon: 'card', color: '#007bff' },
-          { label: 'Success Rate', value: '97%', icon: 'shield-checkmark', color: '#28A745' },
+          { label: 'Jobs Completed', value: '47', icon: 'briefcase', color: theme.primary },
+          { label: 'Total Earned', value: '$2,340', icon: 'card', color: theme.primary },
+          { label: 'Success Rate', value: '97%', icon: 'shield-checkmark', color: theme.primary },
         ];
     }
   };
@@ -111,21 +113,21 @@ const UnifiedHeroDashboardRefactored: React.FC<UnifiedHeroDashboardProps> = ({
     switch (activeRole) {
       case 'TRASH_HERO':
         return [
-          { title: 'Find Jobs', icon: 'search', color: '#28A745', onPress: () => navigation.navigate('MainTabs', { screen: 'Missions' }) },
-          { title: 'My Earnings', icon: 'wallet', color: '#ffc107', onPress: () => navigation.navigate('TrashHeroEarnings') },
-          { title: 'Performance', icon: 'analytics', color: '#007bff', onPress: () => navigation.navigate('TrashHeroEarnings') },
-          { title: 'Map View', icon: 'map', color: '#17a2b8', onPress: () => navigation.navigate('MapScreen') },
+          { title: 'Find Jobs', icon: 'search', color: theme.primary, onPress: () => navigation.navigate('MainTabs', { screen: 'Missions' }) },
+          { title: 'My Earnings', icon: 'wallet', color: theme.warning, onPress: () => navigation.navigate('TrashHeroEarnings') },
+          { title: 'Performance', icon: 'analytics', color: theme.primary, onPress: () => navigation.navigate('TrashHeroEarnings') },
+          { title: 'Map View', icon: 'map', color: theme.primary, onPress: () => navigation.navigate('MapScreen') },
           { title: 'My Badges', icon: 'medal', color: '#8b5cf6', onPress: () => navigation.navigate('BadgeSystem', { userRole: 'TRASH_HERO' }) },
-          { title: 'Profile', icon: 'person', color: '#6c757d', onPress: () => navigation.navigate('ProfileScreen', { role: 'trash-hero' }) },
+          { title: 'Profile', icon: 'person', color: theme.secondaryText, onPress: () => navigation.navigate('ProfileScreen', { role: 'trash-hero' }) },
         ];
       case 'IMPACT_WARRIOR':
         return [
-          { title: 'Join Mission', icon: 'leaf', color: '#dc3545', onPress: () => navigation.navigate('MainTabs', { screen: 'Missions' }) },
-          { title: 'My Impact', icon: 'analytics', color: '#28A745', onPress: () => navigation.navigate('ImpactWarriorImpact') },
-          { title: 'PEAR Verified Missions', icon: 'people', color: '#007bff', onPress: () => navigation.navigate('PearVerifiedMissions') },
-          { title: 'Map View', icon: 'map', color: '#17a2b8', onPress: () => navigation.navigate('MapScreen') },
+          { title: 'Join Mission', icon: 'leaf', color: theme.error, onPress: () => navigation.navigate('MainTabs', { screen: 'Missions' }) },
+          { title: 'My Impact', icon: 'analytics', color: theme.primary, onPress: () => navigation.navigate('ImpactWarriorImpact') },
+          { title: 'PEAR Verified Missions', icon: 'people', color: theme.primary, onPress: () => navigation.navigate('PearVerifiedMissions') },
+          { title: 'Map View', icon: 'map', color: theme.primary, onPress: () => navigation.navigate('MapScreen') },
           { title: 'My Badges', icon: 'medal', color: '#8b5cf6', onPress: () => navigation.navigate('BadgeSystem', { userRole: 'IMPACT_WARRIOR' }) },
-          { title: 'Profile', icon: 'person', color: '#6c757d', onPress: () => navigation.navigate('ProfileScreen', { role: 'impact-warrior' }) },
+          { title: 'Profile', icon: 'person', color: theme.secondaryText, onPress: () => navigation.navigate('ProfileScreen', { role: 'impact-warrior' }) },
         ];
       default:
         return [];
@@ -153,7 +155,7 @@ const UnifiedHeroDashboardRefactored: React.FC<UnifiedHeroDashboardProps> = ({
             status: 'Scheduled',
             time: '1 day ago',
             icon: 'calendar',
-            color: '#007bff',
+            color: theme.primary,
           },
         ];
       case 'IMPACT_WARRIOR':
@@ -188,7 +190,7 @@ const UnifiedHeroDashboardRefactored: React.FC<UnifiedHeroDashboardProps> = ({
   const recentActivity = getRecentActivity();
 
   // Show toggle only for users who can switch between TRASH_HERO and IMPACT_WARRIOR
-  const showToggle = user && (user.role === 'TRASH_HERO' || user.role === 'IMPACT_WARRIOR');
+  const showToggle = Boolean(user && (user.role === 'TRASH_HERO' || user.role === 'IMPACT_WARRIOR'));
 
   return (
     <RoleDashboardLayout

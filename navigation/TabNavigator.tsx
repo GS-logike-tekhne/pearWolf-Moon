@@ -8,6 +8,7 @@ import { UserRole, getRoleColor, getRoleIcon } from '../types/roles';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
 import { useRoleManager } from '../hooks/useRoleManager';
+import { canAccessScreen } from '../types/rolePermissions';
 
 // Import screens
 import UnifiedHeroDashboard from '../screens/UnifiedHeroDashboard';
@@ -105,6 +106,29 @@ const TabNavigator: React.FC = () => {
     }
   };
 
+  // Helper function to check if a tab should be shown
+  const shouldShowTab = (tabName: string): boolean => {
+    switch (tabName) {
+      case 'Dashboard':
+        return canAccessScreen(currentRole, 'AdminDashboard') || 
+               canAccessScreen(currentRole, 'EcoDefenderDashboard') ||
+               canAccessScreen(currentRole, 'TrashHeroMissions'); // UnifiedHeroDashboard
+      case 'Missions':
+        return canAccessScreen(currentRole, 'TrashHeroMissions') ||
+               canAccessScreen(currentRole, 'ImpactWarriorMissions') ||
+               canAccessScreen(currentRole, 'EcoDefenderMissions') ||
+               canAccessScreen(currentRole, 'UserManagement');
+      case 'Map':
+        return canAccessScreen(currentRole, 'MapScreen');
+      case 'Wallet':
+        return canAccessScreen(currentRole, 'WalletScreen');
+      case 'Profile':
+        return canAccessScreen(currentRole, 'ProfileScreen');
+      default:
+        return true;
+    }
+  };
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -127,45 +151,55 @@ const TabNavigator: React.FC = () => {
         headerShown: false,
       })}
     >
-      <Tab.Screen 
-        name="Dashboard" 
-        component={getDashboardScreen()}
-        options={{
-          tabBarLabel: 'Home',
-        }}
-      />
+      {shouldShowTab('Dashboard') && (
+        <Tab.Screen 
+          name="Dashboard" 
+          component={getDashboardScreen()}
+          options={{
+            tabBarLabel: 'Home',
+          }}
+        />
+      )}
       
-      <Tab.Screen 
-        name="Missions" 
-        component={getMissionsScreen()}
-        options={{
-          tabBarLabel: getTabBarLabel('Missions'),
-        }}
-      />
+      {shouldShowTab('Missions') && (
+        <Tab.Screen 
+          name="Missions" 
+          component={getMissionsScreen()}
+          options={{
+            tabBarLabel: getTabBarLabel('Missions'),
+          }}
+        />
+      )}
       
-      <Tab.Screen 
-        name="Map" 
-        component={MapScreen}
-        options={{
-          tabBarLabel: 'Map',
-        }}
-      />
+      {shouldShowTab('Map') && (
+        <Tab.Screen 
+          name="Map" 
+          component={MapScreen}
+          options={{
+            tabBarLabel: 'Map',
+          }}
+        />
+      )}
       
-      <Tab.Screen 
-        name="Wallet" 
-        component={WalletScreen}
-        options={{
-          tabBarLabel: 'Wallet',
-        }}
-      />
+      {shouldShowTab('Wallet') && (
+        <Tab.Screen 
+          name="Wallet" 
+          component={WalletScreen}
+          options={{
+            tabBarLabel: 'Wallet',
+          }}
+        />
+      )}
       
-      <Tab.Screen 
-        name="Profile" 
-        component={ProfileScreen}
-        options={{
-          tabBarLabel: 'Profile',
-        }}
-      />
+      {shouldShowTab('Profile') && (
+        <Tab.Screen 
+          name="Profile" 
+          component={ProfileScreen}
+          options={{
+            tabBarLabel: 'Profile',
+          }}
+        />
+      )}
     </Tab.Navigator>
   );
 };

@@ -9,10 +9,12 @@ import {
   Modal,
   TextInput,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { getRoleColor } from '../utils/roleColors';
 import { useTheme } from '../context/ThemeContext';
+import { THEME } from '../styles/theme';
+import ScreenLayout from '../components/ScreenLayout';
+import { RoleGuard } from '../components/RoleGuard';
 import UnifiedHeader from '../components/UnifiedHeader';
 import MenuModal from '../components/MenuModal';
 
@@ -97,10 +99,10 @@ const AdminIssueResolution: React.FC<AdminIssueResolutionProps> = ({ navigation 
 
   const getCategoryConfig = (category: string) => {
     switch (category) {
-      case 'user_dispute': return { icon: 'people', color: '#6f42c1', label: 'User Dispute' };
+      case 'user_dispute': return { icon: 'people', color: theme.secondary, label: 'User Dispute' };
       case 'payment_issue': return { icon: 'card', color: getRoleColor('admin'), label: 'Payment Issue' };
       case 'safety_concern': return { icon: 'warning', color: getRoleColor('impact-warrior'), label: 'Safety Concern' };
-      case 'technical_bug': return { icon: 'bug', color: '#6c757d', label: 'Technical Bug' };
+      case 'technical_bug': return { icon: 'bug', color: theme.secondaryText, label: 'Technical Bug' };
       case 'harassment': return { icon: 'alert-circle', color: getRoleColor('impact-warrior'), label: 'Harassment' };
       case 'fraud': return { icon: 'shield-outline', color: getRoleColor('impact-warrior'), label: 'Fraud' };
       default: return { icon: 'help-circle', color: adminColor, label: 'Other' };
@@ -268,7 +270,7 @@ const AdminIssueResolution: React.FC<AdminIssueResolutionProps> = ({ navigation 
           </TouchableOpacity>
           
           <TouchableOpacity
-            style={[styles.actionButton, { backgroundColor: '#6c757d' }]}
+            style={[styles.actionButton, { backgroundColor: theme.background }]}
             onPress={() => navigation.navigate('UserProfile', { userId: issue.reportedBy.id })}
           >
             <Ionicons name="person" size={16} color="white" />
@@ -280,16 +282,17 @@ const AdminIssueResolution: React.FC<AdminIssueResolutionProps> = ({ navigation 
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
-      <UnifiedHeader
-        onMenuPress={() => setShowMenu(true)}
-        role="admin"
-        onNotificationPress={() => navigation.navigate('Notifications')}
-        onProfilePress={() => navigation.navigate('ProfileScreen', { 
-          role: 'ADMIN',
-          onSignOut: () => navigation.navigate('Login')
-        })}
-      />
+    <RoleGuard allowedRoles={['ADMIN']}>
+      <ScreenLayout>
+        <UnifiedHeader
+          onMenuPress={() => setShowMenu(true)}
+          role="admin"
+          onNotificationPress={() => navigation.navigate('Notifications')}
+          onProfilePress={() => navigation.navigate('ProfileScreen', { 
+            role: 'ADMIN',
+            onSignOut: () => navigation.navigate('Login')
+          })}
+        />
       
       {/* Page Header */}
       <View style={[styles.pageHeader, { backgroundColor: theme.cardBackground }]}>
@@ -336,7 +339,7 @@ const AdminIssueResolution: React.FC<AdminIssueResolutionProps> = ({ navigation 
       </View>
 
       {/* Filters */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filtersContainer}>
+      <ScrollView {...({ horizontal: true } as any)} showsHorizontalScrollIndicator={false} style={styles.filtersContainer}>
         {['all', 'open', 'investigating', 'escalated', 'critical', 'high', 'harassment', 'payment_issue'].map(filter => (
           <TouchableOpacity
             key={filter}
@@ -373,7 +376,7 @@ const AdminIssueResolution: React.FC<AdminIssueResolutionProps> = ({ navigation 
         presentationStyle="pageSheet"
         onRequestClose={() => setShowResolveModal(false)}
       >
-        <SafeAreaView style={[styles.modalContainer, { backgroundColor: theme.background }]}>
+        <ScreenLayout>
           <View style={[styles.modalHeader, { backgroundColor: theme.cardBackground }]}>
             <TouchableOpacity onPress={() => setShowResolveModal(false)}>
               <Text style={[styles.modalButton, { color: theme.textColor }]}>Cancel</Text>
@@ -390,7 +393,7 @@ const AdminIssueResolution: React.FC<AdminIssueResolutionProps> = ({ navigation 
                 <Text style={[styles.issueTitle, { color: theme.textColor }]}>
                   {selectedIssue.title}
                 </Text>
-                <Text style={[styles.issueDescription, { color: theme.secondaryText, marginBottom: 20 }]}>
+                <Text style={[styles.issueDescription, { color: theme.secondaryText, marginBottom: THEME.SPACING.md + 4 }]}>
                   {selectedIssue.description}
                 </Text>
               </>
@@ -407,7 +410,7 @@ const AdminIssueResolution: React.FC<AdminIssueResolutionProps> = ({ navigation 
               numberOfLines={6}
             />
           </View>
-        </SafeAreaView>
+        </ScreenLayout>
       </Modal>
       <MenuModal
         visible={showMenu}
@@ -416,7 +419,8 @@ const AdminIssueResolution: React.FC<AdminIssueResolutionProps> = ({ navigation 
         onNavigate={(screen, params) => navigation.navigate(screen, params)}
         onSignOut={() => navigation.navigate('Login')}
       />
-    </SafeAreaView>
+      </ScreenLayout>
+    </RoleGuard>
   );
 };
 
@@ -428,52 +432,52 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    paddingTop: 8,
+    paddingHorizontal: THEME.SPACING.md,
+    paddingVertical: THEME.SPACING.sm + 4,
+    paddingTop: THEME.SPACING.sm,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255,255,255,0.1)',
   },
   backButton: {},
   headerTitle: {
-    fontSize: 18,
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
     fontWeight: '700',
   },
   filterButton: {
-    padding: 8,
+    padding: THEME.SPACING.sm,
   },
   statsContainer: {
     flexDirection: 'row',
-    paddingHorizontal: 16,
-    paddingVertical: 16,
+    paddingHorizontal: THEME.SPACING.md,
+    paddingVertical: THEME.SPACING.md,
     gap: 8,
   },
   statCard: {
     flex: 1,
     alignItems: 'center',
-    paddingVertical: 12,
-    borderRadius: 8,
+    paddingVertical: THEME.SPACING.sm + 4,
+    borderRadius: THEME.BORDER_RADIUS.md,
   },
   statValue: {
-    fontSize: 18,
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
     fontWeight: '700',
     marginBottom: 2,
   },
   statLabel: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
   },
   filtersContainer: {
-    paddingHorizontal: 16,
-    paddingBottom: 16,
+    paddingHorizontal: THEME.SPACING.md,
+    paddingBottom: THEME.SPACING.md,
   },
   filterChip: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingHorizontal: THEME.SPACING.md,
+    paddingVertical: THEME.SPACING.sm,
     borderRadius: 20,
-    marginRight: 8,
+    marginRight: THEME.SPACING.sm,
   },
   filterText: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '500',
     textTransform: 'capitalize',
   },
@@ -481,12 +485,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   issuesContainer: {
-    paddingHorizontal: 16,
+    paddingHorizontal: THEME.SPACING.md,
   },
   issueCard: {
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 12,
+    padding: THEME.SPACING.md,
+    borderRadius: THEME.BORDER_RADIUS.lg,
+    marginBottom: THEME.SPACING.sm + 4,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -497,19 +501,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 12,
+    marginBottom: THEME.SPACING.sm + 4,
   },
   issueInfo: {
     flex: 1,
-    marginRight: 12,
+    marginRight: THEME.SPACING.sm + 4,
   },
   issueTitle: {
-    fontSize: 16,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
     fontWeight: '600',
-    marginBottom: 4,
+    marginBottom: THEME.SPACING.xs,
   },
   issueDescription: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     lineHeight: 20,
   },
   badges: {
@@ -519,30 +523,30 @@ const styles = StyleSheet.create({
   categoryBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
+    paddingHorizontal: THEME.SPACING.sm,
+    paddingVertical: THEME.SPACING.xs,
+    borderRadius: THEME.BORDER_RADIUS.lg,
     gap: 4,
   },
   priorityBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
+    paddingHorizontal: THEME.SPACING.sm,
+    paddingVertical: THEME.SPACING.xs,
+    borderRadius: THEME.BORDER_RADIUS.lg,
   },
   statusBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
+    paddingHorizontal: THEME.SPACING.sm,
+    paddingVertical: THEME.SPACING.xs,
+    borderRadius: THEME.BORDER_RADIUS.lg,
   },
   badgeText: {
-    color: 'white',
-    fontSize: 10,
+    // color: theme.background,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '600',
     textTransform: 'uppercase',
   },
   issueMeta: {
-    marginBottom: 16,
-    paddingVertical: 8,
+    marginBottom: THEME.SPACING.md,
+    paddingVertical: THEME.SPACING.sm,
     borderTopWidth: 1,
     borderBottomWidth: 1,
     borderColor: 'rgba(255,255,255,0.1)',
@@ -554,20 +558,20 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   metaText: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
   },
   resolutionContainer: {
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 16,
+    padding: THEME.SPACING.sm + 4,
+    borderRadius: THEME.BORDER_RADIUS.md,
+    marginBottom: THEME.SPACING.md,
   },
   resolutionLabel: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '600',
-    marginBottom: 4,
+    marginBottom: THEME.SPACING.xs,
   },
   resolutionText: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     lineHeight: 20,
   },
   issueActions: {
@@ -578,16 +582,16 @@ const styles = StyleSheet.create({
   actionButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 8,
+    paddingVertical: THEME.SPACING.sm,
+    paddingHorizontal: THEME.SPACING.sm + 4,
+    borderRadius: THEME.BORDER_RADIUS.md,
     gap: 4,
     minWidth: 80,
     justifyContent: 'center',
   },
   actionButtonText: {
-    color: 'white',
-    fontSize: 12,
+    // color: theme.background,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '600',
   },
   bottomSpacing: {
@@ -601,34 +605,34 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: THEME.SPACING.md,
+    paddingVertical: THEME.SPACING.sm + 4,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255,255,255,0.1)',
   },
   modalButton: {
-    fontSize: 16,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
     fontWeight: '600',
   },
   modalTitle: {
-    fontSize: 18,
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
     fontWeight: '700',
   },
   modalContent: {
     flex: 1,
-    paddingHorizontal: 16,
-    paddingTop: 16,
+    paddingHorizontal: THEME.SPACING.md,
+    paddingTop: THEME.SPACING.md,
   },
   label: {
-    fontSize: 16,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
     fontWeight: '600',
-    marginBottom: 8,
+    marginBottom: THEME.SPACING.sm,
   },
   textArea: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderRadius: 8,
-    fontSize: 16,
+    paddingHorizontal: THEME.SPACING.md,
+    paddingVertical: THEME.SPACING.sm + 4,
+    borderRadius: THEME.BORDER_RADIUS.md,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
     minHeight: 120,
     textAlignVertical: 'top',
   },

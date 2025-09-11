@@ -7,11 +7,12 @@ import {
   TouchableOpacity,
   Dimensions,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { getRoleColor } from '../utils/roleColors';
 import { isUserVerified, getVerificationBadgeText } from '../utils/verification';
 import { useTheme } from '../context/ThemeContext';
+import { THEME } from '../styles/theme';
+import ScreenLayout from '../components/ScreenLayout';
 import { useXP } from '../context/XPContext';
 import { useXP as useXPHook } from '../hooks/useXP';
 import { XPProgressBar } from '../components/XPProgressBar';
@@ -96,7 +97,7 @@ const MyCard: React.FC<MyCardProps> = ({ navigation, route }) => {
         return {
           title: 'Platform Admin',
           subtitle: 'System Administrator',
-          color: '#fd7e14',
+          // color: theme.warning,
           level: 8,
           points: 5200,
           progress: 100,
@@ -130,47 +131,47 @@ const MyCard: React.FC<MyCardProps> = ({ navigation, route }) => {
     switch (role) {
       case 'trash-hero':
         return [
-          { label: 'Jobs Completed', value: '47', icon: 'briefcase', color: '#007bff' },
-          { label: 'Total Earned', value: '$2,340', icon: 'card', color: '#007bff' },
-          { label: 'Impact Radius', value: '12.3 km²', icon: 'location', color: '#007bff' },
-          { label: 'Success Rate', value: '97%', icon: 'shield-checkmark', color: '#28A745' },
-          { label: 'Hours Worked', value: '156h', icon: 'time', color: '#28A745' },
+          { label: 'Jobs Completed', value: '47', icon: 'briefcase', color: theme.primary },
+          { label: 'Total Earned', value: '$2,340', icon: 'card', color: theme.primary },
+          { label: 'Impact Radius', value: '12.3 km²', icon: 'location', color: theme.primary },
+          { label: 'Success Rate', value: '97%', icon: 'shield-checkmark', color: theme.primary },
+          { label: 'Hours Worked', value: '156h', icon: 'time', color: theme.primary },
           { label: 'Eco Rating', value: '4.8★', icon: 'trophy', color: '#8b5cf6' },
         ];
       case 'impact-warrior':
         return [
-          { label: 'Events Joined', value: '34', icon: 'people', color: '#007bff' },
-          { label: 'Impact Points', value: '1,680', icon: 'star', color: '#007bff' },
-          { label: 'Community Radius', value: '8.7 km²', icon: 'location', color: '#007bff' },
-          { label: 'Cleanups Led', value: '12', icon: 'people-circle', color: '#28A745' },
-          { label: 'Volunteer Hours', value: '128h', icon: 'time', color: '#28A745' },
+          { label: 'Events Joined', value: '34', icon: 'people', color: theme.primary },
+          { label: 'Impact Points', value: '1,680', icon: 'star', color: theme.primary },
+          { label: 'Community Radius', value: '8.7 km²', icon: 'location', color: theme.primary },
+          { label: 'Cleanups Led', value: '12', icon: 'people-circle', color: theme.primary },
+          { label: 'Volunteer Hours', value: '128h', icon: 'time', color: theme.primary },
           { label: 'Community Rank', value: '#23', icon: 'trophy', color: '#8b5cf6' },
         ];
       case 'business':
         return [
-          { label: 'Funded Jobs', value: '12', icon: 'briefcase', color: '#007bff' },
-          { label: 'Total Investment', value: '$3,240', icon: 'card', color: '#007bff' },
-          { label: 'Impact Radius', value: '8.5 km²', icon: 'location', color: '#007bff' },
-          { label: 'Jobs Created', value: '47', icon: 'people', color: '#28A745' },
-          { label: 'CO₂ Offset', value: '850 kg', icon: 'leaf', color: '#28A745' },
+          { label: 'Funded Jobs', value: '12', icon: 'briefcase', color: theme.primary },
+          { label: 'Total Investment', value: '$3,240', icon: 'card', color: theme.primary },
+          { label: 'Impact Radius', value: '8.5 km²', icon: 'location', color: theme.primary },
+          { label: 'Jobs Created', value: '47', icon: 'people', color: theme.primary },
+          { label: 'CO₂ Offset', value: '850 kg', icon: 'leaf', color: theme.primary },
           { label: 'ESG Rank', value: '#8', icon: 'trophy', color: '#8b5cf6' },
         ];
       case 'admin':
         return [
-          { label: 'Users Managed', value: '1,247', icon: 'people', color: '#007bff' },
-          { label: 'System Uptime', value: '99.8%', icon: 'speedometer', color: '#007bff' },
-          { label: 'Platform Reach', value: '15 cities', icon: 'location', color: '#007bff' },
-          { label: 'Issues Resolved', value: '156', icon: 'checkmark-circle', color: '#28A745' },
-          { label: 'Jobs Overseen', value: '892', icon: 'eye', color: '#28A745' },
+          { label: 'Users Managed', value: '1,247', icon: 'people', color: theme.primary },
+          { label: 'System Uptime', value: '99.8%', icon: 'speedometer', color: theme.primary },
+          { label: 'Platform Reach', value: '15 cities', icon: 'location', color: theme.primary },
+          { label: 'Issues Resolved', value: '156', icon: 'checkmark-circle', color: theme.primary },
+          { label: 'Jobs Overseen', value: '892', icon: 'eye', color: theme.primary },
           { label: 'Admin Level', value: 'Master', icon: 'shield-checkmark', color: '#8b5cf6' },
         ];
       default:
         return [
-          { label: 'Funded Jobs', value: '12', icon: 'briefcase', color: '#007bff' },
-          { label: 'Total Investment', value: '$3,240', icon: 'card', color: '#007bff' },
-          { label: 'Impact Radius', value: '8.5 km²', icon: 'location', color: '#007bff' },
-          { label: 'Jobs Created', value: '47', icon: 'people', color: '#28A745' },
-          { label: 'CO₂ Offset', value: '850 kg', icon: 'leaf', color: '#28A745' },
+          { label: 'Funded Jobs', value: '12', icon: 'briefcase', color: theme.primary },
+          { label: 'Total Investment', value: '$3,240', icon: 'card', color: theme.primary },
+          { label: 'Impact Radius', value: '8.5 km²', icon: 'location', color: theme.primary },
+          { label: 'Jobs Created', value: '47', icon: 'people', color: theme.primary },
+          { label: 'CO₂ Offset', value: '850 kg', icon: 'leaf', color: theme.primary },
           { label: 'ESG Rank', value: '#8', icon: 'trophy', color: '#8b5cf6' },
         ];
     }
@@ -234,7 +235,7 @@ const MyCard: React.FC<MyCardProps> = ({ navigation, route }) => {
   );
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+    <ScreenLayout>
       {/* Header */}
       <View style={[styles.header, { backgroundColor: theme.background }]}>
         <TouchableOpacity 
@@ -347,7 +348,7 @@ const MyCard: React.FC<MyCardProps> = ({ navigation, route }) => {
               <AttributeBar 
                 label="Efficiency" 
                 value={attributes.efficiency} 
-                color={roleConfig.color}
+                color={roleConfig.color || theme.primary}
                 animationKey="efficiency"
               />
               <AttributeBar 
@@ -376,8 +377,7 @@ const MyCard: React.FC<MyCardProps> = ({ navigation, route }) => {
             <View style={styles.achievementsSection}>
               <Text style={[styles.sectionTitle, { color: theme.textColor }]}>🏆 Recent Achievements</Text>
               <ScrollView 
-                horizontal={true} 
-                showsHorizontalScrollIndicator={false} 
+                {...({ horizontal: true, showsHorizontalScrollIndicator: false } as any)}
                 style={styles.achievementsList}
               >
                 {xpState.badges.slice(0, 5).map((badge, index) => (
@@ -416,7 +416,7 @@ const MyCard: React.FC<MyCardProps> = ({ navigation, route }) => {
 
         <View style={styles.bottomSpacing} />
       </ScrollView>
-    </SafeAreaView>
+    </ScreenLayout>
   );
 };
 
@@ -428,33 +428,33 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    paddingTop: 8,
+    paddingHorizontal: THEME.SPACING.md,
+    paddingVertical: THEME.SPACING.sm + 4,
+    paddingTop: THEME.SPACING.sm,
   },
   backButton: {},
   headerTitle: {
-    fontSize: 18,
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
     fontWeight: '700',
     flex: 1,
     textAlign: 'center',
-    marginRight: 32, // Compensate for back button
+    marginRight: THEME.SPACING.xl, // Compensate for back button
   },
   pearBadge: {
     width: 32,
     height: 32,
-    borderRadius: 16,
+    borderRadius: THEME.BORDER_RADIUS.xl,
     alignItems: 'center',
     justifyContent: 'center',
   },
   pearIcon: {
-    fontSize: 16,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
     textAlign: 'center',
   },
   verificationSection: {
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingHorizontal: THEME.SPACING.md,
+    paddingVertical: THEME.SPACING.sm,
   },
   verifiedBadge: {
     flexDirection: 'row',
@@ -462,17 +462,17 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   verifiedText: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '600',
   },
   content: {
     flex: 1,
   },
   myCard: {
-    margin: 16,
-    marginTop: 8,
-    borderRadius: 16,
-    padding: 16,
+    margin: THEME.SPACING.md,
+    marginTop: THEME.SPACING.sm,
+    borderRadius: THEME.BORDER_RADIUS.xl,
+    padding: THEME.SPACING.md,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -482,7 +482,7 @@ const styles = StyleSheet.create({
   profileSection: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    marginBottom: 20,
+    marginBottom: THEME.SPACING.md + 4,
   },
   profileAvatar: {
     position: 'relative',
@@ -491,11 +491,11 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 16,
+    marginRight: THEME.SPACING.md,
   },
   avatarText: {
-    color: 'white',
-    fontSize: 18,
+    // color: theme.background,
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
     fontWeight: '700',
   },
   avatarBadge: {
@@ -513,66 +513,66 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   profileName: {
-    fontSize: 18,
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
     fontWeight: '700',
     marginBottom: 2,
   },
   profileRole: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     marginBottom: 6,
   },
   badgeContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    marginBottom: 4,
+    marginBottom: THEME.SPACING.xs,
   },
   badgeEmoji: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
   },
   badgeText: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '600',
   },
   badgeDescription: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontStyle: 'italic',
   },
   progressSection: {
-    marginBottom: 20,
+    marginBottom: THEME.SPACING.md + 4,
   },
   progressHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: THEME.SPACING.sm,
   },
   progressTitle: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '600',
   },
   evolutionBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
+    paddingHorizontal: THEME.SPACING.sm,
+    paddingVertical: THEME.SPACING.xs,
+    borderRadius: THEME.BORDER_RADIUS.lg,
     gap: 4,
   },
   evolutionText: {
-    color: 'white',
-    fontSize: 10,
+    // color: theme.background,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '600',
   },
   progressBarContainer: {
     height: 8,
-    borderRadius: 4,
-    marginBottom: 8,
+    borderRadius: THEME.BORDER_RADIUS.sm,
+    marginBottom: THEME.SPACING.sm,
     overflow: 'hidden',
   },
   progressBarFill: {
     height: '100%',
-    borderRadius: 4,
+    borderRadius: THEME.BORDER_RADIUS.sm,
   },
   progressFooter: {
     flexDirection: 'row',
@@ -580,11 +580,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   progressPercentage: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '600',
   },
   progressRemaining: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
   },
   metricsContainer: {
     gap: 12,
@@ -596,8 +596,8 @@ const styles = StyleSheet.create({
   metricCard: {
     flex: 1,
     alignItems: 'center',
-    paddingVertical: 12,
-    borderRadius: 12,
+    paddingVertical: THEME.SPACING.sm + 4,
+    borderRadius: THEME.BORDER_RADIUS.lg,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
@@ -607,18 +607,18 @@ const styles = StyleSheet.create({
   metricIcon: {
     width: 32,
     height: 32,
-    borderRadius: 16,
+    borderRadius: THEME.BORDER_RADIUS.xl,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 8,
+    marginBottom: THEME.SPACING.sm,
   },
   metricValue: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '700',
     marginBottom: 2,
   },
   metricLabel: {
-    fontSize: 10,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     textAlign: 'center',
   },
   bottomSpacing: {
@@ -626,33 +626,33 @@ const styles = StyleSheet.create({
   },
   // Dynamic Attributes Styles
   attributesSection: {
-    marginBottom: 20,
+    marginBottom: THEME.SPACING.md + 4,
   },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: THEME.SPACING.sm + 4,
   },
   sectionTitle: {
-    fontSize: 16,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
     fontWeight: '700',
   },
   liveBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    paddingHorizontal: THEME.SPACING.sm,
+    paddingVertical: THEME.SPACING.xs,
     borderRadius: 10,
   },
   liveText: {
-    color: 'white',
-    fontSize: 10,
+    // color: theme.background,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '700',
   },
   attributesList: {
     gap: 12,
   },
   attributeContainer: {
-    paddingVertical: 8,
+    paddingVertical: THEME.SPACING.sm,
   },
   attributeHeader: {
     flexDirection: 'row',
@@ -661,7 +661,7 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   attributeLabel: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '600',
   },
   attributeValueContainer: {
@@ -670,11 +670,11 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   attributeValue: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '700',
   },
   attributeGlow: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
   },
   attributeBarBg: {
     height: 6,
@@ -687,22 +687,22 @@ const styles = StyleSheet.create({
     minWidth: 2,
   },
   attributeDescription: {
-    fontSize: 12,
-    marginTop: 4,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
+    marginTop: THEME.SPACING.xs,
     fontStyle: 'italic',
   },
   // Achievements Styles
   achievementsSection: {
-    marginBottom: 20,
+    marginBottom: THEME.SPACING.md + 4,
   },
   achievementsList: {
-    marginTop: 8,
+    marginTop: THEME.SPACING.sm,
   },
   achievementCard: {
     width: 120,
-    padding: 12,
-    borderRadius: 12,
-    marginRight: 8,
+    padding: THEME.SPACING.sm + 4,
+    borderRadius: THEME.BORDER_RADIUS.lg,
+    marginRight: THEME.SPACING.sm,
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
@@ -711,46 +711,46 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   achievementIcon: {
-    fontSize: 24,
-    marginBottom: 4,
+    fontSize: THEME.TYPOGRAPHY.fontSize["2xl"],
+    marginBottom: THEME.SPACING.xs,
   },
   achievementName: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '600',
     textAlign: 'center',
     marginBottom: 2,
   },
   achievementDesc: {
-    fontSize: 10,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     textAlign: 'center',
-    marginTop: 4,
+    marginTop: THEME.SPACING.xs,
   },
   getVerifiedButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 12,
+    paddingHorizontal: THEME.SPACING.sm + 4,
     paddingVertical: 6,
     borderWidth: 1,
     borderRadius: 20,
   },
   getVerifiedText: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '600',
-    marginLeft: 4,
+    marginLeft: THEME.SPACING.xs,
   },
   xpButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 8,
-    paddingHorizontal: 16,
+    paddingVertical: THEME.SPACING.sm,
+    paddingHorizontal: THEME.SPACING.md,
     borderRadius: 20,
-    marginTop: 12,
+    marginTop: THEME.SPACING.sm + 4,
     gap: 6,
   },
   xpButtonText: {
-    color: 'white',
-    fontSize: 14,
+    // color: theme.background,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '600',
   },
 });

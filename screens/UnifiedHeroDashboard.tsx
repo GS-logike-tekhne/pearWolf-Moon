@@ -7,20 +7,21 @@ import {
   TouchableOpacity,
   Dimensions,
 } from "react-native";
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from "@expo/vector-icons";
 import { getRoleColor } from '../utils/roleColors';
 import { useTheme } from "../context/ThemeContext";
+import { THEME } from '../styles/theme';
 import { useAuth } from "../context/AuthContext";
 import { useRoleManager } from "../hooks/useRoleManager";
 import UnifiedHeader from "../components/UnifiedHeader";
 import MenuModal from "../components/MenuModal";
+import ScreenLayout from "../components/ScreenLayout";
 
 const { width } = Dimensions.get('window');
 
 interface UnifiedHeroDashboardProps {
   navigation: any;
-  userRole?: 'TRASH_HERO' | 'VOLUNTEER' | 'BUSINESS' | 'ADMIN';
+  userRole?: 'TRASH_HERO' | 'VOLUNTEER' | 'BUSINESS' | 'ADMIN' | 'IMPACT_WARRIOR' | 'ECO_DEFENDER';
 }
 
 const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({ 
@@ -28,7 +29,7 @@ const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({
   userRole = 'TRASH_HERO' 
 }) => {
   const { theme } = useTheme();
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, logout } = useAuth();
   const { currentRole, toggleHeroRoles, getRoleConfig } = useRoleManager();
   const [showMenu, setShowMenu] = useState(false);
   
@@ -36,7 +37,18 @@ const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({
   const activeRole = currentRole;
   
   // Get role configuration from role manager
-  const roleConfig = getRoleConfig();
+  const baseRoleConfig = getRoleConfig();
+  
+  // Extend role config with additional properties
+  const roleConfig = {
+    ...baseRoleConfig,
+    level: 6,
+    points: 2450,
+    progress: 85,
+    nextLevelPoints: 150,
+    badgeIcon: '🏆',
+    badge: 'Eco Champion',
+  };
   
   // Toggle between roles using role manager
   const toggleRole = () => {
@@ -52,28 +64,28 @@ const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({
           { label: 'Total Earned', value: '$2,340', icon: 'cash', color: getRoleColor('trash-hero') },
           { label: 'Success Rate', value: '97%', icon: 'trophy', color: '#8b5cf6' },
         ];
-      case 'VOLUNTEER':
+      case 'IMPACT_WARRIOR':
         return [
           { label: 'Events Joined', value: '34', icon: 'people', color: getRoleColor('business') },
           { label: 'Volunteer Hours', value: '128h', icon: 'time', color: getRoleColor('trash-hero') },
           { label: 'Impact Score', value: '4.9★', icon: 'star', color: '#8b5cf6' },
         ];
-      case 'BUSINESS':
+      case 'ECO_DEFENDER':
         return [
-          { label: 'Jobs Created', value: '47', icon: 'briefcase', color: '#007bff' },
-          { label: 'CO₂ Offset', value: '850 kg', icon: 'leaf', color: '#28A745' },
+          { label: 'Jobs Created', value: '47', icon: 'briefcase', color: theme.primary },
+          { label: 'CO₂ Offset', value: '850 kg', icon: 'leaf', color: theme.primary },
           { label: 'ESG Rank', value: '#8', icon: 'trophy', color: '#8b5cf6' },
         ];
       case 'ADMIN':
         return [
-          { label: 'Users Managed', value: '1,247', icon: 'people', color: '#007bff' },
-          { label: 'Issues Resolved', value: '156', icon: 'checkmark-circle', color: '#28A745' },
+          { label: 'Users Managed', value: '1,247', icon: 'people', color: theme.primary },
+          { label: 'Issues Resolved', value: '156', icon: 'checkmark-circle', color: theme.primary },
           { label: 'Platform Health', value: '98%', icon: 'analytics', color: '#8b5cf6' },
         ];
       default:
         return [
-          { label: 'Activities', value: '0', icon: 'star', color: '#007bff' },
-          { label: 'Points', value: '0', icon: 'trophy', color: '#28A745' },
+          { label: 'Activities', value: '0', icon: 'star', color: theme.primary },
+          { label: 'Points', value: '0', icon: 'trophy', color: theme.primary },
           { label: 'Level', value: '1', icon: 'ribbon', color: '#8b5cf6' },
         ];
     }
@@ -84,39 +96,39 @@ const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({
     switch (activeRole) {
       case 'TRASH_HERO':
         return [
-          { title: 'Find Jobs', icon: 'search', color: '#28A745', onPress: () => navigation.navigate('MainTabs', { screen: 'Missions' }) },
-          { title: 'My Earnings', icon: 'wallet', color: '#ffc107', onPress: () => navigation.navigate('TrashHeroEarnings') },
-          { title: 'Performance', icon: 'analytics', color: '#007bff', onPress: () => navigation.navigate('TrashHeroEarnings') },
-          { title: 'Map View', icon: 'map', color: '#17a2b8', onPress: () => navigation.navigate('MapScreen') },
+          { title: 'Find Jobs', icon: 'search', color: theme.primary, onPress: () => navigation.navigate('MainTabs', { screen: 'Missions' }) },
+          { title: 'My Earnings', icon: 'wallet', color: theme.warning, onPress: () => navigation.navigate('TrashHeroEarnings') },
+          { title: 'Performance', icon: 'analytics', color: theme.primary, onPress: () => navigation.navigate('TrashHeroEarnings') },
+          { title: 'Map View', icon: 'map', color: theme.primary, onPress: () => navigation.navigate('MapScreen') },
           { title: 'My Badges', icon: 'medal', color: '#8b5cf6', onPress: () => navigation.navigate('BadgeSystem', { userRole: 'TRASH_HERO' }) },
-          { title: 'Profile', icon: 'person', color: '#6c757d', onPress: () => navigation.navigate('ProfileScreen', { role: 'trash-hero' }) },
+          { title: 'Profile', icon: 'person', color: theme.secondaryText, onPress: () => navigation.navigate('ProfileScreen', { role: 'trash-hero' }) },
         ];
       case 'IMPACT_WARRIOR':
         return [
-          { title: 'Join Mission', icon: 'leaf', color: '#dc3545', onPress: () => navigation.navigate('MainTabs', { screen: 'Missions' }) },
-          { title: 'My Impact', icon: 'analytics', color: '#28A745', onPress: () => navigation.navigate('ImpactWarriorImpact') },
-          { title: 'PEAR Verified Missions', icon: 'people', color: '#007bff', onPress: () => navigation.navigate('PearVerifiedMissions') },
-          { title: 'Map View', icon: 'map', color: '#17a2b8', onPress: () => navigation.navigate('MapScreen') },
+          { title: 'Join Mission', icon: 'leaf', color: theme.error, onPress: () => navigation.navigate('MainTabs', { screen: 'Missions' }) },
+          { title: 'My Impact', icon: 'analytics', color: theme.primary, onPress: () => navigation.navigate('ImpactWarriorImpact') },
+          { title: 'PEAR Verified Missions', icon: 'people', color: theme.primary, onPress: () => navigation.navigate('PearVerifiedMissions') },
+          { title: 'Map View', icon: 'map', color: theme.primary, onPress: () => navigation.navigate('MapScreen') },
           { title: 'My Badges', icon: 'medal', color: '#8b5cf6', onPress: () => navigation.navigate('BadgeSystem', { userRole: 'IMPACT_WARRIOR' }) },
-          { title: 'Profile', icon: 'person', color: '#6c757d', onPress: () => navigation.navigate('ProfileScreen', { role: 'impact-warrior' }) },
+          { title: 'Profile', icon: 'person', color: theme.secondaryText, onPress: () => navigation.navigate('ProfileScreen', { role: 'impact-warrior' }) },
         ];
-      case 'BUSINESS':
+      case 'ECO_DEFENDER':
         return [
-          { title: 'Post New Job', icon: 'add-circle', color: '#007bff', onPress: () => navigation.navigate('PostJob') },
-          { title: 'Manage Missions', icon: 'list', color: '#28A745', onPress: () => navigation.navigate('EcoDefenderMissions') },
+          { title: 'Post New Job', icon: 'add-circle', color: theme.primary, onPress: () => navigation.navigate('PostJob') },
+          { title: 'Manage Missions', icon: 'list', color: theme.primary, onPress: () => navigation.navigate('EcoDefenderMissions') },
           { title: 'Eco Missions', icon: 'rocket', color: '#8b5cf6', onPress: () => navigation.navigate('EcoDefenderMissions') },
-          { title: 'Fund Wallet', icon: 'card', color: '#ffc107', onPress: () => navigation.navigate('WalletScreen', { role: 'business' }) },
-          { title: 'View Impact', icon: 'analytics', color: '#fd7e14', onPress: () => navigation.navigate('EcoDefenderImpact') },
-          { title: 'View Map', icon: 'map', color: '#17a2b8', onPress: () => navigation.navigate('MapScreen') },
+          { title: 'Fund Wallet', icon: 'card', color: theme.warning, onPress: () => navigation.navigate('WalletScreen', { role: 'business' }) },
+          { title: 'View Impact', icon: 'analytics', color: theme.warning, onPress: () => navigation.navigate('EcoDefenderImpact') },
+          { title: 'View Map', icon: 'map', color: theme.primary, onPress: () => navigation.navigate('MapScreen') },
         ];
       case 'ADMIN':
         return [
-          { title: 'Admin Panel', icon: 'speedometer', color: '#fd7e14', onPress: () => navigation.navigate('AdminDashboard') },
-          { title: 'User Management', icon: 'people', color: '#28A745', onPress: () => navigation.navigate('UserManagement') },
-          { title: 'Issue Resolution', icon: 'warning', color: '#dc3545', onPress: () => navigation.navigate('AdminIssueResolution') },
-          { title: 'Mission Control', icon: 'desktop', color: '#007bff', onPress: () => navigation.navigate('AdminMissionControl') },
+          { title: 'Admin Panel', icon: 'speedometer', color: theme.warning, onPress: () => navigation.navigate('AdminDashboard') },
+          { title: 'User Management', icon: 'people', color: theme.primary, onPress: () => navigation.navigate('UserManagement') },
+          { title: 'Issue Resolution', icon: 'warning', color: theme.error, onPress: () => navigation.navigate('AdminIssueResolution') },
+          { title: 'Mission Control', icon: 'desktop', color: theme.primary, onPress: () => navigation.navigate('AdminMissionControl') },
           { title: 'Analytics', icon: 'bar-chart', color: '#8b5cf6', onPress: () => navigation.navigate('Analytics') },
-          { title: 'Settings', icon: 'settings', color: '#6c757d', onPress: () => navigation.navigate('AdminSettings') },
+          { title: 'Settings', icon: 'settings', color: theme.secondaryText, onPress: () => navigation.navigate('AdminSettings') },
         ];
       default:
         return [];
@@ -147,7 +159,7 @@ const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({
             progress: 75,
           },
         ];
-      case 'VOLUNTEER':
+      case 'IMPACT_WARRIOR':
         return [
           {
             id: '1',
@@ -168,7 +180,7 @@ const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({
             progress: 100,
           },
         ];
-      case 'BUSINESS':
+      case 'ECO_DEFENDER':
         return [
           {
             id: '1',
@@ -197,7 +209,6 @@ const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({
     }
   };
 
-  const roleConfig = getRoleConfig();
   const keyMetrics = getKeyMetrics();
   const quickActions = getQuickActions();
   const recentActivity = getRecentActivity();
@@ -254,7 +265,7 @@ const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({
   );
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+    <ScreenLayout scrollable={false}>
       <UnifiedHeader
         onMenuPress={() => setShowMenu(true)}
         role={activeRole}
@@ -299,7 +310,7 @@ const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({
                   <View style={[
                     styles.toggleThumb,
                     { 
-                      backgroundColor: 'white',
+                      backgroundColor: theme.background,
                       transform: [{ 
                         translateX: activeRole === 'IMPACT_WARRIOR' ? 22 : 2 
                       }]
@@ -398,7 +409,7 @@ const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({
           <View style={styles.recentHeader}>
             <Text style={[styles.sectionTitle, { color: theme.textColor }]}>Recent Missions</Text>
             <TouchableOpacity>
-              <Text style={[styles.viewAllText, { color: '#007bff' }]}>View All</Text>
+              <Text style={[styles.viewAllText, { color: theme.primary }]}>View All</Text>
             </TouchableOpacity>
           </View>
           
@@ -416,17 +427,22 @@ const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({
       <MenuModal
         visible={showMenu}
         onClose={() => setShowMenu(false)}
-        userRole={activeRole}
+        userRole={activeRole === 'IMPACT_WARRIOR' ? 'VOLUNTEER' : activeRole === 'ECO_DEFENDER' ? 'BUSINESS' : activeRole}
         userName={roleConfig.title}
         userLevel={roleConfig.level}
         onNavigate={(screen, params) => {
           navigation.navigate(screen, params);
         }}
-        onSignOut={() => {
-          // Handle sign out
+        onSignOut={async () => {
+          try {
+            await logout();
+            navigation.navigate('Login');
+          } catch (error) {
+            console.error('Sign out failed:', error);
+          }
         }}
       />
-    </SafeAreaView>
+    </ScreenLayout>
   );
 };
 
@@ -438,21 +454,21 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    paddingTop: 8,
+    paddingHorizontal: THEME.SPACING.md,
+    paddingVertical: THEME.SPACING.sm + 4,
+    paddingTop: THEME.SPACING.sm,
   },
   menuButton: {
-    padding: 8,
+    padding: THEME.SPACING.sm,
   },
   pearLogo: {
-    paddingHorizontal: 20,
-    paddingVertical: 8,
+    paddingHorizontal: THEME.SPACING.md + 4,
+    paddingVertical: THEME.SPACING.sm,
     borderRadius: 20,
   },
   pearText: {
-    color: 'white',
-    fontSize: 16,
+    // color: theme.background,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
     fontWeight: '700',
     letterSpacing: 1,
   },
@@ -467,34 +483,34 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   pointsText: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '600',
   },
   notificationButton: {
     position: 'relative',
-    padding: 8,
+    padding: THEME.SPACING.sm,
   },
   notificationBadge: {
     position: 'absolute',
     top: 4,
     right: 4,
     backgroundColor: '#dc3545',
-    borderRadius: 8,
+    borderRadius: THEME.BORDER_RADIUS.md,
     minWidth: 16,
     height: 16,
     alignItems: 'center',
     justifyContent: 'center',
   },
   notificationBadgeText: {
-    color: 'white',
-    fontSize: 10,
+    // color: theme.background,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '600',
   },
   profileButton: {
     position: 'relative',
     width: 32,
     height: 32,
-    borderRadius: 16,
+    borderRadius: THEME.BORDER_RADIUS.xl,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -503,25 +519,25 @@ const styles = StyleSheet.create({
     top: -2,
     right: -2,
     backgroundColor: '#28a745',
-    borderRadius: 8,
+    borderRadius: THEME.BORDER_RADIUS.md,
     minWidth: 16,
     height: 16,
     alignItems: 'center',
     justifyContent: 'center',
   },
   profileBadgeText: {
-    color: 'white',
-    fontSize: 10,
+    // color: theme.background,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '600',
   },
   content: {
     flex: 1,
   },
   myCard: {
-    margin: 16,
-    marginTop: 8,
-    borderRadius: 16,
-    padding: 16,
+    margin: THEME.SPACING.md,
+    marginTop: THEME.SPACING.sm,
+    borderRadius: THEME.BORDER_RADIUS.xl,
+    padding: THEME.SPACING.md,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -532,10 +548,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: THEME.SPACING.md,
   },
   cardTitle: {
-    fontSize: 18,
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
     fontWeight: '700',
   },
   verifiedBadge: {
@@ -544,13 +560,13 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   verifiedText: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '600',
   },
   profileSection: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: THEME.SPACING.md,
   },
   profileAvatar: {
     position: 'relative',
@@ -559,11 +575,11 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 16,
+    marginRight: THEME.SPACING.md,
   },
   avatarText: {
-    color: 'white',
-    fontSize: 20,
+    // color: theme.background,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xl,
     fontWeight: '700',
   },
   avatarBadge: {
@@ -581,12 +597,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   profileName: {
-    fontSize: 18,
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
     fontWeight: '700',
     marginBottom: 2,
   },
   profileRole: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     marginBottom: 6,
   },
   badgeContainer: {
@@ -595,62 +611,62 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   badgeEmoji: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
   },
   badgeText: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '500',
   },
   levelInfo: {
     alignItems: 'flex-end',
   },
   levelLabel: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     marginBottom: 2,
   },
   levelValue: {
-    fontSize: 20,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xl,
     fontWeight: '700',
     marginBottom: 2,
   },
   pointsValue: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
   },
   progressSection: {
-    marginBottom: 16,
+    marginBottom: THEME.SPACING.md,
   },
   progressHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: THEME.SPACING.sm,
   },
   progressTitle: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '600',
   },
   evolutionBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
+    paddingHorizontal: THEME.SPACING.sm,
+    paddingVertical: THEME.SPACING.xs,
+    borderRadius: THEME.BORDER_RADIUS.lg,
     gap: 4,
   },
   evolutionText: {
-    color: 'white',
-    fontSize: 10,
+    // color: theme.background,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '600',
   },
   progressBarContainer: {
     height: 8,
-    borderRadius: 4,
-    marginBottom: 8,
+    borderRadius: THEME.BORDER_RADIUS.sm,
+    marginBottom: THEME.SPACING.sm,
     overflow: 'hidden',
   },
   progressBarFill: {
     height: '100%',
-    borderRadius: 4,
+    borderRadius: THEME.BORDER_RADIUS.sm,
   },
   progressFooter: {
     flexDirection: 'row',
@@ -658,11 +674,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   progressPercentage: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '600',
   },
   progressRemaining: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
   },
   metricsRow: {
     flexDirection: 'row',
@@ -671,8 +687,8 @@ const styles = StyleSheet.create({
   metricCard: {
     flex: 1,
     alignItems: 'center',
-    paddingVertical: 12,
-    borderRadius: 12,
+    paddingVertical: THEME.SPACING.sm + 4,
+    borderRadius: THEME.BORDER_RADIUS.lg,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
@@ -682,28 +698,28 @@ const styles = StyleSheet.create({
   metricIcon: {
     width: 32,
     height: 32,
-    borderRadius: 16,
+    borderRadius: THEME.BORDER_RADIUS.xl,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 8,
+    marginBottom: THEME.SPACING.sm,
   },
   metricValue: {
-    fontSize: 16,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
     fontWeight: '700',
     marginBottom: 2,
   },
   metricLabel: {
-    fontSize: 10,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     textAlign: 'center',
   },
   quickActionsSection: {
-    marginHorizontal: 16,
-    marginBottom: 24,
+    marginHorizontal: THEME.SPACING.md,
+    marginBottom: THEME.SPACING.lg,
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
     fontWeight: '700',
-    marginBottom: 16,
+    marginBottom: THEME.SPACING.md,
   },
   actionsGrid: {
     flexDirection: 'row',
@@ -713,9 +729,9 @@ const styles = StyleSheet.create({
   actionCard: {
     width: (width - 56) / 2,
     alignItems: 'center',
-    paddingVertical: 20,
-    paddingHorizontal: 12,
-    borderRadius: 12,
+    paddingVertical: THEME.SPACING.md + 4,
+    paddingHorizontal: THEME.SPACING.sm + 4,
+    borderRadius: THEME.BORDER_RADIUS.lg,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -725,36 +741,36 @@ const styles = StyleSheet.create({
   actionIcon: {
     width: 48,
     height: 48,
-    borderRadius: 24,
+    borderRadius: THEME.BORDER_RADIUS["2xl"],
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 12,
+    marginBottom: THEME.SPACING.sm + 4,
   },
   actionTitle: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '600',
     textAlign: 'center',
   },
   recentSection: {
-    marginHorizontal: 16,
-    marginBottom: 24,
+    marginHorizontal: THEME.SPACING.md,
+    marginBottom: THEME.SPACING.lg,
   },
   recentHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: THEME.SPACING.md,
   },
   viewAllText: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '600',
   },
   activityList: {
     gap: 12,
   },
   activityCard: {
-    padding: 16,
-    borderRadius: 12,
+    padding: THEME.SPACING.md,
+    borderRadius: THEME.BORDER_RADIUS.lg,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -765,23 +781,23 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 12,
+    marginBottom: THEME.SPACING.sm + 4,
   },
   activityInfo: {
     flex: 1,
   },
   activityTitle: {
-    fontSize: 16,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
     fontWeight: '600',
-    marginBottom: 4,
+    marginBottom: THEME.SPACING.xs,
   },
   activityLocation: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     flexDirection: 'row',
     alignItems: 'center',
   },
   activityDate: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
   },
   activityFooter: {
     flexDirection: 'row',
@@ -789,24 +805,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   activityReward: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '600',
   },
   progressContainer: {
     flex: 1,
-    marginLeft: 16,
+    marginLeft: THEME.SPACING.md,
   },
   progressBar: {
     height: 4,
     borderRadius: 2,
-    marginBottom: 4,
+    marginBottom: THEME.SPACING.xs,
   },
   progressFill: {
     height: '100%',
     borderRadius: 2,
   },
   activityStatus: {
-    fontSize: 10,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     textAlign: 'right',
   },
   bottomSpacing: {
@@ -814,21 +830,21 @@ const styles = StyleSheet.create({
   },
   // Toggle section styles
   toggleSection: {
-    marginBottom: 16,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
+    marginBottom: THEME.SPACING.md,
+    paddingVertical: THEME.SPACING.sm + 4,
+    paddingHorizontal: THEME.SPACING.md,
     backgroundColor: 'rgba(255,255,255,0.05)',
-    borderRadius: 12,
-    marginHorizontal: 8,
+    borderRadius: THEME.BORDER_RADIUS.lg,
+    marginHorizontal: THEME.SPACING.sm,
   },
   toggleContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: THEME.SPACING.sm,
   },
   toggleLabel: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '600',
   },
   toggleSwitch: {
@@ -841,7 +857,7 @@ const styles = StyleSheet.create({
   toggleThumb: {
     width: 24,
     height: 24,
-    borderRadius: 12,
+    borderRadius: THEME.BORDER_RADIUS.lg,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.3,
@@ -849,7 +865,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   toggleDescription: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     textAlign: 'center',
     fontStyle: 'italic',
   },

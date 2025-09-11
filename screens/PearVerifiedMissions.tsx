@@ -8,6 +8,8 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
+import { THEME } from '../styles/theme';
+import ScreenLayout from '../components/ScreenLayout';
 import DonationButton from '../components/DonationButton';
 import DonationProgress from '../components/DonationProgress';
 
@@ -67,7 +69,7 @@ const PearVerifiedMissions = ({ navigation }: { navigation: any }) => {
           styles.fundOverview, 
           { 
             backgroundColor: theme.cardBackground,
-            borderColor: theme.borderColor 
+            borderColor: theme.borderColor, 
           }
         ]}>
           <Text style={[styles.fundTitle, { color: theme.textColor }]}>
@@ -78,12 +80,20 @@ const PearVerifiedMissions = ({ navigation }: { navigation: any }) => {
           </Text>
           
           <DonationProgress 
-            raised={fundData.totalRaised}
-            goal={fundData.monthlyGoal as any}
-            donorCount={fundData.donorCount}
-            showPercentage={true}
-            accentColor={theme.primary}
-            onUpdate={refreshFundData}
+            goal={{
+              id: 'monthly-fund',
+              title: 'Monthly Impact Fund',
+              description: 'Supporting verified cleanup missions',
+              targetAmount: fundData.monthlyGoal,
+              currentAmount: fundData.totalRaised,
+              supporters: fundData.donorCount,
+              deadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+              category: 'cleanup'
+            }}
+            onDonate={() => {}}
+            onViewDetails={() => {}}
+            showActions={true}
+            compact={false}
           />
           
           <DonationButton 
@@ -101,7 +111,7 @@ const PearVerifiedMissions = ({ navigation }: { navigation: any }) => {
               styles.statCard, 
               { 
                 backgroundColor: theme.cardBackground,
-                borderColor: theme.borderColor 
+                borderColor: theme.borderColor, 
               }
             ]}>
               <Ionicons name="leaf" size={24} color={theme.success} />
@@ -117,7 +127,7 @@ const PearVerifiedMissions = ({ navigation }: { navigation: any }) => {
               styles.statCard, 
               { 
                 backgroundColor: theme.cardBackground,
-                borderColor: theme.borderColor 
+                borderColor: theme.borderColor, 
               }
             ]}>
               <Ionicons name="people" size={24} color={theme.primary} />
@@ -151,7 +161,7 @@ const PearVerifiedMissions = ({ navigation }: { navigation: any }) => {
                 styles.cleanupCard,
                 { 
                   backgroundColor: theme.cardBackground,
-                  borderColor: theme.borderColor 
+                  borderColor: theme.borderColor, 
                 }
               ]}
             >
@@ -172,11 +182,20 @@ const PearVerifiedMissions = ({ navigation }: { navigation: any }) => {
               </Text>
               
               <DonationProgress 
-                raised={cleanup.raised}
-                goal={cleanup.goal as any}
-                donorCount={cleanup.donors}
-                showPercentage={true}
-                accentColor={theme.success}
+                goal={{
+                  id: cleanup.id.toString(),
+                  title: cleanup.title,
+                  description: 'Environmental cleanup mission',
+                  targetAmount: cleanup.goal,
+                  currentAmount: cleanup.raised,
+                  supporters: cleanup.donors,
+                  deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+                  category: 'cleanup'
+                }}
+                onDonate={() => {}}
+                onViewDetails={() => {}}
+                showActions={true}
+                compact={true}
               />
               
               <View style={styles.cleanupActions}>
@@ -224,9 +243,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   fundOverview: {
-    padding: 20,
-    margin: 16,
-    borderRadius: 12,
+    padding: THEME.SPACING.md + 4,
+    margin: THEME.SPACING.md,
+    borderRadius: THEME.BORDER_RADIUS.lg,
     borderWidth: 1,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -235,17 +254,17 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   fundTitle: {
-    fontSize: 24,
+    fontSize: THEME.TYPOGRAPHY.fontSize["2xl"],
     fontWeight: 'bold',
-    marginBottom: 8,
+    marginBottom: THEME.SPACING.sm,
   },
   fundDescription: {
-    fontSize: 16,
-    marginBottom: 16,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
+    marginBottom: THEME.SPACING.md,
   },
   statsContainer: {
-    paddingHorizontal: 16,
-    marginBottom: 16,
+    paddingHorizontal: THEME.SPACING.md,
+    marginBottom: THEME.SPACING.md,
   },
   statsRow: {
     flexDirection: 'row',
@@ -254,10 +273,10 @@ const styles = StyleSheet.create({
   statCard: {
     flex: 1,
     alignItems: 'center',
-    padding: 16,
-    borderRadius: 12,
+    padding: THEME.SPACING.md,
+    borderRadius: THEME.BORDER_RADIUS.lg,
     borderWidth: 1,
-    marginHorizontal: 4,
+    marginHorizontal: THEME.SPACING.xs,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
@@ -265,36 +284,36 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   statValue: {
-    fontSize: 20,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xl,
     fontWeight: 'bold',
-    marginVertical: 4,
+    marginVertical: THEME.SPACING.xs,
   },
   statLabel: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     textAlign: 'center',
   },
   section: {
-    margin: 16,
+    margin: THEME.SPACING.md,
   },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: THEME.SPACING.md,
   },
   sectionTitle: {
-    fontSize: 20,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xl,
     fontWeight: 'bold',
   },
   seeAllText: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '600',
   },
   cleanupCard: {
-    padding: 16,
-    borderRadius: 12,
+    padding: THEME.SPACING.md,
+    borderRadius: THEME.BORDER_RADIUS.lg,
     borderWidth: 1,
-    marginBottom: 12,
+    marginBottom: THEME.SPACING.sm + 4,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
@@ -305,26 +324,25 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 8,
+    marginBottom: THEME.SPACING.sm,
   },
   cleanupTitle: {
-    fontSize: 18,
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
     fontWeight: '600',
     flex: 1,
   },
   urgentBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 4,
+    paddingHorizontal: THEME.SPACING.sm,
+    paddingVertical: THEME.SPACING.xs,
+    borderRadius: THEME.BORDER_RADIUS.sm,
   },
   urgentText: {
-    color: 'white',
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: 'bold',
   },
   cleanupLocation: {
-    fontSize: 14,
-    marginBottom: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
+    marginBottom: THEME.SPACING.sm + 4,
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -332,11 +350,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 12,
+    marginTop: THEME.SPACING.sm + 4,
   },
   viewButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingHorizontal: THEME.SPACING.md,
+    paddingVertical: THEME.SPACING.sm,
     borderRadius: 20,
     borderWidth: 1,
   },

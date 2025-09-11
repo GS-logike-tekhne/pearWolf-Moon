@@ -7,10 +7,12 @@ import {
   TouchableOpacity,
   Dimensions,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { getRoleColor } from '../utils/roleColors';
 import { useTheme } from '../context/ThemeContext';
+import { THEME } from '../styles/theme';
+import ScreenLayout from '../components/ScreenLayout';
+import { useAuth } from '../context/AuthContext';
 import MenuModal from '../components/MenuModal';
 import UnifiedHeader from '../components/UnifiedHeader';
 
@@ -22,6 +24,7 @@ interface EcoDefenderDashboardProps {
 
 const EcoDefenderDashboard: React.FC<EcoDefenderDashboardProps> = ({ navigation }) => {
   const { theme } = useTheme();
+  const { logout } = useAuth();
   const [showMenu, setShowMenu] = useState(false);
   const userRole = 'BUSINESS';
   
@@ -50,9 +53,9 @@ const EcoDefenderDashboard: React.FC<EcoDefenderDashboardProps> = ({ navigation 
     { title: 'Post New Job', icon: 'add-circle', color: getRoleColor('business'), onPress: () => navigation.navigate('PostJob') },
     { title: 'Manage Missions', icon: 'list', color: getRoleColor('trash-hero'), onPress: () => navigation.navigate('EcoDefenderMissions') },
     { title: 'Eco Missions', icon: 'rocket', color: '#8b5cf6', onPress: () => navigation.navigate('EcoDefenderMissions') },
-    { title: 'Fund Wallet', icon: 'card', color: '#ffc107', onPress: () => navigation.navigate('WalletScreen', { role: 'business' }) },
+    { title: 'Fund Wallet', icon: 'card', color: theme.warning, onPress: () => navigation.navigate('WalletScreen', { role: 'business' }) },
     { title: 'View Impact', icon: 'analytics', color: getRoleColor('admin'), onPress: () => navigation.navigate('EcoDefenderImpact') },
-    { title: 'View Map', icon: 'map', color: '#17a2b8', onPress: () => navigation.navigate('MapScreen') },
+    { title: 'View Map', icon: 'map', color: theme.primary, onPress: () => navigation.navigate('MapScreen') },
   ];
 
   // Recent activity
@@ -129,7 +132,7 @@ const EcoDefenderDashboard: React.FC<EcoDefenderDashboardProps> = ({ navigation 
   );
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+    <ScreenLayout>
       {/* Header */}
       <UnifiedHeader
         onMenuPress={() => setShowMenu(true)}
@@ -250,11 +253,16 @@ const EcoDefenderDashboard: React.FC<EcoDefenderDashboardProps> = ({ navigation 
         onNavigate={(screen, params) => {
           navigation.navigate(screen, params);
         }}
-        onSignOut={() => {
-          // Handle sign out
+        onSignOut={async () => {
+          try {
+            await logout();
+            navigation.navigate('Login');
+          } catch (error) {
+            console.error('Sign out failed:', error);
+          }
         }}
       />
-    </SafeAreaView>
+    </ScreenLayout>
   );
 };
 
@@ -266,10 +274,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   myCard: {
-    margin: 16,
-    marginTop: 8,
-    borderRadius: 16,
-    padding: 16,
+    margin: THEME.SPACING.md,
+    marginTop: THEME.SPACING.sm,
+    borderRadius: THEME.BORDER_RADIUS.xl,
+    padding: THEME.SPACING.md,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -280,10 +288,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: THEME.SPACING.md,
   },
   cardTitle: {
-    fontSize: 18,
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
     fontWeight: '700',
   },
   verifiedBadge: {
@@ -292,13 +300,13 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   verifiedText: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '600',
   },
   profileSection: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: THEME.SPACING.md,
   },
   profileAvatar: {
     position: 'relative',
@@ -307,11 +315,11 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 16,
+    marginRight: THEME.SPACING.md,
   },
   avatarText: {
-    color: 'white',
-    fontSize: 20,
+    // color: theme.background,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xl,
     fontWeight: '700',
   },
   avatarBadge: {
@@ -329,12 +337,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   profileName: {
-    fontSize: 18,
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
     fontWeight: '700',
     marginBottom: 2,
   },
   profileRole: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     marginBottom: 6,
   },
   badgeContainer: {
@@ -343,62 +351,62 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   badgeEmoji: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
   },
   badgeText: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '500',
   },
   levelInfo: {
     alignItems: 'flex-end',
   },
   levelLabel: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     marginBottom: 2,
   },
   levelValue: {
-    fontSize: 20,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xl,
     fontWeight: '700',
     marginBottom: 2,
   },
   pointsValue: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
   },
   progressSection: {
-    marginBottom: 16,
+    marginBottom: THEME.SPACING.md,
   },
   progressHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: THEME.SPACING.sm,
   },
   progressTitle: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '600',
   },
   evolutionBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
+    paddingHorizontal: THEME.SPACING.sm,
+    paddingVertical: THEME.SPACING.xs,
+    borderRadius: THEME.BORDER_RADIUS.lg,
     gap: 4,
   },
   evolutionText: {
-    color: 'white',
-    fontSize: 10,
+    // color: theme.background,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '600',
   },
   progressBarContainer: {
     height: 8,
-    borderRadius: 4,
-    marginBottom: 8,
+    borderRadius: THEME.BORDER_RADIUS.sm,
+    marginBottom: THEME.SPACING.sm,
     overflow: 'hidden',
   },
   progressBarFill: {
     height: '100%',
-    borderRadius: 4,
+    borderRadius: THEME.BORDER_RADIUS.sm,
   },
   progressFooter: {
     flexDirection: 'row',
@@ -406,11 +414,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   progressPercentage: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '600',
   },
   progressRemaining: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
   },
   metricsRow: {
     flexDirection: 'row',
@@ -419,8 +427,8 @@ const styles = StyleSheet.create({
   metricCard: {
     flex: 1,
     alignItems: 'center',
-    paddingVertical: 12,
-    borderRadius: 12,
+    paddingVertical: THEME.SPACING.sm + 4,
+    borderRadius: THEME.BORDER_RADIUS.lg,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
@@ -430,28 +438,28 @@ const styles = StyleSheet.create({
   metricIcon: {
     width: 32,
     height: 32,
-    borderRadius: 16,
+    borderRadius: THEME.BORDER_RADIUS.xl,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 8,
+    marginBottom: THEME.SPACING.sm,
   },
   metricValue: {
-    fontSize: 16,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
     fontWeight: '700',
     marginBottom: 2,
   },
   metricLabel: {
-    fontSize: 10,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     textAlign: 'center',
   },
   quickActionsSection: {
-    marginHorizontal: 16,
-    marginBottom: 24,
+    marginHorizontal: THEME.SPACING.md,
+    marginBottom: THEME.SPACING.lg,
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
     fontWeight: '600',
-    marginBottom: 16,
+    marginBottom: THEME.SPACING.md,
   },
   actionsGrid: {
     flexDirection: 'row',
@@ -461,9 +469,9 @@ const styles = StyleSheet.create({
   actionCard: {
     width: (width - 56) / 2,
     alignItems: 'center',
-    paddingVertical: 20,
-    paddingHorizontal: 12,
-    borderRadius: 12,
+    paddingVertical: THEME.SPACING.md + 4,
+    paddingHorizontal: THEME.SPACING.sm + 4,
+    borderRadius: THEME.BORDER_RADIUS.lg,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -473,36 +481,36 @@ const styles = StyleSheet.create({
   actionIcon: {
     width: 48,
     height: 48,
-    borderRadius: 24,
+    borderRadius: THEME.BORDER_RADIUS["2xl"],
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 12,
+    marginBottom: THEME.SPACING.sm + 4,
   },
   actionTitle: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '600',
     textAlign: 'center',
   },
   recentSection: {
-    marginHorizontal: 16,
-    marginBottom: 24,
+    marginHorizontal: THEME.SPACING.md,
+    marginBottom: THEME.SPACING.lg,
   },
   recentHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: THEME.SPACING.md,
   },
   viewAllText: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '600',
   },
   activityList: {
     gap: 12,
   },
   activityCard: {
-    padding: 16,
-    borderRadius: 12,
+    padding: THEME.SPACING.md,
+    borderRadius: THEME.BORDER_RADIUS.lg,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -513,23 +521,23 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 12,
+    marginBottom: THEME.SPACING.sm + 4,
   },
   activityInfo: {
     flex: 1,
   },
   activityTitle: {
-    fontSize: 16,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
     fontWeight: '600',
-    marginBottom: 4,
+    marginBottom: THEME.SPACING.xs,
   },
   activityLocation: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     flexDirection: 'row',
     alignItems: 'center',
   },
   activityDate: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
   },
   activityFooter: {
     flexDirection: 'row',
@@ -537,24 +545,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   activityReward: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '600',
   },
   progressContainer: {
     flex: 1,
-    marginLeft: 16,
+    marginLeft: THEME.SPACING.md,
   },
   progressBar: {
     height: 4,
     borderRadius: 2,
-    marginBottom: 4,
+    marginBottom: THEME.SPACING.xs,
   },
   progressFill: {
     height: '100%',
     borderRadius: 2,
   },
   activityStatus: {
-    fontSize: 10,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     textAlign: 'right',
   },
   bottomSpacing: {

@@ -7,10 +7,13 @@ import {
   TouchableOpacity,
   Dimensions,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { getRoleColor } from '../utils/roleColors';
 import { useTheme } from '../context/ThemeContext';
+import { THEME } from '../styles/theme';
+import ScreenLayout from '../components/ScreenLayout';
+import { useAuth } from '../context/AuthContext';
+import { RoleGuard } from '../components/RoleGuard';
 import UnifiedHeader from '../components/UnifiedHeader';
 import MenuModal from '../components/MenuModal';
 
@@ -22,6 +25,7 @@ interface AdminDashboardProps {
 
 const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigation }) => {
   const { theme } = useTheme();
+  const { logout } = useAuth();
   const [showMenu, setShowMenu] = useState(false);
   const userRole = 'ADMIN';
   
@@ -52,7 +56,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigation }) => {
     { title: 'Issue Resolution', icon: 'warning', color: getRoleColor('impact-warrior'), onPress: () => navigation.navigate('AdminIssueResolution') },
     { title: 'Mission Control', icon: 'desktop', color: getRoleColor('business'), onPress: () => navigation.navigate('AdminMissionControl') },
     { title: 'Analytics', icon: 'bar-chart', color: '#8b5cf6', onPress: () => navigation.navigate('Analytics') },
-    { title: 'Settings', icon: 'settings', color: '#6c757d', onPress: () => navigation.navigate('AdminSettings') },
+    { title: 'Settings', icon: 'settings', color: theme.secondaryText, onPress: () => navigation.navigate('AdminSettings') },
   ];
 
   // Recent activity
@@ -129,17 +133,18 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigation }) => {
   );
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
-      <UnifiedHeader
-        onMenuPress={() => setShowMenu(true)}
-        role="admin"
-        points={roleConfig.points}
-        onNotificationPress={() => navigation.navigate('Notifications')}
-        onProfilePress={() => navigation.navigate('ProfileScreen', { 
-          role: 'admin',
-          onSignOut: () => navigation.navigate('Login')
-        })}
-      />
+    <RoleGuard allowedRoles={['ADMIN']}>
+      <ScreenLayout>
+        <UnifiedHeader
+          onMenuPress={() => setShowMenu(true)}
+          role="admin"
+          points={roleConfig.points}
+          onNotificationPress={() => navigation.navigate('Notifications')}
+          onProfilePress={() => navigation.navigate('ProfileScreen', { 
+            role: 'admin',
+            onSignOut: () => navigation.navigate('Login')
+          })}
+        />
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* My Card Section */}
@@ -207,7 +212,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigation }) => {
           <View style={styles.recentHeader}>
             <Text style={[styles.sectionTitle, { color: theme.textColor }]}>System Activity</Text>
             <TouchableOpacity>
-              <Text style={[styles.viewAllText, { color: '#fd7e14' }]}>View All</Text>
+              <Text style={[styles.viewAllText, { color: theme.warning }]}>View All</Text>
             </TouchableOpacity>
           </View>
           
@@ -231,11 +236,17 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigation }) => {
         onNavigate={(screen, params) => {
           navigation.navigate(screen, params);
         }}
-        onSignOut={() => {
-          // Handle sign out
+        onSignOut={async () => {
+          try {
+            await logout();
+            navigation.navigate('Login');
+          } catch (error) {
+            console.error('Sign out failed:', error);
+          }
         }}
       />
-    </SafeAreaView>
+      </ScreenLayout>
+    </RoleGuard>
   );
 };
 
@@ -247,10 +258,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   myCard: {
-    margin: 16,
-    marginTop: 8,
-    borderRadius: 16,
-    padding: 16,
+    margin: THEME.SPACING.md,
+    marginTop: THEME.SPACING.sm,
+    borderRadius: THEME.BORDER_RADIUS.xl,
+    padding: THEME.SPACING.md,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -261,10 +272,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: THEME.SPACING.md,
   },
   cardTitle: {
-    fontSize: 18,
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
     fontWeight: '700',
   },
   verifiedBadge: {
@@ -273,13 +284,13 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   verifiedText: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '600',
   },
   profileSection: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: THEME.SPACING.md,
   },
   profileAvatar: {
     position: 'relative',
@@ -288,11 +299,11 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 16,
+    marginRight: THEME.SPACING.md,
   },
   avatarText: {
-    color: 'white',
-    fontSize: 20,
+    // color: theme.background,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xl,
     fontWeight: '700',
   },
   avatarBadge: {
@@ -310,12 +321,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   profileName: {
-    fontSize: 18,
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
     fontWeight: '700',
     marginBottom: 2,
   },
   profileRole: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     marginBottom: 6,
   },
   badgeContainer: {
@@ -324,42 +335,42 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   badgeEmoji: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
   },
   badgeText: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '500',
   },
   levelInfo: {
     alignItems: 'flex-end',
   },
   levelLabel: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     marginBottom: 2,
   },
   levelValue: {
-    fontSize: 20,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xl,
     fontWeight: '700',
     marginBottom: 2,
   },
   pointsValue: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
   },
   maxLevelSection: {
-    marginBottom: 16,
+    marginBottom: THEME.SPACING.md,
     alignItems: 'center',
   },
   maxLevelBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingHorizontal: THEME.SPACING.md,
+    paddingVertical: THEME.SPACING.sm,
     borderRadius: 20,
     gap: 8,
   },
   maxLevelText: {
-    color: 'white',
-    fontSize: 14,
+    // color: theme.background,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '600',
   },
   metricsRow: {
@@ -369,8 +380,8 @@ const styles = StyleSheet.create({
   metricCard: {
     flex: 1,
     alignItems: 'center',
-    paddingVertical: 12,
-    borderRadius: 12,
+    paddingVertical: THEME.SPACING.sm + 4,
+    borderRadius: THEME.BORDER_RADIUS.lg,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
@@ -380,28 +391,28 @@ const styles = StyleSheet.create({
   metricIcon: {
     width: 32,
     height: 32,
-    borderRadius: 16,
+    borderRadius: THEME.BORDER_RADIUS.xl,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 8,
+    marginBottom: THEME.SPACING.sm,
   },
   metricValue: {
-    fontSize: 16,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
     fontWeight: '700',
     marginBottom: 2,
   },
   metricLabel: {
-    fontSize: 10,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     textAlign: 'center',
   },
   quickActionsSection: {
-    marginHorizontal: 16,
-    marginBottom: 24,
+    marginHorizontal: THEME.SPACING.md,
+    marginBottom: THEME.SPACING.lg,
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
     fontWeight: '600',
-    marginBottom: 16,
+    marginBottom: THEME.SPACING.md,
   },
   actionsGrid: {
     flexDirection: 'row',
@@ -411,9 +422,9 @@ const styles = StyleSheet.create({
   actionCard: {
     width: (width - 56) / 2,
     alignItems: 'center',
-    paddingVertical: 20,
-    paddingHorizontal: 12,
-    borderRadius: 12,
+    paddingVertical: THEME.SPACING.md + 4,
+    paddingHorizontal: THEME.SPACING.sm + 4,
+    borderRadius: THEME.BORDER_RADIUS.lg,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -423,36 +434,36 @@ const styles = StyleSheet.create({
   actionIcon: {
     width: 48,
     height: 48,
-    borderRadius: 24,
+    borderRadius: THEME.BORDER_RADIUS["2xl"],
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 12,
+    marginBottom: THEME.SPACING.sm + 4,
   },
   actionTitle: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '600',
     textAlign: 'center',
   },
   recentSection: {
-    marginHorizontal: 16,
-    marginBottom: 24,
+    marginHorizontal: THEME.SPACING.md,
+    marginBottom: THEME.SPACING.lg,
   },
   recentHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: THEME.SPACING.md,
   },
   viewAllText: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '600',
   },
   activityList: {
     gap: 12,
   },
   activityCard: {
-    padding: 16,
-    borderRadius: 12,
+    padding: THEME.SPACING.md,
+    borderRadius: THEME.BORDER_RADIUS.lg,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -463,23 +474,23 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 12,
+    marginBottom: THEME.SPACING.sm + 4,
   },
   activityInfo: {
     flex: 1,
   },
   activityTitle: {
-    fontSize: 16,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
     fontWeight: '600',
-    marginBottom: 4,
+    marginBottom: THEME.SPACING.xs,
   },
   activityLocation: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     flexDirection: 'row',
     alignItems: 'center',
   },
   activityDate: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
   },
   activityFooter: {
     flexDirection: 'row',
@@ -487,24 +498,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   activityReward: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '600',
   },
   progressContainer: {
     flex: 1,
-    marginLeft: 16,
+    marginLeft: THEME.SPACING.md,
   },
   progressBar: {
     height: 4,
     borderRadius: 2,
-    marginBottom: 4,
+    marginBottom: THEME.SPACING.xs,
   },
   progressFill: {
     height: '100%',
     borderRadius: 2,
   },
   activityStatus: {
-    fontSize: 10,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     textAlign: 'right',
   },
   bottomSpacing: {

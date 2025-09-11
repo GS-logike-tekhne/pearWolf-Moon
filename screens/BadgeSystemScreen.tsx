@@ -1,8 +1,9 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import BadgeSystem from '../components/BadgeSystem';
 import { useTheme } from '../context/ThemeContext';
+import { THEME } from '../styles/theme';
+import ScreenLayout from '../components/ScreenLayout';
 
 interface BadgeSystemScreenProps {
   navigation: any;
@@ -14,12 +15,12 @@ const BadgeSystemScreen: React.FC<BadgeSystemScreenProps> = ({ navigation, route
   const { userRole } = route.params || {};
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+    <ScreenLayout>
       <BadgeSystem 
         userRole={userRole}
         onBack={() => navigation.goBack()}
       />
-    </SafeAreaView>
+    </ScreenLayout>
   );
 };
 

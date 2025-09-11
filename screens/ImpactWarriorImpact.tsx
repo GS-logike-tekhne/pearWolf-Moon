@@ -7,10 +7,11 @@ import {
   TouchableOpacity,
   Dimensions,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { getRoleColor } from '../utils/roleColors';
 import { useTheme } from '../context/ThemeContext';
+import { THEME } from '../styles/theme';
+import ScreenLayout from '../components/ScreenLayout';
 import CustomBarChart from '../components/CustomBarChart';
 import CustomLineChart from '../components/CustomLineChart';
 
@@ -117,7 +118,7 @@ const ImpactWarriorImpact: React.FC<ImpactWarriorImpactProps> = ({ navigation })
   );
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+    <ScreenLayout>
       {/* Header */}
       <View style={[styles.header, { backgroundColor: theme.cardBackground }]}>
         <TouchableOpacity
@@ -333,7 +334,7 @@ const ImpactWarriorImpact: React.FC<ImpactWarriorImpactProps> = ({ navigation })
               <Text style={[styles.achievementLabel, { color: theme.textColor }]}>Leaderboard</Text>
             </View>
             <View style={[styles.achievementCard, { backgroundColor: theme.cardBackground }]}>
-              <Text style={[styles.achievementValue, { color: '#ffc107' }]}>
+              <Text style={[styles.achievementValue, { color: theme.warning }]}>
                 {impactMetrics.achievements.impactScore}
               </Text>
               <Text style={[styles.achievementLabel, { color: theme.textColor }]}>Impact Score</Text>
@@ -371,7 +372,7 @@ const ImpactWarriorImpact: React.FC<ImpactWarriorImpactProps> = ({ navigation })
 
         <View style={styles.bottomSpacing} />
       </ScrollView>
-    </SafeAreaView>
+    </ScreenLayout>
   );
 };
 
@@ -383,53 +384,53 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    paddingTop: 8,
+    paddingHorizontal: THEME.SPACING.md,
+    paddingVertical: THEME.SPACING.sm + 4,
+    paddingTop: THEME.SPACING.sm,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255,255,255,0.1)',
   },
   backButton: {
-    padding: 8,
+    padding: THEME.SPACING.sm,
   },
   headerTitle: {
-    fontSize: 18,
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
     fontWeight: '700',
   },
   shareButton: {
-    padding: 8,
+    padding: THEME.SPACING.sm,
   },
   timeframeContainer: {
     flexDirection: 'row',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: THEME.SPACING.md,
+    paddingVertical: THEME.SPACING.sm + 4,
     gap: 8,
   },
   timeframeButton: {
     flex: 1,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 8,
+    paddingVertical: THEME.SPACING.sm,
+    paddingHorizontal: THEME.SPACING.sm + 4,
+    borderRadius: THEME.BORDER_RADIUS.md,
     alignItems: 'center',
   },
   timeframeText: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '600',
   },
   content: {
     flex: 1,
   },
   metricSection: {
-    marginVertical: 12,
+    marginVertical: THEME.SPACING.sm + 4,
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
     fontWeight: '700',
-    marginHorizontal: 16,
-    marginBottom: 12,
+    marginHorizontal: THEME.SPACING.md,
+    marginBottom: THEME.SPACING.sm + 4,
   },
   sectionContent: {
-    paddingHorizontal: 16,
+    paddingHorizontal: THEME.SPACING.md,
   },
   summaryGrid: {
     flexDirection: 'row',
@@ -441,8 +442,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flex: 1,
     minWidth: '45%',
-    padding: 12,
-    borderRadius: 12,
+    padding: THEME.SPACING.sm + 4,
+    borderRadius: THEME.BORDER_RADIUS.lg,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -455,24 +456,24 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 12,
+    marginRight: THEME.SPACING.sm + 4,
   },
   impactContent: {
     flex: 1,
   },
   impactValue: {
-    fontSize: 16,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
     fontWeight: '700',
     marginBottom: 2,
   },
   impactTitle: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '600',
     marginBottom: 2,
   },
   impactSubtitle: {
-    fontSize: 10,
-    marginBottom: 4,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
+    marginBottom: THEME.SPACING.xs,
   },
   trendContainer: {
     flexDirection: 'row',
@@ -492,8 +493,8 @@ const styles = StyleSheet.create({
     flex: 1,
     minWidth: '45%',
     alignItems: 'center',
-    padding: 16,
-    borderRadius: 12,
+    padding: THEME.SPACING.md,
+    borderRadius: THEME.BORDER_RADIUS.lg,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -501,17 +502,17 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   envValue: {
-    fontSize: 16,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
     fontWeight: '700',
-    marginVertical: 8,
+    marginVertical: THEME.SPACING.sm,
   },
   envLabel: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     textAlign: 'center',
   },
   chartContainer: {
-    borderRadius: 12,
-    padding: 16,
+    borderRadius: THEME.BORDER_RADIUS.lg,
+    padding: THEME.SPACING.md,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -522,8 +523,8 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   communityCard: {
-    padding: 16,
-    borderRadius: 12,
+    padding: THEME.SPACING.md,
+    borderRadius: THEME.BORDER_RADIUS.lg,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -533,39 +534,39 @@ const styles = StyleSheet.create({
   communityHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: THEME.SPACING.sm,
     gap: 8,
   },
   communityTitle: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '600',
   },
   communityValue: {
-    fontSize: 24,
+    fontSize: THEME.TYPOGRAPHY.fontSize["2xl"],
     fontWeight: '800',
-    marginBottom: 4,
+    marginBottom: THEME.SPACING.xs,
   },
   communitySubtitle: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
   },
   achievementStats: {
     flexDirection: 'row',
     gap: 12,
-    marginBottom: 16,
+    marginBottom: THEME.SPACING.md,
   },
   achievementCard: {
     flex: 1,
     alignItems: 'center',
-    paddingVertical: 12,
-    borderRadius: 8,
+    paddingVertical: THEME.SPACING.sm + 4,
+    borderRadius: THEME.BORDER_RADIUS.md,
   },
   achievementValue: {
-    fontSize: 18,
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
     fontWeight: '700',
     marginBottom: 2,
   },
   achievementLabel: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
   },
   badgesGrid: {
     flexDirection: 'row',
@@ -582,16 +583,16 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 4,
+    marginBottom: THEME.SPACING.xs,
   },
   badgeTitle: {
-    fontSize: 10,
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     textAlign: 'center',
   },
   actionSection: {
     flexDirection: 'row',
-    paddingHorizontal: 16,
-    paddingVertical: 20,
+    paddingHorizontal: THEME.SPACING.md,
+    paddingVertical: THEME.SPACING.md + 4,
     gap: 12,
   },
   actionButton: {
@@ -599,14 +600,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 8,
+    paddingVertical: THEME.SPACING.sm + 4,
+    paddingHorizontal: THEME.SPACING.md,
+    borderRadius: THEME.BORDER_RADIUS.md,
     gap: 8,
   },
   actionButtonText: {
-    color: 'white',
-    fontSize: 14,
+    // color: theme.background,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '600',
   },
   bottomSpacing: {

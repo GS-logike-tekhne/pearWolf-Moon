@@ -8,12 +8,23 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { getRoleColor } from '../utils/roleColors';
 import { useTheme } from '../context/ThemeContext';
+import { THEME } from '../styles/theme';
+import ScreenLayout from '../components/ScreenLayout';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-const PostJob = ({ navigation, route }) => {
+type PostJobProps = {
+  navigation: NativeStackNavigationProp<any>;
+  route: {
+    params?: {
+      role?: string;
+    };
+  };
+};
+
+const PostJob: React.FC<PostJobProps> = ({ navigation, route }) => {
   const { theme } = useTheme();
   const role = route?.params?.role || 'business';
   const [jobData, setJobData] = useState({
@@ -64,11 +75,11 @@ const PostJob = ({ navigation, route }) => {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+    <ScreenLayout>
       {/* Role-based Header with Back Button */}
       <View style={[styles.header, { backgroundColor: theme.background }]}>
         <TouchableOpacity 
-          style={[styles.backButton, { backgroundColor: 'white' }]}
+          style={[styles.backButton, { backgroundColor: theme.background }]}
           onPress={handleBack}
         >
           <Ionicons name="arrow-back" size={24} color={getRoleColor('business')} />
@@ -87,7 +98,7 @@ const PostJob = ({ navigation, route }) => {
         {/* Mission Category Selection */}
         <View style={styles.inputGroup}>
           <Text style={[styles.label, { color: theme.textColor }]}>Mission Category *</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoryScroll}>
+          <ScrollView {...({ horizontal: true, showsHorizontalScrollIndicator: false } as any)} style={styles.categoryScroll}>
             {missionCategories.map((category) => (
               <TouchableOpacity
                 key={category.id}
@@ -187,7 +198,7 @@ const PostJob = ({ navigation, route }) => {
               onChangeText={(text) => setJobData({ ...jobData, budget: text })}
               placeholder="e.g., $450"
               placeholderTextColor={theme.secondaryText}
-              keyboardType="numeric"
+              {...({ keyboardType: "numeric" } as any)}
             />
           </View>
 
@@ -199,7 +210,7 @@ const PostJob = ({ navigation, route }) => {
               onChangeText={(text) => setJobData({ ...jobData, maxVolunteers: text })}
               placeholder="e.g., 12"
               placeholderTextColor={theme.secondaryText}
-              keyboardType="numeric"
+              {...({ keyboardType: "numeric" } as any)}
             />
           </View>
         </View>
@@ -239,7 +250,7 @@ const PostJob = ({ navigation, route }) => {
         </TouchableOpacity>
       </View>
       </ScrollView>
-    </SafeAreaView>
+    </ScreenLayout>
   );
 };
 
@@ -250,7 +261,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 20,
+    padding: THEME.SPACING.md + 4,
     paddingTop: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -264,7 +275,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 16,
+    marginRight: THEME.SPACING.md,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
@@ -275,31 +286,31 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerTitle: {
-    fontSize: 24,
+    fontSize: THEME.TYPOGRAPHY.fontSize["2xl"],
     fontWeight: '700',
   },
   headerSubtitle: {
-    fontSize: 16,
-    marginTop: 4,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
+    marginTop: THEME.SPACING.xs,
   },
   scrollContent: {
     flex: 1,
   },
   form: {
-    padding: 20,
+    padding: THEME.SPACING.md + 4,
   },
   inputGroup: {
-    marginBottom: 24,
+    marginBottom: THEME.SPACING.lg,
   },
   label: {
-    fontSize: 16,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
     fontWeight: '600',
-    marginBottom: 12,
+    marginBottom: THEME.SPACING.sm + 4,
   },
   input: {
-    borderRadius: 12,
-    padding: 16,
-    fontSize: 16,
+    borderRadius: THEME.BORDER_RADIUS.lg,
+    padding: THEME.SPACING.md,
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
     borderWidth: 1,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
@@ -308,36 +319,36 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
   categoryScroll: {
-    marginTop: 8,
+    marginTop: THEME.SPACING.sm,
   },
   categoryCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderRadius: 12,
+    paddingHorizontal: THEME.SPACING.md,
+    paddingVertical: THEME.SPACING.sm + 4,
+    borderRadius: THEME.BORDER_RADIUS.lg,
     borderWidth: 2,
-    marginRight: 12,
+    marginRight: THEME.SPACING.sm + 4,
     gap: 8,
   },
   categoryLabel: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '600',
   },
   urgencyContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 12,
-    marginTop: 8,
+    marginTop: THEME.SPACING.sm,
   },
   urgencyButton: {
-    paddingHorizontal: 16,
+    paddingHorizontal: THEME.SPACING.md,
     paddingVertical: 10,
     borderRadius: 20,
     borderWidth: 2,
   },
   urgencyText: {
-    fontSize: 14,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '600',
   },
   textArea: {
@@ -357,8 +368,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 18,
-    borderRadius: 16,
-    marginTop: 32,
+    borderRadius: THEME.BORDER_RADIUS.xl,
+    marginTop: THEME.SPACING.xl,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.15,
@@ -366,10 +377,9 @@ const styles = StyleSheet.create({
     elevation: 6,
   },
   submitButtonText: {
-    color: 'white',
-    fontSize: 18,
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
     fontWeight: '700',
-    marginLeft: 8,
+    marginLeft: THEME.SPACING.sm,
   },
 });
 
