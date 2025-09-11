@@ -1,21 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { getLevelProgress, Level } from '../data/levels';
+import { XPData, XPLevelData, XPReward, XPSummary } from '../types/xp';
 
-export interface XPLevelData {
-  currentLevel: Level;
-  nextLevel: Level | null;
-  xpToNext: number;
-  progressPercent: number;
-  isMaxLevel: boolean;
-}
-
-export interface XPReward {
-  amount: number;
-  source: string;
-  timestamp: Date;
-}
-
-export const useXP = (initialXP: number = 0) => {
+export const useXP = (initialXP: number = 0): XPData => {
   const [currentXP, setCurrentXP] = useState(initialXP);
   const [levelData, setLevelData] = useState<XPLevelData>(() => getLevelProgress(initialXP));
   const [recentRewards, setRecentRewards] = useState<XPReward[]>([]);
@@ -67,7 +54,7 @@ export const useXP = (initialXP: number = 0) => {
   }, []);
 
   // Get XP history for analytics
-  const getXPSummary = useCallback(() => {
+  const getXPSummary = useCallback((): XPSummary => {
     const totalEarned = recentRewards.reduce((sum, reward) => sum + reward.amount, 0);
     const sources = recentRewards.reduce((acc, reward) => {
       acc[reward.source] = (acc[reward.source] || 0) + reward.amount;

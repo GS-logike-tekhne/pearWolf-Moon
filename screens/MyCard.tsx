@@ -21,6 +21,7 @@ import LabProgressCard from '../components/LabProgressCard';
 import { formatCO2Offset } from '../utils/weightUtils';
 import { getUserStatsByRole } from '../utils/mockData';
 import { EvolutionAnimation } from '../components/EvolutionAnimation';
+import { getCurrentUser, UserRole } from '../data/userStats';
 
 const { width } = Dimensions.get('window');
 
@@ -33,22 +34,15 @@ const MyCard: React.FC<MyCardProps> = ({ navigation, route }) => {
   const { theme } = useTheme();
   const { state: xpState } = useXP();
   const { user } = useAuth();
-  const role = route?.params?.role || 'business';
+  const role = (route?.params?.role || 'trash-hero') as UserRole;
   const [selectedAttribute, setSelectedAttribute] = useState<string | null>(null);
   
-  // Initialize XP system with role-specific starting XP
-  const getInitialXP = () => {
-    switch (role) {
-      case 'trash-hero': return 2450;
-      case 'impact-warrior': return 1680;
-      case 'business': return 3450;
-      case 'admin': return 5200;
-      default: return 1000;
-    }
-  };
+  // Get dynamic user data
+  const currentUser = getCurrentUser(role);
+  const { profile, stats, levelData } = currentUser;
   
-  // Use the new enhanced XP system
-  const enhancedXP = useXPHook(getInitialXP());
+  // Use the new enhanced XP system with dynamic data
+  const enhancedXP = useXPHook(stats.totalXP);
   const { 
     currentLevel, 
     nextLevel, 
@@ -80,136 +74,83 @@ const MyCard: React.FC<MyCardProps> = ({ navigation, route }) => {
     }
   }, [levelUpHistory]);
   
-  // Role configuration with exact colors and data
+  // Role configuration using dynamic data
   const getRoleConfig = () => {
-    switch (role) {
-      case 'trash-hero':
-        return {
-          title: 'TrashHero Pro',
-          subtitle: 'Professional Cleaner',
-          color: getRoleColor('trash-hero'),
-          level: 6,
-          points: 2450,
-          progress: 85,
-          nextLevelPoints: 150,
-          badge: 'Elite Cleaner',
-          badgeIcon: '🎯',
-          badgeDescription: 'Professional Environmental Services',
-          nextRank: 'Master Hero',
-          avatar: 'TH',
-        };
-      case 'impact-warrior':
-        return {
-          title: 'Impact Warrior',
-          subtitle: 'Community Volunteer',
-          color: getRoleColor('impact-warrior'),
-          level: 4,
-          points: 1680,
-          progress: 72,
-          nextLevelPoints: 320,
-          badge: 'Community Champion',
-          badgeIcon: '❤️',
-          badgeDescription: 'Leading Community Environmental Action',
-          nextRank: 'Eco Guardian',
-          avatar: 'IW',
-        };
-      case 'business':
-        return {
-          title: 'EcoDefender Corp',
-          subtitle: 'EcoDefender',
-          color: getRoleColor('business'),
-          level: 6,
-          points: 3450,
-          progress: 93,
-          nextLevelPoints: 150,
-          badge: 'Green Pioneer',
-          badgeIcon: '🌱',
-          badgeDescription: 'Investing in Environmental Impact',
-          nextRank: 'Impact Investor',
-          avatar: 'EC',
-        };
-      case 'admin':
-        return {
-          title: 'Platform Admin',
-          subtitle: 'System Administrator',
-          // color: theme.warning,
-          level: 8,
-          points: 5200,
-          progress: 100,
-          nextLevelPoints: 0,
-          badge: 'Platform Guardian',
-          badgeIcon: '🛡️',
-          badgeDescription: 'Maintaining System Excellence',
-          nextRank: 'System Master',
-          avatar: 'PA',
-        };
-      default:
-        return {
-          title: 'EcoDefender Corp',
-          subtitle: 'EcoDefender',
-          color: getRoleColor('business'),
-          level: 6,
-          points: 3450,
-          progress: 93,
-          nextLevelPoints: 150,
-          badge: 'Green Pioneer',
-          badgeIcon: '🌱',
-          badgeDescription: 'Investing in Environmental Impact',
-          nextRank: 'Impact Investor',
-          avatar: 'EC',
-        };
+    const latestBadge = stats.badges[stats.badges.length - 1];
+    
+    return {
+      title: profile.name,
+      subtitle: getRoleSubtitle(role),
+      color: getRoleColor(role),
+      level: currentLevel.level,
+      points: stats.totalXP,
+      progress: progressPercent / 100,
+      nextLevelPoints: xpToNext,
+      badge: latestBadge?.name || 'New Hero',
+      badgeIcon: latestBadge?.icon || '🌟',
+      badgeDescription: latestBadge?.description || 'Making an impact!',
+      nextRank: nextLevel?.title || 'Max Level',
+      avatar: profile.avatar || 'U',
+    };
+  };
+
+  const getRoleSubtitle = (userRole: UserRole): string => {
+    switch (userRole) {
+      case 'trash-hero': return 'Professional Cleaner';
+      case 'impact-warrior': return 'Community Volunteer';
+      case 'eco-defender': return 'Environmental Investor';
+      case 'admin': return 'System Administrator';
+      default: return 'PEAR User';
     }
   };
 
-  // Role-specific 6-metric layout using consolidated mock data
+  // Role-specific 6-metric layout using dynamic stats
   const getMetrics = () => {
-    const userStats = getUserStatsByRole(role);
-    
     switch (role) {
       case 'trash-hero':
         return [
-          { label: 'Jobs Completed', value: userStats.jobsCompleted.toString(), icon: 'briefcase', color: theme.primary },
-          { label: 'Total Earned', value: userStats.totalEarned, icon: 'card', color: theme.primary },
-          { label: 'Impact Radius', value: userStats.impactRadius, icon: 'location', color: theme.primary },
-          { label: 'Success Rate', value: userStats.successRate, icon: 'shield-checkmark', color: theme.primary },
-          { label: 'Hours Worked', value: userStats.hoursWorked, icon: 'time', color: theme.primary },
-          { label: 'Verified Events', value: userStats.verifiedEvents.toString(), icon: 'shield-checkmark', color: '#10b981' },
+          { label: 'Jobs Completed', value: stats.jobsCompleted?.toString() || '0', icon: 'briefcase', color: theme.primary },
+          { label: 'Total Earned', value: stats.totalEarned || '$0', icon: 'card', color: theme.primary },
+          { label: 'Impact Radius', value: stats.impactRadius, icon: 'location', color: theme.primary },
+          { label: 'Success Rate', value: stats.successRate || '100%', icon: 'shield-checkmark', color: theme.primary },
+          { label: 'Hours Worked', value: stats.hoursWorked || '0h', icon: 'time', color: theme.primary },
+          { label: 'Verified Events', value: stats.verifiedEvents.toString(), icon: 'shield-checkmark', color: '#10b981' },
         ];
       case 'impact-warrior':
         return [
-          { label: 'Events Joined', value: userStats.eventsJoined.toString(), icon: 'people', color: theme.primary },
-          { label: 'Impact Points', value: userStats.impactPoints, icon: 'star', color: theme.primary },
-          { label: 'Community Radius', value: userStats.communityRadius, icon: 'location', color: theme.primary },
-          { label: 'Cleanups Led', value: userStats.cleanupsLed.toString(), icon: 'people-circle', color: theme.primary },
-          { label: 'Volunteer Hours', value: userStats.volunteerHours, icon: 'time', color: theme.primary },
-          { label: 'Verified Events', value: userStats.verifiedEvents.toString(), icon: 'shield-checkmark', color: '#10b981' },
+          { label: 'Events Joined', value: stats.eventsJoined?.toString() || '0', icon: 'people', color: theme.primary },
+          { label: 'Impact Points', value: stats.impactPoints || '0', icon: 'star', color: theme.primary },
+          { label: 'Community Radius', value: stats.communityRadius || '0km', icon: 'location', color: theme.primary },
+          { label: 'Cleanups Led', value: stats.cleanupsLed?.toString() || '0', icon: 'people-circle', color: theme.primary },
+          { label: 'Volunteer Hours', value: stats.volunteerHours || '0h', icon: 'time', color: theme.primary },
+          { label: 'Verified Events', value: stats.verifiedEvents.toString(), icon: 'shield-checkmark', color: '#10b981' },
         ];
-      case 'business':
+      case 'eco-defender':
         return [
-          { label: 'Funded Jobs', value: userStats.fundedJobs.toString(), icon: 'briefcase', color: theme.primary },
-          { label: 'Total Investment', value: userStats.totalInvestment, icon: 'card', color: theme.primary },
-          { label: 'Impact Radius', value: userStats.impactRadius, icon: 'location', color: theme.primary },
-          { label: 'Jobs Created', value: userStats.jobsCreated.toString(), icon: 'people', color: theme.primary },
-          { label: 'CO₂ Offset', value: userStats.co2Offset, icon: 'leaf', color: theme.primary },
-          { label: 'Verified Events', value: userStats.verifiedEvents.toString(), icon: 'shield-checkmark', color: '#10b981' },
+          { label: 'Funded Jobs', value: stats.fundedJobs?.toString() || '0', icon: 'briefcase', color: theme.primary },
+          { label: 'Total Investment', value: stats.totalInvestment || '$0', icon: 'card', color: theme.primary },
+          { label: 'Impact Radius', value: stats.impactRadius, icon: 'location', color: theme.primary },
+          { label: 'Jobs Created', value: stats.jobsCreated?.toString() || '0', icon: 'people', color: theme.primary },
+          { label: 'CO₂ Offset', value: stats.co2Offset || '0 tons', icon: 'leaf', color: theme.primary },
+          { label: 'Verified Events', value: stats.verifiedEvents.toString(), icon: 'shield-checkmark', color: '#10b981' },
         ];
       case 'admin':
         return [
-          { label: 'Users Managed', value: userStats.usersManaged.toString(), icon: 'people', color: theme.primary },
-          { label: 'System Uptime', value: userStats.systemUptime, icon: 'speedometer', color: theme.primary },
-          { label: 'Platform Reach', value: userStats.platformReach, icon: 'location', color: theme.primary },
-          { label: 'Issues Resolved', value: userStats.issuesResolved.toString(), icon: 'checkmark-circle', color: theme.primary },
-          { label: 'Jobs Overseen', value: userStats.jobsOverseen.toString(), icon: 'eye', color: theme.primary },
-          { label: 'Verified Events', value: userStats.verifiedEvents.toString(), icon: 'shield-checkmark', color: '#10b981' },
+          { label: 'Users Managed', value: stats.usersManaged?.toString() || '0', icon: 'people', color: theme.primary },
+          { label: 'System Uptime', value: stats.systemUptime || '100%', icon: 'speedometer', color: theme.primary },
+          { label: 'Platform Reach', value: stats.platformReach || 'Global', icon: 'location', color: theme.primary },
+          { label: 'Issues Resolved', value: stats.issuesResolved?.toString() || '0', icon: 'checkmark-circle', color: theme.primary },
+          { label: 'Jobs Overseen', value: stats.jobsOverseen?.toString() || '0', icon: 'eye', color: theme.primary },
+          { label: 'Verified Events', value: stats.verifiedEvents.toString(), icon: 'shield-checkmark', color: '#10b981' },
         ];
       default:
         return [
-          { label: 'Funded Jobs', value: userStats.fundedJobs.toString(), icon: 'briefcase', color: theme.primary },
-          { label: 'Total Investment', value: userStats.totalInvestment, icon: 'card', color: theme.primary },
-          { label: 'Impact Radius', value: userStats.impactRadius, icon: 'location', color: theme.primary },
-          { label: 'Jobs Created', value: userStats.jobsCreated.toString(), icon: 'people', color: theme.primary },
-          { label: 'CO₂ Offset', value: userStats.co2Offset, icon: 'leaf', color: theme.primary },
-          { label: 'Verified Events', value: userStats.verifiedEvents.toString(), icon: 'shield-checkmark', color: '#10b981' },
+          { label: 'XP Points', value: stats.totalXP.toString(), icon: 'star', color: theme.primary },
+          { label: 'Current Level', value: currentLevel.level.toString(), icon: 'trending-up', color: theme.primary },
+          { label: 'Impact Radius', value: stats.impactRadius, icon: 'location', color: theme.primary },
+          { label: 'Badges Earned', value: stats.badges.length.toString(), icon: 'trophy', color: theme.primary },
+          { label: 'Streak', value: `${stats.streak} days`, icon: 'flame', color: theme.primary },
+          { label: 'Verified Events', value: stats.verifiedEvents.toString(), icon: 'shield-checkmark', color: '#10b981' },
         ];
     }
   };
