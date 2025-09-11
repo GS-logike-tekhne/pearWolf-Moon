@@ -13,7 +13,7 @@ import { useTheme } from '../context/ThemeContext';
 const { width } = Dimensions.get('window');
 
 interface Quest {
-  id: string;
+  id: string; 
   title: string;
   description: string;
   progress: number;
