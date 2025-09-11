@@ -85,13 +85,13 @@ const MenuModal: React.FC<MenuModalProps> = ({
           color: '#28A745',
           icon: 'person',
         };
-      case 'VOLUNTEER':
+      case 'IMPACT_WARRIOR':
         return {
           title: 'Impact Warrior',
           color: '#dc3545',
           icon: 'person',
         };
-      case 'BUSINESS':
+      case 'ECO_DEFENDER':
         return {
           title: 'Eco Defender',
           color: '#007bff',
@@ -338,7 +338,7 @@ const styles = StyleSheet.create({
   overlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.5)',
-    flexDirection: 'row',
+    flexDirection: 'row' as const,
   },
   overlayTouchable: {
     flex: 1,
@@ -346,7 +346,7 @@ const styles = StyleSheet.create({
   menuContainer: {
     width: width * 0.85,
     maxWidth: 350,
-    height: '100%',
+    height: '100%' as const,
     shadowColor: '#000',
     shadowOffset: { width: -2, height: 0 },
     shadowOpacity: 0.3,

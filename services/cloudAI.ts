@@ -85,7 +85,7 @@ export const verifyWithGoogleCloudVision = async (
       metadata: {
         beforeImageSize: beforeAnalysis.dimensions,
         afterImageSize: afterAnalysis.dimensions,
-        locationAccuracy: submission.location?.coords.accuracy,
+        locationAccuracy: submission.location?.coords.accuracy || undefined,
         processingTime: Date.now(),
       },
     };
@@ -182,7 +182,7 @@ const analyzeImageWithGoogleVision = async (imageBase64: string) => {
   // Mock implementation - replace with actual Google Cloud Vision API call
   return {
     trashDetected: Math.random() > 0.5,
-    quality: 'good' as const,
+    quality: 'good' as 'good' | 'fair' | 'poor',
     dimensions: { width: 1920, height: 1080 },
     objects: ['trash', 'bottle', 'can'],
     confidence: Math.random() * 100,

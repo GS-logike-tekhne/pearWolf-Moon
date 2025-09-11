@@ -230,7 +230,6 @@ const MissionCompletionModal: React.FC<MissionCompletionModalProps> = ({
               multiline
               numberOfLines={4}
               textAlignVertical="top"
-              editable={!isSubmitting}
             />
           </View>
 
@@ -253,8 +252,6 @@ const MissionCompletionModal: React.FC<MissionCompletionModalProps> = ({
                 placeholderTextColor={theme.secondaryText}
                 value={actualDuration}
                 onChangeText={setActualDuration}
-                keyboardType="numeric"
-                editable={!isSubmitting}
               />
               <Text style={[styles.durationLabel, { color: theme.secondaryText }]}>
                 minutes

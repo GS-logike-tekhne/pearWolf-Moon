@@ -112,7 +112,6 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({
         aspect: [4, 3],
         quality: 0.8,
         allowsMultipleSelection: true,
-        selectionLimit: maxPhotos - photos.length,
       });
 
       if (!result.canceled && result.assets && result.assets.length > 0) {
@@ -199,10 +198,8 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({
 
       {/* Photo Grid */}
       <ScrollView 
-        horizontal 
         showsHorizontalScrollIndicator={false}
         style={styles.photoGrid}
-        contentContainerStyle={styles.photoGridContent}
       >
         {photos.map((photo) => (
           <PhotoItem key={photo.id} photo={photo} />
@@ -289,8 +286,6 @@ const styles = StyleSheet.create({
   },
   photoGrid: {
     marginBottom: 16,
-  },
-  photoGridContent: {
     paddingRight: 16,
   },
   photoItem: {

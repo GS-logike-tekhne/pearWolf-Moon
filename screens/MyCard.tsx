@@ -17,6 +17,8 @@ import { useXP } from '../context/XPContext';
 import { useXP as useXPHook } from '../hooks/useXP';
 import { XPProgressBar } from '../components/XPProgressBar';
 import { useAuth } from '../context/AuthContext';
+import LabProgressCard from '../components/LabProgressCard';
+import { formatCO2Offset } from '../utils/weightUtils';
 
 const { width } = Dimensions.get('window');
 
@@ -413,6 +415,22 @@ const MyCard: React.FC<MyCardProps> = ({ navigation, route }) => {
             </View>
           </View>
         </View>
+
+        {/* Park Restoration Lab Progress - Only for Impact Warriors */}
+        {role === 'impact-warrior' && (
+          <LabProgressCard
+            progress={{
+              totalQuests: 12,
+              completedQuests: 3,
+              currentStreak: 5,
+              totalTreesPlanted: 15,
+              totalParksRestored: 2,
+              labLevel: 2,
+              nextLevelXP: 250,
+            }}
+            onPress={() => navigation.navigate('ParkRestorationLab')}
+          />
+        )}
 
         <View style={styles.bottomSpacing} />
       </ScrollView>

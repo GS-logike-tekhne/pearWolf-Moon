@@ -400,7 +400,7 @@ const styles = StyleSheet.create({
     width: width * 0.9,
     maxHeight: height * 0.8,
     borderRadius: 24,
-    overflow: 'hidden',
+    overflow: 'hidden' as const,
   },
   content: {
     flex: 1,
@@ -496,8 +496,8 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   rewardItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
     padding: 16,
     borderRadius: 12,
     gap: 12,
@@ -558,7 +558,7 @@ const styles = StyleSheet.create({
     pointerEvents: 'none',
   },
   confettiPiece: {
-    position: 'absolute',
+    position: 'absolute' as const,
     width: 10,
     height: 10,
     borderRadius: 5,

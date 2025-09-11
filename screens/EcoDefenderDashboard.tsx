@@ -249,7 +249,7 @@ const EcoDefenderDashboard: React.FC<EcoDefenderDashboardProps> = ({ navigation 
       <MenuModal
         visible={showMenu}
         onClose={() => setShowMenu(false)}
-        userRole={userRole}
+        userRole="ECO_DEFENDER"
         userName={roleConfig.title}
         userLevel={roleConfig.level}
         onNavigate={(screen, params) => {

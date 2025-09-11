@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
   },
   bar: {
     borderRadius: 4,
-    width: '100%',
+    width: '100%' as const,
   },
   label: {
     fontSize: 10,

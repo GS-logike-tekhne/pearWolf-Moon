@@ -26,9 +26,6 @@ interface ScreenLayoutProps {
   contentContainerStyle?: any;
   showsVerticalScrollIndicator?: boolean;
   showsHorizontalScrollIndicator?: boolean;
-  refreshControl?: React.ReactElement;
-  onScroll?: (event: any) => void;
-  scrollEventThrottle?: number;
 }
 
 const ScreenLayout: React.FC<ScreenLayoutProps> = ({
@@ -45,9 +42,6 @@ const ScreenLayout: React.FC<ScreenLayoutProps> = ({
   contentContainerStyle,
   showsVerticalScrollIndicator = false,
   showsHorizontalScrollIndicator = false,
-  refreshControl,
-  onScroll,
-  scrollEventThrottle = 16,
 }) => {
   const { theme } = useTheme();
   const { currentRole } = useAuth();
@@ -81,13 +75,8 @@ const ScreenLayout: React.FC<ScreenLayoutProps> = ({
       return (
         <ScrollView
           style={styles.scrollView}
-          contentContainerStyle={scrollContentStyle}
           showsVerticalScrollIndicator={showsVerticalScrollIndicator}
           showsHorizontalScrollIndicator={showsHorizontalScrollIndicator}
-          refreshControl={refreshControl}
-          onScroll={onScroll}
-          scrollEventThrottle={scrollEventThrottle}
-          keyboardShouldPersistTaps="handled"
         >
           {children}
         </ScrollView>

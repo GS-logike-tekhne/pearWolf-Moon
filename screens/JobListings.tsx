@@ -339,7 +339,7 @@ const JobListings = ({ navigation, route, onSignOut }: { navigation: any; route:
       <MenuModal
         visible={showMenu}
         onClose={() => setShowMenu(false)}
-        userRole={userRole === 'business' ? 'BUSINESS' : userRole === 'admin' ? 'ADMIN' : userRole === 'trash-hero' ? 'TRASH_HERO' : 'VOLUNTEER'}
+        userRole={userRole === 'business' ? 'ECO_DEFENDER' : userRole === 'admin' ? 'ADMIN' : userRole === 'trash-hero' ? 'TRASH_HERO' : 'IMPACT_WARRIOR'}
         onNavigate={(screen, params) => navigation.navigate(screen, params)}
         onSignOut={route?.params?.onSignOut || onSignOut}
       />

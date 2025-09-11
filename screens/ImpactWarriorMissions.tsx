@@ -407,7 +407,7 @@ const ImpactWarriorMissions = ({ navigation }: any) => {
       <MenuModal
         visible={showMenu}
         onClose={() => setShowMenu(false)}
-        userRole="VOLUNTEER"
+        userRole="IMPACT_WARRIOR"
         userName="Impact Warrior"
         userLevel={3}
         onNavigate={(screen, params) => {

@@ -20,6 +20,7 @@ interface NotificationData {
   data?: any;
   scheduledFor?: Date;
   type: 'mission_reminder' | 'mission_complete' | 'daily_quest' | 'level_up' | 'general';
+  read: boolean;
 }
 
 interface NotificationsContextType {
@@ -188,6 +189,7 @@ export const NotificationsProvider: React.FC<NotificationsProviderProps> = ({ ch
       data: { missionId, type: 'mission_reminder' },
       scheduledFor: scheduledTime,
       type: 'mission_reminder',
+      read: false,
     });
   };
 
@@ -203,6 +205,7 @@ export const NotificationsProvider: React.FC<NotificationsProviderProps> = ({ ch
       data: { type: 'daily_quest' },
       scheduledFor: tomorrow,
       type: 'daily_quest',
+      read: false,
     });
   };
 
@@ -212,6 +215,7 @@ export const NotificationsProvider: React.FC<NotificationsProviderProps> = ({ ch
       body: `Congratulations! You've reached level ${newLevel}!`,
       data: { newLevel, type: 'level_up' },
       type: 'level_up',
+      read: false,
     });
   };
 

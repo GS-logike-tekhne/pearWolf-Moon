@@ -106,9 +106,9 @@ const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({
       case 'IMPACT_WARRIOR':
         return [
           { title: 'Join Mission', icon: 'leaf', color: theme.error, onPress: () => navigation.navigate('MainTabs', { screen: 'Missions' }) },
+          { title: 'Restoration Lab', icon: 'flask', color: '#f97316', onPress: () => navigation.navigate('ParkRestorationLab') },
           { title: 'My Impact', icon: 'analytics', color: theme.primary, onPress: () => navigation.navigate('ImpactWarriorImpact') },
           { title: 'PEAR Verified Missions', icon: 'people', color: theme.primary, onPress: () => navigation.navigate('PearVerifiedMissions') },
-          { title: 'Map View', icon: 'map', color: theme.primary, onPress: () => navigation.navigate('MapScreen') },
           { title: 'My Badges', icon: 'medal', color: '#8b5cf6', onPress: () => navigation.navigate('BadgeSystem', { userRole: 'IMPACT_WARRIOR' }) },
           { title: 'Profile', icon: 'person', color: theme.secondaryText, onPress: () => navigation.navigate('ProfileScreen', { role: 'impact-warrior' }) },
         ];

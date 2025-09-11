@@ -97,7 +97,7 @@ export const getPrioritizedMissions = (
   if (!userLocation?.coordinates) return missions;
 
   const roleMissions = missions.filter(mission => 
-    mission.role === userRole || mission.role === 'ALL'
+    mission.role === userRole
   );
 
   const prioritizedMissions: Mission[] = [];

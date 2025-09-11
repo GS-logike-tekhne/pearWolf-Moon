@@ -25,6 +25,16 @@ export interface Mission {
   category: string;
   icon: string;
   
+  // Location and region data
+  region?: {
+    coordinates?: {
+      lat: number;
+      lng: number;
+    };
+    city?: string;
+    state?: string;
+  };
+  
   // Runtime state
   status: MissionStatus;
   startedAt?: Date;
@@ -32,6 +42,10 @@ export interface Mission {
   joinedUsers: string[];
   boostUsed: boolean;
   pointsSpentOnBoost: number;
+  
+  // Additional properties for location utils
+  priority?: number;
+  distance?: number;
 }
 
 export interface MissionProgress {

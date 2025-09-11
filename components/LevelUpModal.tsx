@@ -327,7 +327,7 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   confettiPiece: {
-    position: 'absolute',
+    position: 'absolute' as const,
     width: 8,
     height: 8,
     borderRadius: 4,
@@ -358,11 +358,11 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   levelContainer: {
-    position: 'relative',
+    position: 'relative' as const,
     marginBottom: 24,
   },
   glowEffect: {
-    position: 'absolute',
+    position: 'absolute' as const,
     width: 140,
     height: 140,
     borderRadius: 70,
@@ -373,8 +373,8 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: 60,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
     borderWidth: 4,
     borderColor: 'white',
   },

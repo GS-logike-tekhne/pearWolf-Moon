@@ -209,7 +209,7 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({
     { id: 'withdrawn', label: 'Withdrawn', icon: 'arrow-up' },
   ] as const;
 
-  const FilterChip = ({ filterItem }: { filterItem: typeof filters[0] }) => (
+  const FilterChip = ({ filterItem }: { filterItem: typeof filters[number] }) => (
     <TouchableOpacity
       style={[
         styles.filterChip,
@@ -305,10 +305,8 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({
 
       {/* Filter Chips */}
       <ScrollView
-        horizontal
         showsHorizontalScrollIndicator={false}
         style={styles.filterContainer}
-        contentContainerStyle={styles.filterContent}
       >
         {filters.map((filterItem) => (
           <FilterChip key={filterItem.id} filterItem={filterItem} />
@@ -318,9 +316,6 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({
       {/* Transaction List */}
       <ScrollView
         style={styles.transactionList}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
         showsVerticalScrollIndicator={false}
       >
         {transactions.length > 0 ? (
@@ -370,8 +365,6 @@ const styles = StyleSheet.create({
   },
   filterContainer: {
     marginBottom: 16,
-  },
-  filterContent: {
     paddingRight: 16,
   },
   filterChip: {

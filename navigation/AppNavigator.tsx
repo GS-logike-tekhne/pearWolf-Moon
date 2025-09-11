@@ -37,6 +37,7 @@ import EcoDefenderMissions from '../screens/EcoDefenderMissions';
 import BadgeSystemScreen from '../screens/BadgeSystemScreen';
 import MissionFeedScreen from '../screens/MissionFeedScreen';
 import PlaceholderScreen from '../screens/PlaceholderScreen';
+import ParkRestorationLabScreen from '../screens/ParkRestorationLabScreen';
 
 const Stack = createStackNavigator();
 
@@ -83,6 +84,7 @@ const AppNavigator: React.FC = () => {
       <Stack.Screen name="EcoDefenderMissions" component={EcoDefenderMissions} />
       <Stack.Screen name="BadgeSystem" component={BadgeSystemScreen} />
       <Stack.Screen name="MissionFeed" component={MissionFeedScreen} />
+      <Stack.Screen name="ParkRestorationLab" component={ParkRestorationLabScreen} />
       
       {/* Placeholder screens for features under development */}
       <Stack.Screen name="UserProfile" component={PlaceholderScreen} />

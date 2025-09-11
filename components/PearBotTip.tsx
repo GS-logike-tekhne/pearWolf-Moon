@@ -60,23 +60,23 @@ const PearBotTip: React.FC<PearBotTipProps> = ({
       "🏆 You're building a legacy of environmental stewardship!",
     ];
 
-    const roleTips = {
-      'trash-hero': [
+    const roleTips: Record<string, string[]> = {
+      'TRASH_HERO': [
         "💰 Pro tip: Early morning cleanups often have better weather and higher rewards!",
         "🧹 Bring your own supplies to earn bonus points on missions!",
         "📍 Check nearby missions before traveling - cluster them for efficiency!",
       ],
-      'impact-warrior': [
+      'IMPACT_WARRIOR': [
         "❤️ Your volunteer work creates ripple effects in the community!",
         "👥 Invite friends to join missions - teamwork makes the dream work!",
         "📸 Share your cleanup photos to inspire others!",
       ],
-      'business': [
+      'ECO_DEFENDER': [
         "📊 Sponsoring cleanups improves your ESG scores and community reputation!",
         "🤝 Partner with local schools for educational cleanup events!",
         "💚 Employee volunteer programs boost morale and team building!",
       ],
-      'admin': [
+      'ADMIN': [
         "📈 Monitor user engagement trends to optimize mission placement!",
         "🎖️ Recognize top performers to maintain community motivation!",
         "🔍 Regular platform updates keep users engaged and active!",

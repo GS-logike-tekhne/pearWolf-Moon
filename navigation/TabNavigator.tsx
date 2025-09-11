@@ -131,8 +131,8 @@ const TabNavigator: React.FC = () => {
 
   return (
     <Tab.Navigator
-      screenOptions={({ route }) => ({
-        tabBarIcon: ({ focused, color, size }) =>
+      screenOptions={({ route }: { route: any }) => ({
+        tabBarIcon: ({ focused, color, size }: { focused: boolean; color: string; size: number }) =>
           getTabBarIcon(route.name, focused, color, size),
         tabBarActiveTintColor: getTabBarColor(),
         tabBarInactiveTintColor: theme.secondaryText,

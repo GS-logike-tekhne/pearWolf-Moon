@@ -164,10 +164,8 @@ const MissionFeed: React.FC<MissionFeedProps> = ({ userRole, navigation }) => {
       {/* Mission Type Filters */}
       <View style={styles.filterSection}>
         <ScrollView 
-          horizontal={true}
           showsHorizontalScrollIndicator={false}
           style={styles.filterScrollView}
-          contentContainerStyle={styles.filterContent}
         >
           {missionTypeFilters.map((filter) => (
             <TouchableOpacity
@@ -203,9 +201,7 @@ const MissionFeed: React.FC<MissionFeedProps> = ({ userRole, navigation }) => {
       {categories.length > 0 && (
         <View style={styles.categorySection}>
           <ScrollView
-            horizontal={true}
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.categoryContent}
           >
             <TouchableOpacity
               style={[
@@ -254,9 +250,6 @@ const MissionFeed: React.FC<MissionFeedProps> = ({ userRole, navigation }) => {
       <ScrollView
         style={styles.missionList}
         showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
-        }
       >
         {filteredMissions.length > 0 ? (
           filteredMissions.map((mission) => (
@@ -342,8 +335,6 @@ const styles = StyleSheet.create({
   },
   filterScrollView: {
     flex: 1,
-  },
-  filterContent: {
     paddingHorizontal: 16,
     paddingRight: 32,
   },
@@ -365,8 +356,6 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderBottomWidth: 1,
     borderBottomColor: '#f3f4f6',
-  },
-  categoryContent: {
     paddingHorizontal: 16,
     paddingRight: 32,
   },

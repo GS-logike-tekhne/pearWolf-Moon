@@ -62,7 +62,7 @@ export const verifyCleanup = async (
       metadata: {
         beforeImageSize,
         afterImageSize,
-        locationAccuracy: submission.location?.coords.accuracy,
+        locationAccuracy: submission.location?.coords.accuracy || undefined,
         processingTime,
       },
     };
@@ -95,10 +95,10 @@ export const verifyCleanup = async (
  */
 const getImageDimensions = (uri: string): Promise<{ width: number; height: number }> => {
   return new Promise((resolve, reject) => {
-    Image.getSize(
+    (Image as any).getSize(
       uri,
-      (width, height) => resolve({ width, height }),
-      (error) => reject(error)
+      (width: number, height: number) => resolve({ width, height }),
+      (error: any) => reject(error)
     );
   });
 };
@@ -122,7 +122,7 @@ const simulateAIAnalysis = async (
   // Image quality assessment
   const beforeQuality = assessImageQuality(beforeSize);
   const afterQuality = assessImageQuality(afterSize);
-  const imageQuality = beforeQuality === 'good' && afterQuality === 'good' ? 'good' : 
+  const imageQuality: 'good' | 'fair' | 'poor' = beforeQuality === 'good' && afterQuality === 'good' ? 'good' : 
                       beforeQuality === 'fair' || afterQuality === 'fair' ? 'fair' : 'poor';
   
   // Adjust confidence based on image quality
@@ -146,7 +146,7 @@ const simulateAIAnalysis = async (
   
   // Location verification
   const locationVerified = submission.location && 
-    submission.location.coords.accuracy < 50; // Within 50 meters
+    submission.location.coords.accuracy && submission.location.coords.accuracy < 50; // Within 50 meters
   
   if (locationVerified) {
     confidence += 10;
@@ -232,12 +232,18 @@ export const isVerificationRequired = (missionType: string, reward: number): boo
  * Get verification requirements for a mission
  */
 export const getVerificationRequirements = (missionType: string) => {
-  const requirements = {
+  const requirements: {
+    photosRequired: number;
+    videoAllowed: boolean;
+    locationRequired: boolean;
+    timestampRequired: boolean;
+    minImageQuality: 'good' | 'fair' | 'poor';
+  } = {
     photosRequired: 2, // before and after
     videoAllowed: false,
     locationRequired: true,
     timestampRequired: true,
-    minImageQuality: 'fair' as const,
+    minImageQuality: 'fair',
   };
   
   if (missionType === 'PAID_CLEANUP') {

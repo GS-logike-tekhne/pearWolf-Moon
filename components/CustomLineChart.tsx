@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   point: {
-    position: 'absolute',
+    position: 'absolute' as const,
     width: 6,
     height: 6,
     borderRadius: 3,
@@ -162,8 +162,8 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   line: {
-    position: 'absolute',
-    transformOrigin: 'left center',
+    position: 'absolute' as const,
+    transformOrigin: 'left center' as const,
   },
 });
 

@@ -320,7 +320,7 @@ const styles = StyleSheet.create({
   container: {
     margin: 16,
     borderRadius: 16,
-    overflow: 'hidden',
+    overflow: 'hidden' as const,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.15,
@@ -331,9 +331,9 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    flexDirection: 'row' as const,
+    justifyContent: 'space-between' as const,
+    alignItems: 'flex-start' as const,
     marginBottom: 24,
   },
   titleContainer: {
@@ -360,8 +360,8 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
@@ -384,7 +384,7 @@ const styles = StyleSheet.create({
   },
   metricCard: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: 'center' as const,
     paddingVertical: 16,
     paddingHorizontal: 8,
     borderRadius: 12,
@@ -408,7 +408,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   actionSection: {
-    alignItems: 'center',
+    alignItems: 'center' as const,
   },
   actionButton: {
     flexDirection: 'row',
@@ -428,8 +428,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.2)',
   },
   progressBar: {
-    height: '100%',
-    transformOrigin: 'left center',
+    height: '100%' as const,
+    transformOrigin: 'left center' as const,
   },
 });
 

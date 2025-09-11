@@ -144,7 +144,7 @@ const Notifications = ({ navigation, route }: { navigation: any; route: any }) =
       <MenuModal
         visible={showMenu}
         onClose={() => setShowMenu(false)}
-        userRole={role === 'admin' ? 'ADMIN' : role === 'business' ? 'BUSINESS' : role === 'trash-hero' ? 'TRASH_HERO' : 'VOLUNTEER'}
+        userRole={role === 'admin' ? 'ADMIN' : role === 'business' ? 'ECO_DEFENDER' : role === 'trash-hero' ? 'TRASH_HERO' : 'IMPACT_WARRIOR'}
         onNavigate={(screen, params) => navigation.navigate(screen, params)}
         onSignOut={() => navigation.navigate('Login')}
       />
