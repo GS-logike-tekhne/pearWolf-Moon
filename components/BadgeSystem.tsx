@@ -109,6 +109,16 @@ const BadgeSystem: React.FC<BadgeSystemProps> = ({
       unlockedAt: new Date('2024-04-22'),
       category: 'special',
       rarity: 'rare'
+    },
+    {
+      id: 'pear_verified_cleanup',
+      name: 'PEAR Verified Cleanup',
+      description: 'Complete a PEAR-verified environmental mission',
+      icon: 'shield-checkmark',
+      color: '#10b981',
+      isUnlocked: false,
+      category: 'special',
+      rarity: 'epic'
     }
   ];
   

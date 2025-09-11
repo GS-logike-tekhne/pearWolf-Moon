@@ -12,45 +12,17 @@ import { THEME } from '../styles/theme';
 import ScreenLayout from '../components/ScreenLayout';
 import DonationButton from '../components/DonationButton';
 import DonationProgress from '../components/DonationProgress';
+import Leaderboard from '../components/verified/Leaderboard';
+import { 
+  mockFeaturedCleanups, 
+  mockTopContributors, 
+  mockFundData 
+} from '../utils/mockData';
 
 const PearVerifiedMissions = ({ navigation }: { navigation: any }) => {
   const { theme } = useTheme();
-  const [fundData, setFundData] = useState({
-    totalRaised: 15420,
-    monthlyGoal: 25000,
-    activeCleanups: 12,
-    donorCount: 247,
-  });
-
-  const [featuredCleanups, setFeaturedCleanups] = useState([
-    {
-      id: 1,
-      title: 'Beach Cleanup Marathon',
-      location: 'Santa Monica Beach',
-      raised: 1200,
-      goal: 2000,
-      donors: 34,
-      urgency: 'high',
-    },
-    {
-      id: 2,
-      title: 'Park Restoration Project',
-      location: 'Central Park',
-      raised: 800,
-      goal: 1500,
-      donors: 18,
-      urgency: 'medium',
-    },
-    {
-      id: 3,
-      title: 'River Trail Cleanup',
-      location: 'LA River Trail',
-      raised: 450,
-      goal: 1000,
-      donors: 12,
-      urgency: 'low',
-    },
-  ]);
+  const [fundData, setFundData] = useState(mockFundData);
+  const [featuredCleanups, setFeaturedCleanups] = useState(mockFeaturedCleanups);
 
   const refreshFundData = () => {
     // Simulate data refresh
@@ -76,14 +48,14 @@ const PearVerifiedMissions = ({ navigation }: { navigation: any }) => {
             PEAR Verified Missions
           </Text>
           <Text style={[styles.fundDescription, { color: theme.secondaryText }]}>
-            Support admin-verified environmental missions with measurable impact
+            Support PEAR-verified environmental missions with measurable impact and real community change
           </Text>
           
           <DonationProgress 
             goal={{
               id: 'monthly-fund',
-              title: 'Monthly Impact Fund',
-              description: 'Supporting verified cleanup missions',
+              title: 'PEAR Verified Missions Fund',
+              description: 'Supporting impact-verified environmental missions',
               targetAmount: fundData.monthlyGoal,
               currentAmount: fundData.totalRaised,
               supporters: fundData.donorCount,
@@ -97,7 +69,7 @@ const PearVerifiedMissions = ({ navigation }: { navigation: any }) => {
           />
           
           <DonationButton 
-            cleanupId="community-fund"
+            cleanupId="pear-verified-fund"
             cleanupTitle="PEAR Verified Missions"
             onDonationSuccess={refreshFundData}
             style={{}}
@@ -185,7 +157,7 @@ const PearVerifiedMissions = ({ navigation }: { navigation: any }) => {
                 goal={{
                   id: cleanup.id.toString(),
                   title: cleanup.title,
-                  description: 'Environmental cleanup mission',
+                  description: 'PEAR-verified environmental mission',
                   targetAmount: cleanup.goal,
                   currentAmount: cleanup.raised,
                   supporters: cleanup.donors,
@@ -204,7 +176,16 @@ const PearVerifiedMissions = ({ navigation }: { navigation: any }) => {
                     styles.viewButton,
                     { borderColor: theme.borderColor }
                   ]}
-                  onPress={() => navigation.navigate('ImpactWarriorMissions')}
+                  onPress={() => navigation.navigate('PearVerifiedMissionDetail', { 
+                    mission: {
+                      ...cleanup,
+                      description: 'Join this verified environmental cleanup mission and make a real impact in your community.',
+                      startDate: '2024-01-15',
+                      endDate: '2024-01-22',
+                      organizer: 'PEAR Community',
+                      participants: 25
+                    }
+                  })}
                 >
                   <Text style={[styles.viewButtonText, { color: theme.secondaryText }]}>
                     View Details
@@ -229,6 +210,19 @@ const PearVerifiedMissions = ({ navigation }: { navigation: any }) => {
               </View>
             </View>
           ))}
+        </View>
+
+        {/* Top Contributors */}
+        <View style={styles.section}>
+          <Leaderboard 
+            type="contributors"
+            data={mockTopContributors}
+            maxItems={5}
+            onViewAll={() => {
+              // Navigate to full leaderboard screen
+              console.log('View all contributors');
+            }}
+          />
         </View>
 
         {/* Bottom Spacing */}

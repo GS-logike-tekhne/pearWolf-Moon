@@ -11,6 +11,7 @@ import LoginScreen from '../screens/LoginScreen';
 import MyCard from '../screens/MyCard';
 import RewardsScreen from '../screens/RewardsScreen';
 import PearVerifiedMissions from '../screens/PearVerifiedMissions';
+import PearVerifiedMissionDetail from '../screens/PearVerifiedMissionDetail';
 import Notifications from '../screens/Notifications';
 import JobListings from '../screens/JobListings';
 import SuggestCleanup from '../screens/SuggestCleanup';
@@ -61,6 +62,7 @@ const AppNavigator: React.FC = () => {
       <Stack.Screen name="MyCard" component={MyCard} />
       <Stack.Screen name="RewardsScreen" component={RewardsScreen} />
       <Stack.Screen name="PearVerifiedMissions" component={PearVerifiedMissions} />
+      <Stack.Screen name="PearVerifiedMissionDetail" component={PearVerifiedMissionDetail} />
       <Stack.Screen name="Notifications" component={Notifications} />
       <Stack.Screen name="JobListings" component={JobListings} />
       <Stack.Screen name="SuggestCleanup" component={SuggestCleanup} />

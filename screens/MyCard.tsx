@@ -19,6 +19,7 @@ import { XPProgressBar } from '../components/XPProgressBar';
 import { useAuth } from '../context/AuthContext';
 import LabProgressCard from '../components/LabProgressCard';
 import { formatCO2Offset } from '../utils/weightUtils';
+import { getUserStatsByRole } from '../utils/mockData';
 
 const { width } = Dimensions.get('window');
 
@@ -128,53 +129,55 @@ const MyCard: React.FC<MyCardProps> = ({ navigation, route }) => {
     }
   };
 
-  // Role-specific 6-metric layout
+  // Role-specific 6-metric layout using consolidated mock data
   const getMetrics = () => {
+    const userStats = getUserStatsByRole(role);
+    
     switch (role) {
       case 'trash-hero':
         return [
-          { label: 'Jobs Completed', value: '47', icon: 'briefcase', color: theme.primary },
-          { label: 'Total Earned', value: '$2,340', icon: 'card', color: theme.primary },
-          { label: 'Impact Radius', value: '12.3 km²', icon: 'location', color: theme.primary },
-          { label: 'Success Rate', value: '97%', icon: 'shield-checkmark', color: theme.primary },
-          { label: 'Hours Worked', value: '156h', icon: 'time', color: theme.primary },
-          { label: 'Eco Rating', value: '4.8★', icon: 'trophy', color: '#8b5cf6' },
+          { label: 'Jobs Completed', value: userStats.jobsCompleted.toString(), icon: 'briefcase', color: theme.primary },
+          { label: 'Total Earned', value: userStats.totalEarned, icon: 'card', color: theme.primary },
+          { label: 'Impact Radius', value: userStats.impactRadius, icon: 'location', color: theme.primary },
+          { label: 'Success Rate', value: userStats.successRate, icon: 'shield-checkmark', color: theme.primary },
+          { label: 'Hours Worked', value: userStats.hoursWorked, icon: 'time', color: theme.primary },
+          { label: 'Verified Events', value: userStats.verifiedEvents.toString(), icon: 'shield-checkmark', color: '#10b981' },
         ];
       case 'impact-warrior':
         return [
-          { label: 'Events Joined', value: '34', icon: 'people', color: theme.primary },
-          { label: 'Impact Points', value: '1,680', icon: 'star', color: theme.primary },
-          { label: 'Community Radius', value: '8.7 km²', icon: 'location', color: theme.primary },
-          { label: 'Cleanups Led', value: '12', icon: 'people-circle', color: theme.primary },
-          { label: 'Volunteer Hours', value: '128h', icon: 'time', color: theme.primary },
-          { label: 'Community Rank', value: '#23', icon: 'trophy', color: '#8b5cf6' },
+          { label: 'Events Joined', value: userStats.eventsJoined.toString(), icon: 'people', color: theme.primary },
+          { label: 'Impact Points', value: userStats.impactPoints, icon: 'star', color: theme.primary },
+          { label: 'Community Radius', value: userStats.communityRadius, icon: 'location', color: theme.primary },
+          { label: 'Cleanups Led', value: userStats.cleanupsLed.toString(), icon: 'people-circle', color: theme.primary },
+          { label: 'Volunteer Hours', value: userStats.volunteerHours, icon: 'time', color: theme.primary },
+          { label: 'Verified Events', value: userStats.verifiedEvents.toString(), icon: 'shield-checkmark', color: '#10b981' },
         ];
       case 'business':
         return [
-          { label: 'Funded Jobs', value: '12', icon: 'briefcase', color: theme.primary },
-          { label: 'Total Investment', value: '$3,240', icon: 'card', color: theme.primary },
-          { label: 'Impact Radius', value: '8.5 km²', icon: 'location', color: theme.primary },
-          { label: 'Jobs Created', value: '47', icon: 'people', color: theme.primary },
-          { label: 'CO₂ Offset', value: '850 kg', icon: 'leaf', color: theme.primary },
-          { label: 'ESG Rank', value: '#8', icon: 'trophy', color: '#8b5cf6' },
+          { label: 'Funded Jobs', value: userStats.fundedJobs.toString(), icon: 'briefcase', color: theme.primary },
+          { label: 'Total Investment', value: userStats.totalInvestment, icon: 'card', color: theme.primary },
+          { label: 'Impact Radius', value: userStats.impactRadius, icon: 'location', color: theme.primary },
+          { label: 'Jobs Created', value: userStats.jobsCreated.toString(), icon: 'people', color: theme.primary },
+          { label: 'CO₂ Offset', value: userStats.co2Offset, icon: 'leaf', color: theme.primary },
+          { label: 'Verified Events', value: userStats.verifiedEvents.toString(), icon: 'shield-checkmark', color: '#10b981' },
         ];
       case 'admin':
         return [
-          { label: 'Users Managed', value: '1,247', icon: 'people', color: theme.primary },
-          { label: 'System Uptime', value: '99.8%', icon: 'speedometer', color: theme.primary },
-          { label: 'Platform Reach', value: '15 cities', icon: 'location', color: theme.primary },
-          { label: 'Issues Resolved', value: '156', icon: 'checkmark-circle', color: theme.primary },
-          { label: 'Jobs Overseen', value: '892', icon: 'eye', color: theme.primary },
-          { label: 'Admin Level', value: 'Master', icon: 'shield-checkmark', color: '#8b5cf6' },
+          { label: 'Users Managed', value: userStats.usersManaged.toString(), icon: 'people', color: theme.primary },
+          { label: 'System Uptime', value: userStats.systemUptime, icon: 'speedometer', color: theme.primary },
+          { label: 'Platform Reach', value: userStats.platformReach, icon: 'location', color: theme.primary },
+          { label: 'Issues Resolved', value: userStats.issuesResolved.toString(), icon: 'checkmark-circle', color: theme.primary },
+          { label: 'Jobs Overseen', value: userStats.jobsOverseen.toString(), icon: 'eye', color: theme.primary },
+          { label: 'Verified Events', value: userStats.verifiedEvents.toString(), icon: 'shield-checkmark', color: '#10b981' },
         ];
       default:
         return [
-          { label: 'Funded Jobs', value: '12', icon: 'briefcase', color: theme.primary },
-          { label: 'Total Investment', value: '$3,240', icon: 'card', color: theme.primary },
-          { label: 'Impact Radius', value: '8.5 km²', icon: 'location', color: theme.primary },
-          { label: 'Jobs Created', value: '47', icon: 'people', color: theme.primary },
-          { label: 'CO₂ Offset', value: '850 kg', icon: 'leaf', color: theme.primary },
-          { label: 'ESG Rank', value: '#8', icon: 'trophy', color: '#8b5cf6' },
+          { label: 'Funded Jobs', value: userStats.fundedJobs.toString(), icon: 'briefcase', color: theme.primary },
+          { label: 'Total Investment', value: userStats.totalInvestment, icon: 'card', color: theme.primary },
+          { label: 'Impact Radius', value: userStats.impactRadius, icon: 'location', color: theme.primary },
+          { label: 'Jobs Created', value: userStats.jobsCreated.toString(), icon: 'people', color: theme.primary },
+          { label: 'CO₂ Offset', value: userStats.co2Offset, icon: 'leaf', color: theme.primary },
+          { label: 'Verified Events', value: userStats.verifiedEvents.toString(), icon: 'shield-checkmark', color: '#10b981' },
         ];
     }
   };
