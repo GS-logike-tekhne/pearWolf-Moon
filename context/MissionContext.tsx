@@ -392,7 +392,7 @@ const generateInitialMissions = (): Mission[] => {
       title: 'Organize Eco Workshop',
       description: 'Plan and host an environmental awareness workshop in your community',
       type: 'Community Quest',
-      role: 'VOLUNTEER',
+      role: 'IMPACT_WARRIOR',
       duration: 259200, // 3 days
       reward: { xp: 75, ecoPoints: 50, badge: 'Community Leader' },
       canBoost: true,
@@ -413,7 +413,7 @@ const generateInitialMissions = (): Mission[] => {
       title: 'Corporate Cleanup Sponsorship',
       description: 'Fund and organize a large-scale cleanup event for 50+ participants',
       type: 'Business Mission',
-      role: 'BUSINESS',
+      role: 'ECO_DEFENDER',
       duration: 604800, // 7 days
       reward: { xp: 100, ecoPoints: 200, tokenReward: 500 },
       canBoost: true,
@@ -431,7 +431,7 @@ const generateInitialMissions = (): Mission[] => {
       title: 'Office Waste Audit',
       description: 'Conduct a comprehensive waste audit of your business operations',
       type: 'Timed Mission',
-      role: 'BUSINESS',
+      role: 'ECO_DEFENDER',
       duration: 172800, // 2 days
       reward: { xp: 60, ecoPoints: 80, badge: 'Efficiency Expert' },
       canBoost: true,

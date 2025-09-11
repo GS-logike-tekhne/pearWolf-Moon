@@ -3,12 +3,14 @@ import ScreenLayout from '../components/ScreenLayout';
 import { UserRole } from '../types/roles';
 import { getRoleColor } from '../utils/roleColors';
 import RoleDashboardLayout from '../components/RoleDashboardLayout';
+import { useTheme } from '../context/ThemeContext';
 
 interface EcoDefenderDashboardProps {
   navigation: any;
 }
 
 const EcoDefenderDashboardRefactored: React.FC<EcoDefenderDashboardProps> = ({ navigation }) => {
+  const { theme } = useTheme();
   const role: UserRole = 'ECO_DEFENDER';
   
   // Role configuration

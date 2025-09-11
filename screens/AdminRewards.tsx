@@ -83,7 +83,7 @@ const AdminRewards: React.FC<AdminRewardsProps> = ({ navigation }) => {
     title: '',
     description: '',
     cost: '',
-    category: 'physical' as const,
+    category: 'physical' as 'digital' | 'physical' | 'discount' | 'experience',
     totalAvailable: '',
   });
 
@@ -156,7 +156,7 @@ const AdminRewards: React.FC<AdminRewardsProps> = ({ navigation }) => {
 
     setShowAddModal(false);
     setEditingReward(null);
-    setNewReward({ title: '', description: '', cost: '', category: 'physical', totalAvailable: '' });
+    setNewReward({ title: '', description: '', cost: '', category: 'physical' as 'digital' | 'physical' | 'discount' | 'experience', totalAvailable: '' });
     Alert.alert('Success', `Reward ${editingReward ? 'updated' : 'added'} successfully`);
   };
 

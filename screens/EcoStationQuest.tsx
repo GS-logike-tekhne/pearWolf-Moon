@@ -29,7 +29,7 @@ import { useTheme } from '../context/ThemeContext';
 import { THEME } from '../styles/theme';
 import ScreenLayout from '../components/ScreenLayout';
 import { useXP } from '../context/XPContext';
-import { useMissionContext } from '../context/MissionContext';
+import { useMissions } from '../context/MissionContext';
 
 const { width, height } = Dimensions.get('window');
 
@@ -51,8 +51,11 @@ interface QuestZone {
 
 const EcoStationQuest: React.FC<{ navigation: any }> = ({ navigation }) => {
   const { theme } = useTheme();
-  const { level, xp } = useXP();
-  const { activeMissions } = useMissionContext();
+  const { state: xpState } = useXP();
+  const level = xpState.currentLevel;
+  const xp = xpState.totalXP;
+  const { state: missionState } = useMissions();
+  const { activeMissions } = missionState;
   
   const [selectedZone, setSelectedZone] = useState<string | null>(null);
   const scrollY = new Animated.Value(0);
@@ -392,7 +395,6 @@ const styles = StyleSheet.create({
   },
   questCard: {
     borderRadius: 20,
-    overflow: 'hidden',
     elevation: 6,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },

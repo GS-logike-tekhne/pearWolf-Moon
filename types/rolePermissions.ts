@@ -1,8 +1,43 @@
 // types/rolePermissions.ts
 import { UserRole } from './roles';
 
+// Define all possible features
+export type Feature = 
+  | 'ManageUsers'
+  | 'PostMissions' 
+  | 'ViewAnalytics'
+  | 'ResolveIssues'
+  | 'ManageRewards'
+  | 'ViewAllData'
+  | 'SystemSettings'
+  | 'IssueResolution'
+  | 'UserManagement'
+  | 'MissionControl'
+  | 'SuggestedSpots'
+  | 'PlatformAnalytics'
+  | 'PostJobs'
+  | 'FundCleanups' 
+  | 'TrackImpact'
+  | 'ViewMissions'
+  | 'CompleteJobs'
+  | 'EarnBadges'
+  | 'ViewEarnings'
+  | 'WithdrawEarnings'
+  | 'TrashHeroMissions'
+  | 'TrashHeroEarnings'
+  | 'ProfessionalCleanup'
+  | 'ReportIssues'
+  | 'ImpactWarriorMissions'
+  | 'ImpactWarriorImpact'
+  | 'CommunityVolunteer'
+  | 'SuggestCleanup'
+  | 'ManageBusinessProfile'
+  | 'PostJob'
+  | 'EcoDefenderImpact'
+  | 'BusinessDashboard';
+
 // Define feature permissions for each role
-export const rolePermissions = {
+export const rolePermissions: Record<UserRole, Feature[]> = {
   ADMIN: [
     'ManageUsers',
     'PostMissions', 
@@ -50,10 +85,7 @@ export const rolePermissions = {
     'CommunityVolunteer',
     'SuggestCleanup'
   ]
-} as const;
-
-// Type for feature names
-export type Feature = typeof rolePermissions[UserRole][number];
+};
 
 // Helper function to check if a role has a specific permission
 export const hasPermission = (role: UserRole, feature: Feature): boolean => {

@@ -27,7 +27,7 @@ interface MenuItem {
 interface MenuModalProps {
   visible: boolean;
   onClose: () => void;
-  userRole: 'TRASH_HERO' | 'VOLUNTEER' | 'BUSINESS' | 'ADMIN';
+  userRole: 'TRASH_HERO' | 'IMPACT_WARRIOR' | 'ECO_DEFENDER' | 'ADMIN';
   userName?: string;
   userLevel?: number;
   onNavigate: (screen: string, params?: any) => void;

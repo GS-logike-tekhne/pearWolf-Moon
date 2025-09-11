@@ -21,7 +21,7 @@ const { width } = Dimensions.get('window');
 
 interface UnifiedHeroDashboardProps {
   navigation: any;
-  userRole?: 'TRASH_HERO' | 'VOLUNTEER' | 'BUSINESS' | 'ADMIN' | 'IMPACT_WARRIOR' | 'ECO_DEFENDER';
+  userRole?: 'TRASH_HERO' | 'IMPACT_WARRIOR' | 'ECO_DEFENDER' | 'ADMIN';
 }
 
 const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({ 
@@ -427,7 +427,7 @@ const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({
       <MenuModal
         visible={showMenu}
         onClose={() => setShowMenu(false)}
-        userRole={activeRole === 'IMPACT_WARRIOR' ? 'VOLUNTEER' : activeRole === 'ECO_DEFENDER' ? 'BUSINESS' : activeRole}
+        userRole={activeRole}
         userName={roleConfig.title}
         userLevel={roleConfig.level}
         onNavigate={(screen, params) => {

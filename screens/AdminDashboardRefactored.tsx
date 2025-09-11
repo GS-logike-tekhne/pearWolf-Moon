@@ -3,12 +3,14 @@ import ScreenLayout from '../components/ScreenLayout';
 import { UserRole } from '../types/roles';
 import { getRoleColor } from '../utils/roleColors';
 import RoleDashboardLayout from '../components/RoleDashboardLayout';
+import { useTheme } from '../context/ThemeContext';
 
 interface AdminDashboardProps {
   navigation: any;
 }
 
 const AdminDashboardRefactored: React.FC<AdminDashboardProps> = ({ navigation }) => {
+  const { theme } = useTheme();
   const role: UserRole = 'ADMIN';
   
   // Admin role configuration

@@ -13,6 +13,10 @@ interface Theme {
   success: string;
   warning: string;
   error: string;
+  text: string;
+  textSecondary: string;
+  card: string;
+  isDark: boolean;
 }
 
 interface ThemeContextType {
@@ -35,6 +39,10 @@ const themes: Record<UserRole, Theme> = {
     success: '#10b981',
     warning: '#f59e0b',
     error: '#ef4444',
+    text: '#1f2937',
+    textSecondary: '#6b7280',
+    card: '#ffffff',
+    isDark: false,
   },
   ECO_DEFENDER: {
     primary: '#007bff',
@@ -48,6 +56,10 @@ const themes: Record<UserRole, Theme> = {
     success: '#10b981',
     warning: '#f59e0b',
     error: '#ef4444',
+    text: '#1f2937',
+    textSecondary: '#6b7280',
+    card: '#ffffff',
+    isDark: false,
   },
   TRASH_HERO: {
     primary: '#28A745',
@@ -61,6 +73,10 @@ const themes: Record<UserRole, Theme> = {
     success: '#28A745',
     warning: '#28A745',
     error: '#ef4444',
+    text: '#1f2937',
+    textSecondary: '#6b7280',
+    card: '#ffffff',
+    isDark: false,
   },
   IMPACT_WARRIOR: {
     primary: '#dc2626',
@@ -74,6 +90,10 @@ const themes: Record<UserRole, Theme> = {
     success: '#10b981',
     warning: '#f59e0b',
     error: '#ef4444',
+    text: '#1f2937',
+    textSecondary: '#6b7280',
+    card: '#ffffff',
+    isDark: false,
   },
 };
 

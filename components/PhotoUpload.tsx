@@ -76,10 +76,9 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({
         allowsEditing: true,
         aspect: [4, 3],
         quality: 0.8,
-        exif: false,
       });
 
-      if (!result.canceled && result.assets[0]) {
+      if (!result.canceled && result.assets && result.assets[0]) {
         const newPhoto: PhotoItem = {
           id: `photo_${Date.now()}`,
           uri: result.assets[0].uri,
@@ -116,7 +115,7 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({
         selectionLimit: maxPhotos - photos.length,
       });
 
-      if (!result.canceled && result.assets.length > 0) {
+      if (!result.canceled && result.assets && result.assets.length > 0) {
         const newPhotos: PhotoItem[] = result.assets.map((asset, index) => ({
           id: `library_${Date.now()}_${index}`,
           uri: asset.uri,

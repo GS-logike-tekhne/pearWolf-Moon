@@ -146,7 +146,7 @@ const JobCompleteFlow: React.FC<JobCompleteFlowProps> = ({
     if (job) {
       const xpReward = job.rewards.find(r => r.type === 'xp');
       if (xpReward) {
-        addXP(Number(xpReward.amount));
+        addXP(Number(xpReward.amount), 'mission_completion');
       }
     }
   };

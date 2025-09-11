@@ -14,6 +14,7 @@ import { THEME } from '../styles/theme';
 import ScreenLayout from '../components/ScreenLayout';
 import CustomBarChart from '../components/CustomBarChart';
 import CustomLineChart from '../components/CustomLineChart';
+import { RoleGuard } from '../components/RoleGuard';
 
 const { width } = Dimensions.get('window');
 
@@ -52,20 +53,20 @@ const EcoDefenderImpact: React.FC<EcoDefenderImpactProps> = ({ navigation }) => 
   };
 
   const monthlyData = [
-    { month: 'Jan', investment: 2100, impact: 340, heroes: 8 },
-    { month: 'Feb', investment: 1800, impact: 420, heroes: 6 },
-    { month: 'Mar', investment: 2400, impact: 510, heroes: 12 },
-    { month: 'Apr', investment: 1950, impact: 380, heroes: 9 },
-    { month: 'May', investment: 2200, impact: 470, heroes: 11 },
-    { month: 'Jun', investment: 2400, impact: 520, heroes: 14 },
+    { value: 2100 }, // investment
+    { value: 1800 },
+    { value: 2400 },
+    { value: 1950 },
+    { value: 2200 },
+    { value: 2400 },
   ];
 
   const categoryData = [
-    { category: 'Beach Cleanup', jobs: 18, investment: 4200 },
-    { category: 'Park Restoration', jobs: 12, investment: 3800 },
-    { category: 'River Cleanup', jobs: 8, investment: 2400 },
-    { category: 'Urban Cleanup', jobs: 6, investment: 1800 },
-    { category: 'Education', jobs: 3, investment: 650 },
+    { value: 4200, label: 'Beach Cleanup' },
+    { value: 3800, label: 'Park Restoration' },
+    { value: 2400, label: 'River Cleanup' },
+    { value: 1800, label: 'Urban Cleanup' },
+    { value: 650, label: 'Education' },
   ];
 
   const ImpactCard = ({ title, value, subtitle, icon, color }: any) => (
@@ -93,7 +94,8 @@ const EcoDefenderImpact: React.FC<EcoDefenderImpactProps> = ({ navigation }) => 
   );
 
   return (
-    <ScreenLayout>
+    <RoleGuard allowedRoles={['ECO_DEFENDER']}>
+      <ScreenLayout>
       {/* Header */}
       <View style={[styles.header, { backgroundColor: theme.cardBackground }]}>
         <TouchableOpacity
@@ -208,13 +210,8 @@ const EcoDefenderImpact: React.FC<EcoDefenderImpactProps> = ({ navigation }) => 
           <View style={[styles.chartContainer, { backgroundColor: theme.cardBackground }]}>
             <CustomLineChart
               data={monthlyData}
-              primaryKey="investment"
-              secondaryKey="impact"
+              color={ecoDefenderColor}
               height={200}
-              primaryColor={ecoDefenderColor}
-              secondaryColor="#28a745"
-              primaryLabel="Investment ($)"
-              secondaryLabel="Impact Score"
             />
           </View>
         </MetricSection>
@@ -224,10 +221,9 @@ const EcoDefenderImpact: React.FC<EcoDefenderImpactProps> = ({ navigation }) => 
           <View style={[styles.chartContainer, { backgroundColor: theme.cardBackground }]}>
             <CustomBarChart
               data={categoryData}
-              dataKey="investment"
               height={200}
               color={ecoDefenderColor}
-              labelKey="category"
+              showLabels={true}
             />
           </View>
         </MetricSection>
@@ -310,7 +306,8 @@ const EcoDefenderImpact: React.FC<EcoDefenderImpactProps> = ({ navigation }) => 
 
         <View style={styles.bottomSpacing} />
       </ScrollView>
-    </ScreenLayout>
+      </ScreenLayout>
+    </RoleGuard>
   );
 };
 

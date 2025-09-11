@@ -107,19 +107,19 @@ const TrashHeroEarnings: React.FC<TrashHeroEarningsProps> = ({ navigation }) => 
   earningsSummary.averageHourlyRate = earningsSummary.totalHours > 0 ? earningsSummary.totalEarnings / earningsSummary.totalHours : 0;
 
   const monthlyData = [
-    { month: 'Jan', earnings: 890, jobs: 8, hours: 32 },
-    { month: 'Feb', earnings: 1120, jobs: 12, hours: 45 },
-    { month: 'Mar', earnings: 950, jobs: 9, hours: 38 },
-    { month: 'Apr', earnings: 1340, jobs: 15, hours: 52 },
-    { month: 'May', earnings: 1180, jobs: 11, hours: 43 },
-    { month: 'Jun', earnings: 1050, jobs: 10, hours: 40 },
+    { value: 890 }, // earnings
+    { value: 1120 },
+    { value: 950 },
+    { value: 1340 },
+    { value: 1180 },
+    { value: 1050 },
   ];
 
   const jobTypeData = [
-    { type: 'Cleanup', earnings: 1850, count: 28 },
-    { type: 'Monitoring', earnings: 1200, count: 8 },
-    { type: 'Recycling', earnings: 680, count: 12 },
-    { type: 'Education', earnings: 450, count: 6 },
+    { value: 1850, label: 'Cleanup' },
+    { value: 1200, label: 'Monitoring' },
+    { value: 680, label: 'Recycling' },
+    { value: 450, label: 'Education' },
   ];
 
   const getStatusColor = (status: string) => {
@@ -324,13 +324,8 @@ const TrashHeroEarnings: React.FC<TrashHeroEarningsProps> = ({ navigation }) => 
           <View style={[styles.chartContainer, { backgroundColor: theme.cardBackground }]}>
             <CustomLineChart
               data={monthlyData}
-              primaryKey="earnings"
-              secondaryKey="jobs"
+              color={trashHeroColor}
               height={200}
-              primaryColor={trashHeroColor}
-              secondaryColor="#007bff"
-              primaryLabel="Earnings ($)"
-              secondaryLabel="Jobs Completed"
             />
           </View>
         </View>
@@ -341,10 +336,9 @@ const TrashHeroEarnings: React.FC<TrashHeroEarningsProps> = ({ navigation }) => 
           <View style={[styles.chartContainer, { backgroundColor: theme.cardBackground }]}>
             <CustomBarChart
               data={jobTypeData}
-              dataKey="earnings"
               height={200}
               color={trashHeroColor}
-              labelKey="type"
+              showLabels={true}
             />
           </View>
         </View>

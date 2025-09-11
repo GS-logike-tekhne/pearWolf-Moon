@@ -13,6 +13,8 @@ import { useTheme } from '../context/ThemeContext';
 import { THEME } from '../styles/theme';
 import { analyticsAPI, Analytics, apiUtils } from '../services/api';
 import ScreenLayout from '../components/ScreenLayout';
+import CustomLineChart from '../components/CustomLineChart';
+import CustomBarChart from '../components/CustomBarChart';
 
 const { width } = Dimensions.get('window');
 
@@ -110,6 +112,123 @@ const AdminAnalytics: React.FC<{ navigation: any }> = ({ navigation }) => {
       </View>
     </View>
   );
+
+  if (isLoading) {
+    return (
+      <ScreenLayout>
+        <View style={styles.loadingContainer}>
+          <Text style={[styles.loadingText, { color: theme.textColor }]}>Loading analytics...</Text>
+        </View>
+      </ScreenLayout>
+    );
+  }
+
+  if (!analytics) {
+    return (
+      <ScreenLayout>
+        <View style={styles.errorContainer}>
+          <Text style={[styles.errorText, { color: theme.textColor }]}>Failed to load analytics</Text>
+        </View>
+      </ScreenLayout>
+    );
+  }
+
+  return (
+    <ScreenLayout>
+        <ScrollView 
+          style={styles.container}
+        >
+        {/* Header */}
+        <View style={[styles.header, { backgroundColor: theme.background }]}>
+          <TouchableOpacity 
+            style={styles.backButton}
+            onPress={() => navigation.goBack()}
+          >
+            <Ionicons name="arrow-back" size={24} color={theme.textColor} />
+          </TouchableOpacity>
+          <Text style={[styles.headerTitle, { color: theme.textColor }]}>Analytics</Text>
+          <View style={styles.periodSelector}>
+            {(['week', 'month', 'year'] as const).map((period) => (
+              <TouchableOpacity
+                key={period}
+                style={[
+                  styles.periodButton,
+                  { 
+                    backgroundColor: selectedPeriod === period ? theme.primary : 'transparent',
+                    borderColor: theme.borderColor 
+                  }
+                ]}
+                onPress={() => setSelectedPeriod(period)}
+              >
+                <Text style={[
+                  styles.periodButtonText,
+                  { color: selectedPeriod === period ? 'white' : theme.textColor }
+                ]}>
+                  {period.charAt(0).toUpperCase() + period.slice(1)}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
+        {/* Stats Grid */}
+        <View style={styles.statsGrid}>
+          <StatCard
+            title="Total Users"
+            value={analytics.totalUsers.toLocaleString()}
+            icon="people"
+            color="#007bff"
+            subtitle="Active community members"
+          />
+          <StatCard
+            title="Total Missions"
+            value={analytics.totalMissions}
+            icon="flag"
+            color="#28a745"
+            subtitle="Missions created"
+          />
+          <StatCard
+            title="Eco Points Distributed"
+            value={analytics.totalEcoPointsDistributed.toLocaleString()}
+            icon="leaf"
+            color="#20c997"
+            subtitle="Points awarded"
+          />
+          <StatCard
+            title="Cleanups Completed"
+            value={analytics.totalCleanupsCompleted}
+            icon="trash"
+            color="#fd7e14"
+            subtitle="Environmental impact"
+          />
+        </View>
+
+        {/* Charts Section */}
+        <View style={styles.chartsSection}>
+          <Text style={[styles.sectionTitle, { color: theme.textColor }]}>Monthly Stats</Text>
+          <View style={[styles.chartContainer, { backgroundColor: theme.cardBackground }]}>
+            <CustomLineChart
+              data={analytics.monthlyStats.map(stat => ({ value: stat.missions }))}
+              color={theme.primary}
+              height={200}
+            />
+          </View>
+        </View>
+
+        <View style={styles.chartsSection}>
+          <Text style={[styles.sectionTitle, { color: theme.textColor }]}>Top Performing Roles</Text>
+          <View style={[styles.chartContainer, { backgroundColor: theme.cardBackground }]}>
+            <CustomBarChart
+              data={analytics.topPerformingRoles.map(role => ({ value: role.missionsCompleted, label: role.role }))}
+              color={theme.primary}
+              height={200}
+              showLabels={true}
+            />
+          </View>
+        </View>
+      </ScrollView>
+    </ScreenLayout>
+  );
 };
 
 const styles = StyleSheet.create({
@@ -142,6 +261,17 @@ const styles = StyleSheet.create({
   loadingText: {
     fontSize: THEME.TYPOGRAPHY.fontSize.base,
   },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: THEME.SPACING.lg,
+  },
+  errorText: {
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
+    fontWeight: '500',
+    textAlign: 'center',
+  },
   periodSelector: {
     flexDirection: 'row',
     margin: THEME.SPACING.md,
@@ -164,6 +294,9 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     paddingHorizontal: THEME.SPACING.md,
     gap: 12,
+  },
+  chartsSection: {
+    padding: THEME.SPACING.md,
   },
   statCard: {
     width: (width - 44) / 2,

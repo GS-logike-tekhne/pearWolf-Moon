@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Dimensions,
+  Animated,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
@@ -35,7 +36,7 @@ interface XPAction {
 }
 
 interface EvolutionSystemProps {
-  role: 'TRASH_HERO' | 'VOLUNTEER' | 'BUSINESS';
+  role: 'TRASH_HERO' | 'IMPACT_WARRIOR' | 'ECO_DEFENDER';
 }
 
 const EvolutionSystem: React.FC<EvolutionSystemProps> = ({
@@ -45,6 +46,7 @@ const EvolutionSystem: React.FC<EvolutionSystemProps> = ({
   const navigation = useNavigation();
   const { state: xpState, addXP } = useXP();
   const [showLevelUpAnimation, setShowLevelUpAnimation] = useState(false);
+  const animatedValue = new Animated.Value(0);
   
   const currentLevel = xpState.currentLevel;
   const currentXP = xpState.totalXP;
@@ -102,7 +104,7 @@ const EvolutionSystem: React.FC<EvolutionSystemProps> = ({
           description: 'The ultimate environmental superhero'
         }
       ];
-    } else if (role === 'VOLUNTEER') {
+    } else if (role === 'IMPACT_WARRIOR') {
       return [
         {
           id: 'sprout',
@@ -222,7 +224,7 @@ const EvolutionSystem: React.FC<EvolutionSystemProps> = ({
           { id: 'earn-money', name: 'Earn cleanup payment', xpValue: 15, icon: 'card-outline', description: 'Professional cleanup work' },
           { id: 'tool-upgrade', name: 'Upgrade cleanup tools', xpValue: 20, icon: 'construct-outline', description: 'Improve efficiency' },
         ]
-      : role === 'VOLUNTEER'
+      : role === 'IMPACT_WARRIOR'
       ? [
           { id: 'community-event', name: 'Organize community event', xpValue: 30, icon: 'megaphone-outline', description: 'Rally the community' },
           { id: 'educate-public', name: 'Share eco education', xpValue: 12, icon: 'school-outline', description: 'Spread awareness' },

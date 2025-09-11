@@ -15,6 +15,7 @@ import ScreenLayout from '../components/ScreenLayout';
 import { useAuth } from '../context/AuthContext';
 import MenuModal from '../components/MenuModal';
 import UnifiedHeader from '../components/UnifiedHeader';
+import { RoleGuard } from '../components/RoleGuard';
 
 const { width } = Dimensions.get('window');
 
@@ -132,7 +133,8 @@ const EcoDefenderDashboard: React.FC<EcoDefenderDashboardProps> = ({ navigation 
   );
 
   return (
-    <ScreenLayout>
+    <RoleGuard allowedRoles={['ECO_DEFENDER']}>
+      <ScreenLayout>
       {/* Header */}
       <UnifiedHeader
         onMenuPress={() => setShowMenu(true)}
@@ -262,7 +264,8 @@ const EcoDefenderDashboard: React.FC<EcoDefenderDashboardProps> = ({ navigation 
           }
         }}
       />
-    </ScreenLayout>
+      </ScreenLayout>
+    </RoleGuard>
   );
 };
 

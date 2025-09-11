@@ -12,13 +12,12 @@ interface BadgeSystemScreenProps {
 
 const BadgeSystemScreen: React.FC<BadgeSystemScreenProps> = ({ navigation, route }) => {
   const { theme } = useTheme();
-  const { userRole } = route.params || {};
 
   return (
     <ScreenLayout>
       <BadgeSystem 
-        userRole={userRole}
-        onBack={() => navigation.goBack()}
+        navigation={navigation}
+        route={route}
       />
     </ScreenLayout>
   );

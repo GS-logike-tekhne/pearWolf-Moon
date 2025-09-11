@@ -4,7 +4,8 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
-import { UserRole, Feature, hasPermission, getRolePermissions } from '../types/rolePermissions';
+import { UserRole } from '../types/roles';
+import { Feature, hasPermission, getRolePermissions } from '../types/rolePermissions';
 
 interface RoleGuardProps {
   children: ReactNode;
@@ -129,16 +130,16 @@ export const withRoleGuard = <P extends object>(
 export const useRoleGuard = () => {
   const { currentRole } = useAuth();
 
-  const hasPermission = (permission: Feature): boolean => {
+  const checkPermission = (permission: Feature): boolean => {
     return hasPermission(currentRole, permission);
   };
 
   const hasAnyPermission = (permissions: Feature[]): boolean => {
-    return permissions.some(permission => hasPermission(currentRole, permission));
+    return permissions.some(permission => checkPermission(permission));
   };
 
   const hasAllPermissions = (permissions: Feature[]): boolean => {
-    return permissions.every(permission => hasPermission(currentRole, permission));
+    return permissions.every(permission => checkPermission(permission));
   };
 
   const isRole = (role: UserRole): boolean => {
@@ -151,7 +152,7 @@ export const useRoleGuard = () => {
 
   return {
     currentRole,
-    hasPermission,
+    hasPermission: checkPermission,
     hasAnyPermission,
     hasAllPermissions,
     isRole,

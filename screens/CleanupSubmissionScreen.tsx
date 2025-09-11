@@ -106,10 +106,9 @@ const CleanupSubmissionScreen: React.FC<CleanupSubmissionScreenProps> = ({ navig
         allowsEditing: true,
         aspect: [4, 3],
         quality: 0.8,
-        exif: false,
       });
 
-      if (!result.canceled && result.assets[0]) {
+      if (!result.canceled && result.assets && result.assets[0]) {
         if (type === 'before') {
           setBeforeImage(result.assets[0].uri);
         } else {
@@ -141,7 +140,7 @@ const CleanupSubmissionScreen: React.FC<CleanupSubmissionScreenProps> = ({ navig
         quality: 0.8,
       });
 
-      if (!result.canceled && result.assets[0]) {
+      if (!result.canceled && result.assets && result.assets[0]) {
         if (type === 'before') {
           setBeforeImage(result.assets[0].uri);
         } else {

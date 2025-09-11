@@ -12,6 +12,7 @@ import { getRoleColor } from '../utils/roleColors';
 import { useTheme } from '../context/ThemeContext';
 import { THEME } from '../styles/theme';
 import ScreenLayout from '../components/ScreenLayout';
+import { RoleGuard } from '../components/RoleGuard';
 
 interface Mission {
   id: string;
@@ -363,7 +364,8 @@ const EcoDefenderMissions: React.FC<EcoDefenderMissionsProps> = ({ navigation })
   };
 
   return (
-    <ScreenLayout>
+    <RoleGuard allowedRoles={['ECO_DEFENDER']}>
+      <ScreenLayout>
       {/* Header */}
       <View style={[styles.header, { backgroundColor: theme.cardBackground }]}>
         <TouchableOpacity
@@ -441,7 +443,8 @@ const EcoDefenderMissions: React.FC<EcoDefenderMissionsProps> = ({ navigation })
         </View>
         <View style={styles.bottomSpacing} />
       </ScrollView>
-    </ScreenLayout>
+      </ScreenLayout>
+    </RoleGuard>
   );
 };
 

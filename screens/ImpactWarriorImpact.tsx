@@ -56,20 +56,20 @@ const ImpactWarriorImpact: React.FC<ImpactWarriorImpactProps> = ({ navigation })
   };
 
   const monthlyData = [
-    { month: 'Jan', activities: 4, hours: 18, impact: 420 },
-    { month: 'Feb', activities: 6, hours: 22, impact: 510 },
-    { month: 'Mar', activities: 5, hours: 19, impact: 380 },
-    { month: 'Apr', activities: 8, hours: 28, impact: 640 },
-    { month: 'May', activities: 7, hours: 25, impact: 590 },
-    { month: 'Jun', activities: 6, hours: 21, impact: 470 },
+    { value: 4 }, // activities
+    { value: 6 },
+    { value: 5 },
+    { value: 8 },
+    { value: 7 },
+    { value: 6 },
   ];
 
   const activityData = [
-    { activity: 'Beach Cleanup', count: 12, hours: 48 },
-    { activity: 'Park Restoration', count: 8, hours: 32 },
-    { activity: 'River Cleanup', count: 6, hours: 24 },
-    { activity: 'Tree Planting', count: 5, hours: 15 },
-    { activity: 'Education Events', count: 3, hours: 9 },
+    { value: 12, label: 'Beach Cleanup' },
+    { value: 8, label: 'Park Restoration' },
+    { value: 6, label: 'River Cleanup' },
+    { value: 5, label: 'Tree Planting' },
+    { value: 3, label: 'Education Events' },
   ];
 
   const ImpactCard = ({ title, value, subtitle, icon, color, trend }: any) => (
@@ -237,13 +237,8 @@ const ImpactWarriorImpact: React.FC<ImpactWarriorImpactProps> = ({ navigation })
           <View style={[styles.chartContainer, { backgroundColor: theme.cardBackground }]}>
             <CustomLineChart
               data={monthlyData}
-              primaryKey="activities"
-              secondaryKey="impact"
+              color={impactWarriorColor}
               height={200}
-              primaryColor={impactWarriorColor}
-              secondaryColor="#28a745"
-              primaryLabel="Activities"
-              secondaryLabel="Impact Score"
             />
           </View>
         </MetricSection>
@@ -253,10 +248,9 @@ const ImpactWarriorImpact: React.FC<ImpactWarriorImpactProps> = ({ navigation })
           <View style={[styles.chartContainer, { backgroundColor: theme.cardBackground }]}>
             <CustomBarChart
               data={activityData}
-              dataKey="count"
               height={200}
               color={impactWarriorColor}
-              labelKey="activity"
+              showLabels={true}
             />
           </View>
         </MetricSection>
