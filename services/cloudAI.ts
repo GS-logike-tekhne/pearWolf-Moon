@@ -1,4 +1,4 @@
-import { CleanupSubmission, CleanupVerificationResult } from '../utils/VerifyCleanup';
+import { CleanupSubmission, CleanupVerificationResult } from './verification';
 
 /**
  * Phase 2: Cloud AI Integration Service

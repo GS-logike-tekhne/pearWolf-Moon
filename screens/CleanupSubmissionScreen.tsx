@@ -23,7 +23,7 @@ import {
   CleanupVerificationResult,
   isVerificationRequired,
   getVerificationRequirements 
-} from '../utils/VerifyCleanup';
+} from '../services/verification';
 import ScreenLayout from '../components/ScreenLayout';
 
 const { width } = Dimensions.get('window');

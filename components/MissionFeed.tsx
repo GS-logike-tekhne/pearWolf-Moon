@@ -119,7 +119,7 @@ const MissionFeed: React.FC<MissionFeedProps> = ({ userRole, navigation }) => {
     { key: 'restoration', label: 'Restoration', icon: 'leaf-outline' },
     { key: 'data-collection', label: 'Data Collection', icon: 'analytics-outline' },
     { key: 'community-event', label: 'Community', icon: 'people-outline' },
-    { key: 'recycling', label: 'Recycling', icon: 'recycle-outline' },
+    { key: 'recycling', label: 'Recycling', icon: 'refresh-outline' },
   ];
 
   return (

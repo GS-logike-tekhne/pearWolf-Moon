@@ -4,12 +4,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { Mission } from '../../types/missions';
 import { useTheme } from '../../context/ThemeContext';
 import { THEME } from '../../styles/theme';
+import { CleanupVerificationResult } from '../../services/verification';
 import MissionPhotoVerification from './MissionPhotoVerification';
 
 interface MissionVerificationProps {
   mission: Mission;
   onBack: () => void;
-  onVerificationComplete: (result: any) => void;
+  onVerificationComplete: (result: CleanupVerificationResult) => void;
   onVerificationFailed: (error: string) => void;
   userRole: string;
 }

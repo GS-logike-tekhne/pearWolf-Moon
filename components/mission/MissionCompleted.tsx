@@ -8,14 +8,14 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Mission } from '../../types/missions';
-import { PhotoVerificationResult } from '../../services/photoVerificationService';
+import { CleanupVerificationResult } from '../../services/verification';
 import { useTheme } from '../../context/ThemeContext';
 import { THEME } from '../../styles/theme';
 import { getRoleColor } from '../../utils/roleColors';
 
 interface MissionCompletedProps {
   mission: Mission;
-  verificationResult: PhotoVerificationResult;
+  verificationResult: CleanupVerificationResult;
   isCompleting: boolean;
   onCompleteMission: () => void;
 }
@@ -57,12 +57,12 @@ const MissionCompleted: React.FC<MissionCompletedProps> = ({
         </View>
 
         {/* Suggestions */}
-        {verificationResult.suggestions && verificationResult.suggestions.length > 0 && (
+        {verificationResult.details.recommendations && verificationResult.details.recommendations.length > 0 && (
           <View style={styles.suggestionsContainer}>
             <Text style={[styles.suggestionsTitle, { color: theme.textColor }]}>
               Suggestions for Next Time:
             </Text>
-            {verificationResult.suggestions.map((suggestion, index) => (
+            {verificationResult.details.recommendations.map((suggestion: string, index: number) => (
               <Text key={index} style={[styles.suggestionText, { color: theme.secondaryText }]}>
                 • {suggestion}
               </Text>

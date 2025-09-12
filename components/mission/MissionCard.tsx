@@ -11,13 +11,13 @@ import MissionDetailsModal from './MissionDetailsModal';
 import MissionCompletionModal from './MissionCompletionModal';
 import CelebrationAnimation from '../animations/CelebrationAnimation';
 import LevelUpModal from '../animations/LevelUpModal';
-import { PhotoVerificationResult } from '../../services/photoVerificationService';
+import { CleanupVerificationResult } from '../../services/verification';
 import { useGamification } from '../../hooks/useGamification';
 
 interface MissionCardProps {
   mission: Mission;
   onAccept?: (mission: Mission) => void;
-  onComplete?: (mission: Mission, verificationResult?: PhotoVerificationResult) => void;
+  onComplete?: (mission: Mission, verificationResult?: CleanupVerificationResult) => void;
   userRole?: string;
 }
 
@@ -55,7 +55,7 @@ const MissionCard: React.FC<MissionCardProps> = ({
     setShowCompletionModal(true);
   };
 
-  const handleMissionCompleted = async (verificationResult: PhotoVerificationResult) => {
+  const handleMissionCompleted = async (verificationResult: CleanupVerificationResult) => {
     try {
       const rewards = await processMissionCompletion(mission, verificationResult);
       setIsCompleted(true);

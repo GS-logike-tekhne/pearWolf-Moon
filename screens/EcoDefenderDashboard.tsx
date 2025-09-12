@@ -48,14 +48,12 @@ const EcoDefenderDashboard: React.FC<EcoDefenderDashboardProps> = ({ navigation 
     { label: 'ESG Rank', value: '#8', icon: 'trophy', color: '#8b5cf6' },
   ];
 
-  // Quick actions (2x3 grid)
+  // Quick actions (2x2 grid - 4 items max)
   const quickActions = [
     { title: 'Post New Job', icon: 'add-circle', color: getRoleColor('eco-defender'), onPress: () => navigation.navigate('PostJob') },
     { title: 'Manage Missions', icon: 'list', color: getRoleColor('eco-defender'), onPress: () => navigation.navigate('EcoDefenderMissions') },
-    { title: 'Eco Missions', icon: 'rocket', color: '#8b5cf6', onPress: () => navigation.navigate('EcoDefenderMissions') },
     { title: 'Fund Wallet', icon: 'card', color: '#FF9800', onPress: () => navigation.navigate('WalletScreen', { role: 'eco-defender' }) },
     { title: 'View Impact', icon: 'analytics', color: '#FF9800', onPress: () => navigation.navigate('EcoDefenderImpact') },
-    { title: 'View Map', icon: 'map', color: getRoleColor('eco-defender'), onPress: () => navigation.navigate('MapScreen') },
   ];
 
   // Recent activity
@@ -136,7 +134,7 @@ const EcoDefenderDashboard: React.FC<EcoDefenderDashboardProps> = ({ navigation 
       <PEARScreen
         title="Eco Defender Dashboard"
         role={userRole}
-        showHeader={true}
+        showHeader={false}
         showScroll={true}
         enableRefresh={true}
         onRefresh={() => {

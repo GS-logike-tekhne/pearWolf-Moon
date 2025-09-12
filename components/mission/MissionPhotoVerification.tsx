@@ -17,14 +17,14 @@ import * as Location from 'expo-location';
 import { useTheme } from '../../context/ThemeContext';
 import { THEME } from '../../styles/theme';
 import { getRoleColor } from '../../utils/roleColors';
-import PhotoVerificationService, { MissionPhotoData, PhotoVerificationResult } from '../../services/photoVerificationService';
+import { PhotoVerificationService, CleanupVerificationResult, CleanupSubmission } from '../../services/verification';
 
 const { width } = Dimensions.get('window');
 
 interface MissionPhotoVerificationProps {
   missionId: string;
   userId: string;
-  onVerificationComplete: (result: PhotoVerificationResult) => void;
+  onVerificationComplete: (result: CleanupVerificationResult) => void;
   onVerificationFailed: (error: string) => void;
   disabled?: boolean;
   role?: string;
@@ -60,7 +60,7 @@ const MissionPhotoVerification: React.FC<MissionPhotoVerificationProps> = ({
   const [beforePhotos, setBeforePhotos] = useState<PhotoItem[]>([]);
   const [afterPhotos, setAfterPhotos] = useState<PhotoItem[]>([]);
   const [isVerifying, setIsVerifying] = useState(false);
-  const [verificationResult, setVerificationResult] = useState<PhotoVerificationResult | null>(null);
+  const [verificationResult, setVerificationResult] = useState<CleanupVerificationResult | null>(null);
   const [activeTab, setActiveTab] = useState<'before' | 'after'>('before');
 
   const roleColor = getRoleColor(role);
@@ -100,6 +100,7 @@ const MissionPhotoVerification: React.FC<MissionPhotoVerificationProps> = ({
       return {
         latitude: location.coords.latitude,
         longitude: location.coords.longitude,
+        accuracy: location.coords.accuracy,
       };
     } catch (error) {
       console.error('Error getting location:', error);
@@ -218,24 +219,23 @@ const MissionPhotoVerification: React.FC<MissionPhotoVerificationProps> = ({
         throw new Error('Unable to get current location. Please ensure location services are enabled.');
       }
 
-      const photoData: MissionPhotoData = {
+      const photoData: CleanupSubmission = {
+        beforeImageUri: beforePhotos[0]?.uri || '',
+        afterImageUri: afterPhotos[0]?.uri || '',
         missionId,
-        userId,
-        photos: [...beforePhotos, ...afterPhotos].map(p => p.uri),
         location: {
           latitude: currentLocation.latitude,
           longitude: currentLocation.longitude,
+          accuracy: currentLocation.accuracy || undefined,
         },
         timestamp: new Date(),
-        beforePhotos: beforePhotos.map(p => p.uri),
-        afterPhotos: afterPhotos.map(p => p.uri),
       };
 
-      const result = await PhotoVerificationService.verifyMissionPhotos(photoData);
+      const result = await PhotoVerificationService.getInstance().verifyCleanup(photoData);
       
       setVerificationResult(result);
       
-      if (result.isVerified) {
+      if (result.verified) {
         onVerificationComplete(result);
       } else {
         onVerificationFailed('Photos did not pass verification. Please check suggestions and try again.');
@@ -357,21 +357,21 @@ const MissionPhotoVerification: React.FC<MissionPhotoVerificationProps> = ({
         <View style={[
           styles.verificationStatus,
           { 
-            backgroundColor: verificationResult.isVerified ? theme.success + '20' : theme.error + '20',
-            borderColor: verificationResult.isVerified ? theme.success : theme.error,
+            backgroundColor: verificationResult.verified ? theme.success + '20' : theme.error + '20',
+            borderColor: verificationResult.verified ? theme.success : theme.error,
           }
         ]}>
           <Ionicons 
-            name={verificationResult.isVerified ? 'checkmark-circle' : 'alert-circle'} 
+            name={verificationResult.verified ? 'checkmark-circle' : 'alert-circle'} 
             size={20} 
-            color={verificationResult.isVerified ? theme.success : theme.error} 
+            color={verificationResult.verified ? theme.success : theme.error} 
           />
           <View style={styles.verificationInfo}>
             <Text style={[
               styles.verificationTitle,
-              { color: verificationResult.isVerified ? theme.success : theme.error }
+              { color: verificationResult.verified ? theme.success : theme.error }
             ]}>
-              {verificationResult.isVerified ? 'Verification Successful!' : 'Verification Failed'}
+              {verificationResult.verified ? 'Verification Successful!' : 'Verification Failed'}
             </Text>
             <Text style={[styles.verificationSubtitle, { color: theme.secondaryText }]}>
               Confidence: {verificationResult.confidence}%

@@ -13,7 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
 import { useXP } from '../context/XPContext';
 import PhotoUpload from './PhotoUpload';
-import { isVerificationRequired } from '../utils/VerifyCleanup';
+import { isVerificationRequired } from '../services/verification';
 
 interface MissionCompletionModalProps {
   visible: boolean;

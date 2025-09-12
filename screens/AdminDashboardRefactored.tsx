@@ -33,14 +33,12 @@ const AdminDashboardRefactored: React.FC<AdminDashboardProps> = ({ navigation })
     { label: 'Platform Health', value: '98%', icon: 'analytics', color: '#8b5cf6' },
   ];
 
-  // Quick actions (2x3 grid)
+  // Quick actions (2x2 grid - 4 items max)
   const quickActions = [
     { title: 'User Management', icon: 'people', color: getRoleColor('trash-hero'), onPress: () => navigation.navigate('UserManagement') },
     { title: 'Issue Resolution', icon: 'warning', color: getRoleColor('impact-warrior'), onPress: () => navigation.navigate('AdminIssueResolution') },
     { title: 'Mission Control', icon: 'desktop', color: getRoleColor('business'), onPress: () => navigation.navigate('AdminMissionControl') },
     { title: 'Analytics', icon: 'bar-chart', color: '#8b5cf6', onPress: () => navigation.navigate('Analytics') },
-    { title: 'Rewards System', icon: 'gift', color: theme.warning, onPress: () => navigation.navigate('AdminRewards') },
-    { title: 'Suggested Spots', icon: 'location', color: theme.primary, onPress: () => navigation.navigate('AdminSuggestedSpots') },
   ];
 
   // Recent activity

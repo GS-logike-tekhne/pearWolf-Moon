@@ -229,33 +229,6 @@ const TrashHeroMissions = ({ navigation }: any) => {
       }}
       refreshing={false}
     >
-      {/* Menu Button */}
-      <TouchableOpacity 
-        style={styles.menuButton}
-        onPress={() => setShowMenu(true)}
-      >
-        <Ionicons name="menu" size={24} color={theme.textColor} />
-      </TouchableOpacity>
-        {/* Page Header */}
-        <View style={styles.pageHeader}>
-          <TouchableOpacity 
-            style={[styles.backButton, { backgroundColor: theme.cardBackground }]}
-            onPress={() => navigation.goBack()}
-          >
-            <Ionicons name="arrow-back" size={24} color={getRoleColor('trash-hero')} />
-          </TouchableOpacity>
-          <View style={styles.headerText}>
-            <Text style={[styles.title, { color: theme.primary }]}>
-              Trash Hero Missions
-            </Text>
-            <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
-              {filteredMissions.length} paid cleanup jobs available
-            </Text>
-          </View>
-          <View style={[styles.heroIcon, { backgroundColor: theme.primary }]}>
-            <Ionicons name="briefcase" size={24} color="white" />
-          </View>
-        </View>
 
         {/* Search Bar */}
         <View style={styles.searchContainer}>

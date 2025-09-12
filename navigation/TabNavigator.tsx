@@ -11,7 +11,7 @@ import { useRoleManager } from '../hooks/useRoleManager';
 import { canAccessScreen } from '../types/rolePermissions';
 
 // Import screens
-import UnifiedHeroDashboard from '../screens/UnifiedHeroDashboard';
+import UnifiedHeroDashboard from '../screens/UnifiedHeroDashboardBackup';
 import EcoDefenderDashboard from '../screens/EcoDefenderDashboard';
 import AdminDashboard from '../screens/AdminDashboard';
 import MapScreen from '../screens/MapScreen';

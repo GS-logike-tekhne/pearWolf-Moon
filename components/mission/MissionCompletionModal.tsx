@@ -14,7 +14,7 @@ import { Mission } from '../../types/missions';
 import { useTheme } from '../../context/ThemeContext';
 import { THEME } from '../../styles/theme';
 import { getRoleColor } from '../../utils/roleColors';
-import { PhotoVerificationResult } from '../../services/photoVerificationService';
+import { CleanupVerificationResult } from '../../services/verification';
 import MissionSummary from './MissionSummary';
 import MissionVerification from './MissionVerification';
 import MissionCompleted from './MissionCompleted';
@@ -25,7 +25,7 @@ interface MissionCompletionModalProps {
   visible: boolean;
   mission: Mission | null;
   onClose: () => void;
-  onComplete: (missionId: string, verificationResult: PhotoVerificationResult) => void;
+  onComplete: (missionId: string, verificationResult: CleanupVerificationResult) => void;
   userRole?: string;
 }
 
@@ -38,7 +38,7 @@ const MissionCompletionModal: React.FC<MissionCompletionModalProps> = ({
 }) => {
   const { theme } = useTheme();
   const [currentStep, setCurrentStep] = useState<'summary' | 'verification' | 'completed'>('summary');
-  const [verificationResult, setVerificationResult] = useState<PhotoVerificationResult | null>(null);
+  const [verificationResult, setVerificationResult] = useState<CleanupVerificationResult | null>(null);
   const [isCompleting, setIsCompleting] = useState(false);
 
   const roleColor = getRoleColor(userRole);
@@ -47,7 +47,7 @@ const MissionCompletionModal: React.FC<MissionCompletionModalProps> = ({
     setCurrentStep('verification');
   };
 
-  const handleVerificationComplete = async (result: PhotoVerificationResult) => {
+  const handleVerificationComplete = async (result: CleanupVerificationResult) => {
     setVerificationResult(result);
     
     // Auto-advance to completed step

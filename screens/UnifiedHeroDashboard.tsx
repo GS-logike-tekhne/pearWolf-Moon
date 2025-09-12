@@ -33,11 +33,27 @@ const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({
   const { currentRole, toggleHeroRoles, getRoleConfig } = useRoleManager();
   const [showMenu, setShowMenu] = useState(false);
   
+  // Debug logging
+  console.log('UnifiedHeroDashboard: Rendering with role:', currentRole);
+  console.log('UnifiedHeroDashboard: User:', user?.name);
+  console.log('UnifiedHeroDashboard: Theme:', theme);
+  
   // Use current role from role manager
-  const activeRole = currentRole;
+  const activeRole = currentRole || 'TRASH_HERO';
   
   // Get role configuration from role manager
-  const baseRoleConfig = getRoleConfig();
+  let baseRoleConfig;
+  try {
+    baseRoleConfig = getRoleConfig();
+  } catch (error) {
+    console.error('UnifiedHeroDashboard: Error getting role config:', error);
+    baseRoleConfig = {
+      title: 'Eco Hero',
+      subtitle: 'Environmental Warrior',
+      color: '#4CAF50',
+      icon: 'leaf',
+    };
+  }
   
   // Extend role config with additional properties
   const roleConfig = {
