@@ -3,7 +3,6 @@ import {
   View,
   Text,
   StyleSheet,
-  ScrollView,
   TouchableOpacity,
   Dimensions,
 } from "react-native";
@@ -15,13 +14,14 @@ import { useAuth } from "../context/AuthContext";
 import { useRoleManager } from "../hooks/useRoleManager";
 import UnifiedHeader from "../components/UnifiedHeader";
 import MenuModal from "../components/MenuModal";
-import ScreenLayout from "../components/ScreenLayout";
+import PEARScreen from "../components/PEARScreen";
+import { UserRole } from "../types/roles";
 
 const { width } = Dimensions.get('window');
 
 interface UnifiedHeroDashboardProps {
   navigation: any;
-  userRole?: 'TRASH_HERO' | 'IMPACT_WARRIOR' | 'ECO_DEFENDER' | 'ADMIN';
+  userRole?: UserRole;
 }
 
 const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({ 
@@ -60,26 +60,26 @@ const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({
     switch (activeRole) {
       case 'TRASH_HERO':
         return [
-          { label: 'Jobs Completed', value: '47', icon: 'briefcase', color: getRoleColor('business') },
+          { label: 'Jobs Completed', value: '47', icon: 'briefcase', color: getRoleColor('trash-hero') },
           { label: 'Total Earned', value: '$2,340', icon: 'cash', color: getRoleColor('trash-hero') },
           { label: 'Success Rate', value: '97%', icon: 'trophy', color: '#8b5cf6' },
         ];
       case 'IMPACT_WARRIOR':
         return [
-          { label: 'Events Joined', value: '34', icon: 'people', color: getRoleColor('business') },
-          { label: 'Volunteer Hours', value: '128h', icon: 'time', color: getRoleColor('trash-hero') },
+          { label: 'Events Joined', value: '34', icon: 'people', color: getRoleColor('impact-warrior') },
+          { label: 'Volunteer Hours', value: '128h', icon: 'time', color: getRoleColor('impact-warrior') },
           { label: 'Impact Score', value: '4.9★', icon: 'star', color: '#8b5cf6' },
         ];
       case 'ECO_DEFENDER':
         return [
-          { label: 'Jobs Created', value: '47', icon: 'briefcase', color: theme.primary },
-          { label: 'CO₂ Offset', value: '850 kg', icon: 'leaf', color: theme.primary },
+          { label: 'Jobs Created', value: '47', icon: 'briefcase', color: getRoleColor('eco-defender') },
+          { label: 'CO₂ Offset', value: '850 kg', icon: 'leaf', color: getRoleColor('eco-defender') },
           { label: 'ESG Rank', value: '#8', icon: 'trophy', color: '#8b5cf6' },
         ];
       case 'ADMIN':
         return [
-          { label: 'Users Managed', value: '1,247', icon: 'people', color: theme.primary },
-          { label: 'Issues Resolved', value: '156', icon: 'checkmark-circle', color: theme.primary },
+          { label: 'Users Managed', value: '1,247', icon: 'people', color: getRoleColor('admin') },
+          { label: 'Issues Resolved', value: '156', icon: 'checkmark-circle', color: getRoleColor('admin') },
           { label: 'Platform Health', value: '98%', icon: 'analytics', color: '#8b5cf6' },
         ];
       default:
@@ -96,37 +96,37 @@ const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({
     switch (activeRole) {
       case 'TRASH_HERO':
         return [
-          { title: 'Find Jobs', icon: 'search', color: theme.primary, onPress: () => navigation.navigate('MainTabs', { screen: 'Missions' }) },
-          { title: 'My Earnings', icon: 'wallet', color: theme.warning, onPress: () => navigation.navigate('TrashHeroEarnings') },
-          { title: 'Performance', icon: 'analytics', color: theme.primary, onPress: () => navigation.navigate('TrashHeroEarnings') },
-          { title: 'Map View', icon: 'map', color: theme.primary, onPress: () => navigation.navigate('MapScreen') },
+          { title: 'Find Jobs', icon: 'search', color: getRoleColor('trash-hero'), onPress: () => navigation.navigate('MainTabs', { screen: 'Missions' }) },
+          { title: 'My Earnings', icon: 'wallet', color: '#FF9800', onPress: () => navigation.navigate('TrashHeroEarnings') },
+          { title: 'Performance', icon: 'analytics', color: getRoleColor('trash-hero'), onPress: () => navigation.navigate('TrashHeroEarnings') },
+          { title: 'Map View', icon: 'map', color: getRoleColor('trash-hero'), onPress: () => navigation.navigate('MapScreen') },
           { title: 'My Badges', icon: 'medal', color: '#8b5cf6', onPress: () => navigation.navigate('BadgeSystem', { userRole: 'TRASH_HERO' }) },
           { title: 'Profile', icon: 'person', color: theme.secondaryText, onPress: () => navigation.navigate('ProfileScreen', { role: 'trash-hero' }) },
         ];
       case 'IMPACT_WARRIOR':
         return [
-          { title: 'Join Mission', icon: 'leaf', color: theme.error, onPress: () => navigation.navigate('MainTabs', { screen: 'Missions' }) },
+          { title: 'Join Mission', icon: 'leaf', color: getRoleColor('impact-warrior'), onPress: () => navigation.navigate('MainTabs', { screen: 'Missions' }) },
           { title: 'Restoration Lab', icon: 'flask', color: '#f97316', onPress: () => navigation.navigate('ParkRestorationLab') },
-          { title: 'My Impact', icon: 'analytics', color: theme.primary, onPress: () => navigation.navigate('ImpactWarriorImpact') },
-          { title: 'PEAR Verified Missions', icon: 'people', color: theme.primary, onPress: () => navigation.navigate('PearVerifiedMissions') },
+          { title: 'My Impact', icon: 'analytics', color: getRoleColor('impact-warrior'), onPress: () => navigation.navigate('ImpactWarriorImpact') },
+          { title: 'PEAR Verified Missions', icon: 'people', color: getRoleColor('impact-warrior'), onPress: () => navigation.navigate('PearVerifiedMissions') },
           { title: 'My Badges', icon: 'medal', color: '#8b5cf6', onPress: () => navigation.navigate('BadgeSystem', { userRole: 'IMPACT_WARRIOR' }) },
           { title: 'Profile', icon: 'person', color: theme.secondaryText, onPress: () => navigation.navigate('ProfileScreen', { role: 'impact-warrior' }) },
         ];
       case 'ECO_DEFENDER':
         return [
-          { title: 'Post New Job', icon: 'add-circle', color: theme.primary, onPress: () => navigation.navigate('PostJob') },
-          { title: 'Manage Missions', icon: 'list', color: theme.primary, onPress: () => navigation.navigate('EcoDefenderMissions') },
+          { title: 'Post New Job', icon: 'add-circle', color: getRoleColor('eco-defender'), onPress: () => navigation.navigate('PostJob') },
+          { title: 'Manage Missions', icon: 'list', color: getRoleColor('eco-defender'), onPress: () => navigation.navigate('EcoDefenderMissions') },
           { title: 'Eco Missions', icon: 'rocket', color: '#8b5cf6', onPress: () => navigation.navigate('EcoDefenderMissions') },
-          { title: 'Fund Wallet', icon: 'card', color: theme.warning, onPress: () => navigation.navigate('WalletScreen', { role: 'business' }) },
-          { title: 'View Impact', icon: 'analytics', color: theme.warning, onPress: () => navigation.navigate('EcoDefenderImpact') },
-          { title: 'View Map', icon: 'map', color: theme.primary, onPress: () => navigation.navigate('MapScreen') },
+          { title: 'Fund Wallet', icon: 'card', color: '#FF9800', onPress: () => navigation.navigate('WalletScreen', { role: 'eco-defender' }) },
+          { title: 'View Impact', icon: 'analytics', color: '#FF9800', onPress: () => navigation.navigate('EcoDefenderImpact') },
+          { title: 'View Map', icon: 'map', color: getRoleColor('eco-defender'), onPress: () => navigation.navigate('MapScreen') },
         ];
       case 'ADMIN':
         return [
-          { title: 'Admin Panel', icon: 'speedometer', color: theme.warning, onPress: () => navigation.navigate('AdminDashboard') },
-          { title: 'User Management', icon: 'people', color: theme.primary, onPress: () => navigation.navigate('UserManagement') },
-          { title: 'Issue Resolution', icon: 'warning', color: theme.error, onPress: () => navigation.navigate('AdminIssueResolution') },
-          { title: 'Mission Control', icon: 'desktop', color: theme.primary, onPress: () => navigation.navigate('AdminMissionControl') },
+          { title: 'Admin Panel', icon: 'speedometer', color: '#FF9800', onPress: () => navigation.navigate('AdminDashboard') },
+          { title: 'User Management', icon: 'people', color: getRoleColor('admin'), onPress: () => navigation.navigate('UserManagement') },
+          { title: 'Issue Resolution', icon: 'warning', color: '#F44336', onPress: () => navigation.navigate('AdminIssueResolution') },
+          { title: 'Mission Control', icon: 'desktop', color: getRoleColor('admin'), onPress: () => navigation.navigate('AdminMissionControl') },
           { title: 'Analytics', icon: 'bar-chart', color: '#8b5cf6', onPress: () => navigation.navigate('Analytics') },
           { title: 'Settings', icon: 'settings', color: theme.secondaryText, onPress: () => navigation.navigate('AdminSettings') },
         ];
@@ -265,7 +265,18 @@ const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({
   );
 
   return (
-    <ScreenLayout scrollable={false}>
+    <PEARScreen
+      title="Dashboard"
+      role={activeRole || 'TRASH_HERO'}
+      showHeader={true}
+      showScroll={true}
+      enableRefresh={true}
+      onRefresh={() => {
+        // Refresh dashboard data
+        console.log('Refreshing dashboard...');
+      }}
+      refreshing={false}
+    >
       <UnifiedHeader
         onMenuPress={() => setShowMenu(true)}
         role={activeRole}
@@ -276,8 +287,6 @@ const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({
           onSignOut: () => navigation.navigate('Login')
         })}
       />
-
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* My Card Section */}
         <View style={[styles.myCard, { backgroundColor: theme.cardBackground }]}>
           <View style={styles.cardHeader}>
@@ -294,7 +303,7 @@ const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({
               <View style={styles.toggleContainer}>
                 <Text style={[
                   styles.toggleLabel, 
-                  { color: activeRole === 'TRASH_HERO' ? '#28A745' : theme.secondaryText }
+                  { color: activeRole === 'TRASH_HERO' ? '#4CAF50' : theme.secondaryText }
                 ]}>
                   Trash Hero
                 </Text>
@@ -302,7 +311,7 @@ const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({
                 <TouchableOpacity
                   style={[
                     styles.toggleSwitch,
-                    { backgroundColor: activeRole === 'IMPACT_WARRIOR' ? '#dc3545' : '#28A745' }
+                    { backgroundColor: activeRole === 'IMPACT_WARRIOR' ? '#FF5722' : '#4CAF50' }
                   ]}
                   onPress={toggleRole}
                   activeOpacity={0.8}
@@ -320,7 +329,7 @@ const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({
                 
                 <Text style={[
                   styles.toggleLabel, 
-                  { color: activeRole === 'IMPACT_WARRIOR' ? '#dc3545' : theme.secondaryText }
+                  { color: activeRole === 'IMPACT_WARRIOR' ? '#FF5722' : theme.secondaryText }
                 ]}>
                   Impact Warrior
                 </Text>
@@ -421,7 +430,6 @@ const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({
         </View>
 
         <View style={styles.bottomSpacing} />
-      </ScrollView>
 
       {/* Menu Modal */}
       <MenuModal
@@ -442,97 +450,11 @@ const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({
           }
         }}
       />
-    </ScreenLayout>
+    </PEARScreen>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: THEME.SPACING.md,
-    paddingVertical: THEME.SPACING.sm + 4,
-    paddingTop: THEME.SPACING.sm,
-  },
-  menuButton: {
-    padding: THEME.SPACING.sm,
-  },
-  pearLogo: {
-    paddingHorizontal: THEME.SPACING.md + 4,
-    paddingVertical: THEME.SPACING.sm,
-    borderRadius: 20,
-  },
-  pearText: {
-    // color: theme.background,
-    fontSize: THEME.TYPOGRAPHY.fontSize.base,
-    fontWeight: '700',
-    letterSpacing: 1,
-  },
-  headerRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  pointsContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  pointsText: {
-    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
-    fontWeight: '600',
-  },
-  notificationButton: {
-    position: 'relative',
-    padding: THEME.SPACING.sm,
-  },
-  notificationBadge: {
-    position: 'absolute',
-    top: 4,
-    right: 4,
-    backgroundColor: '#dc3545',
-    borderRadius: THEME.BORDER_RADIUS.md,
-    minWidth: 16,
-    height: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  notificationBadgeText: {
-    // color: theme.background,
-    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
-    fontWeight: '600',
-  },
-  profileButton: {
-    position: 'relative',
-    width: 32,
-    height: 32,
-    borderRadius: THEME.BORDER_RADIUS.xl,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  profileBadge: {
-    position: 'absolute',
-    top: -2,
-    right: -2,
-    backgroundColor: '#28a745',
-    borderRadius: THEME.BORDER_RADIUS.md,
-    minWidth: 16,
-    height: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  profileBadgeText: {
-    // color: theme.background,
-    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
-    fontWeight: '600',
-  },
-  content: {
-    flex: 1,
-  },
   myCard: {
     margin: THEME.SPACING.md,
     marginTop: THEME.SPACING.sm,

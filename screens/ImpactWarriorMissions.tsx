@@ -12,7 +12,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { getRoleColor } from '../utils/roleColors';
 import { useTheme } from '../context/ThemeContext';
 import { THEME } from '../styles/theme';
-import ScreenLayout from '../components/ScreenLayout';
+import PEARScreen from '../components/PEARScreen';
 import MenuModal from '../components/MenuModal';
 
 const { width } = Dimensions.get('window');
@@ -236,44 +236,25 @@ const ImpactWarriorMissions = ({ navigation }: any) => {
   );
 
   return (
-    <ScreenLayout>
-      {/* Unified Header */}
-      <View style={[styles.header, { backgroundColor: theme.background }]}>
-        <TouchableOpacity 
-          style={styles.menuButton}
-          onPress={() => setShowMenu(true)}
-        >
-          <Ionicons name="menu" size={24} color={theme.textColor} />
-        </TouchableOpacity>
-        
-        <View style={[styles.pearLogo, { backgroundColor: theme.primary }]}>
-          <Text style={styles.pearText}>PEAR</Text>
-        </View>
-        
-        <View style={styles.headerRight}>
-          <View style={styles.pointsContainer}>
-            <Ionicons name="star" size={16} color="#ffc107" />
-            <Text style={[styles.pointsText, { color: theme.textColor }]}>850</Text>
-            <Ionicons name="help-circle" size={16} color={theme.secondaryText} />
-          </View>
-          
-          <TouchableOpacity style={styles.notificationButton}>
-            <Ionicons name="notifications" size={20} color={theme.textColor} />
-            <View style={styles.notificationBadge}>
-              <Text style={styles.notificationBadgeText}>3</Text>
-            </View>
-          </TouchableOpacity>
-          
-          <TouchableOpacity style={[styles.profileButton, { backgroundColor: theme.primary }]}>
-            <Ionicons name="person" size={20} color="white" />
-            <View style={styles.profileBadge}>
-              <Text style={styles.profileBadgeText}>1</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+    <PEARScreen
+      title="Impact Warrior Missions"
+      role="IMPACT_WARRIOR"
+      showHeader={true}
+      showScroll={true}
+      enableRefresh={true}
+      onRefresh={() => {
+        // Refresh missions data
+        console.log('Refreshing ImpactWarrior missions...');
+      }}
+      refreshing={false}
+    >
+      {/* Menu Button */}
+      <TouchableOpacity 
+        style={styles.menuButton}
+        onPress={() => setShowMenu(true)}
+      >
+        <Ionicons name="menu" size={24} color={theme.textColor} />
+      </TouchableOpacity>
         {/* Page Header */}
         <View style={styles.pageHeader}>
           <TouchableOpacity 
@@ -401,7 +382,6 @@ const ImpactWarriorMissions = ({ navigation }: any) => {
         </View>
 
         <View style={styles.bottomSpacing} />
-      </ScrollView>
 
       {/* Menu Modal */}
       <MenuModal
@@ -417,7 +397,7 @@ const ImpactWarriorMissions = ({ navigation }: any) => {
           navigation.navigate('Login');
         }}
       />
-    </ScreenLayout>
+    </PEARScreen>
   );
 };
 
@@ -434,7 +414,7 @@ const styles = StyleSheet.create({
     paddingTop: THEME.SPACING.sm,
   },
   menuButton: {
-    padding: THEME.SPACING.sm,
+    marginBottom: THEME.SPACING.sm,
   },
   pearLogo: {
     paddingHorizontal: THEME.SPACING.md + 4,

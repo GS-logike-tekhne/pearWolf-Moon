@@ -1,5 +1,5 @@
 import React from 'react';
-import ScreenLayout from '../components/ScreenLayout';
+import PEARScreen from '../components/PEARScreen';
 import {
   View,
   Text,
@@ -98,7 +98,13 @@ const RewardsScreen: React.FC<RewardsScreenProps> = ({ navigation }) => {
   );
 
   return (
-    <ScreenLayout>
+    <PEARScreen
+      title="Rewards & Achievements"
+      role="TRASH_HERO"
+      showHeader={true}
+      showScroll={true}
+      enableRefresh={false}
+    >
       {/* Points Header */}
       <View style={[styles.pointsHeader, { backgroundColor: theme.background }]}>
         <Text style={[styles.pointsLabel, { color: theme.secondaryText }]}>Available Points</Text>
@@ -121,7 +127,7 @@ const RewardsScreen: React.FC<RewardsScreenProps> = ({ navigation }) => {
           <AchievementCard key={index} achievement={achievement} />
         ))}
       </View>
-    </ScreenLayout>
+    </PEARScreen>
   );
 };
 

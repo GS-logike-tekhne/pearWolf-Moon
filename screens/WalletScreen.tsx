@@ -11,7 +11,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { getRoleColor } from '../utils/roleColors';
 import { useTheme } from '../context/ThemeContext';
 import { THEME } from '../styles/theme';
-import ScreenLayout from '../components/ScreenLayout';
+import PEARScreen from '../components/PEARScreen';
 import { useAuth } from '../context/AuthContext';
 import { generateWalletId } from '../utils/generateWalletId';
 import { UserRole } from '../types/roles';
@@ -182,7 +182,18 @@ const WalletScreen: React.FC<WalletScreenProps> = ({ navigation, route }) => {
   );
 
   return (
-    <ScreenLayout>
+    <PEARScreen
+      title="Wallet & Earnings"
+      role={userRole.toUpperCase().replace('-', '_') as UserRole}
+      showHeader={true}
+      showScroll={true}
+      enableRefresh={true}
+      onRefresh={() => {
+        // Refresh wallet data
+        console.log('Refreshing wallet...');
+      }}
+      refreshing={false}
+    >
       <UnifiedHeader
         onMenuPress={() => setShowMenu(true)}
         role={userRole}
@@ -294,7 +305,7 @@ const WalletScreen: React.FC<WalletScreenProps> = ({ navigation, route }) => {
           navigation.navigate('Login');
         }}
       />
-    </ScreenLayout>
+    </PEARScreen>
   );
 };
 

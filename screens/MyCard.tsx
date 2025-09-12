@@ -3,7 +3,6 @@ import {
   View,
   Text,
   StyleSheet,
-  ScrollView,
   TouchableOpacity,
   Dimensions,
 } from 'react-native';
@@ -12,7 +11,7 @@ import { getRoleColor } from '../utils/roleColors';
 import { isUserVerified, getVerificationBadgeText } from '../utils/verification';
 import { useTheme } from '../context/ThemeContext';
 import { THEME } from '../styles/theme';
-import ScreenLayout from '../components/ScreenLayout';
+import PEARScreen from '../components/PEARScreen';
 import { useXP } from '../context/XPContext';
 import { useXP as useXPHook } from '../hooks/useXP';
 import { XPProgressBar } from '../components/XPProgressBar';
@@ -21,7 +20,8 @@ import LabProgressCard from '../components/LabProgressCard';
 import { formatCO2Offset } from '../utils/weightUtils';
 import { getUserStatsByRole } from '../utils/mockData';
 import { EvolutionAnimation } from '../components/EvolutionAnimation';
-import { getCurrentUser, UserRole } from '../data/userStats';
+import { getCurrentUser } from '../data/userStats';
+import { UserRole } from '../types/roles';
 
 const { width } = Dimensions.get('window');
 
@@ -34,11 +34,12 @@ const MyCard: React.FC<MyCardProps> = ({ navigation, route }) => {
   const { theme } = useTheme();
   const { state: xpState } = useXP();
   const { user } = useAuth();
-  const role = (route?.params?.role || 'trash-hero') as UserRole;
+  const role = (route?.params?.role || 'TRASH_HERO') as UserRole;
   const [selectedAttribute, setSelectedAttribute] = useState<string | null>(null);
   
-  // Get dynamic user data
-  const currentUser = getCurrentUser(role);
+  // Get dynamic user data - convert role to lowercase format
+  const roleForData = role.toLowerCase().replace('_', '-') as 'trash-hero' | 'impact-warrior' | 'eco-defender' | 'admin';
+  const currentUser = getCurrentUser(roleForData);
   const { profile, stats, levelData } = currentUser;
   
   // Use the new enhanced XP system with dynamic data
@@ -96,10 +97,10 @@ const MyCard: React.FC<MyCardProps> = ({ navigation, route }) => {
 
   const getRoleSubtitle = (userRole: UserRole): string => {
     switch (userRole) {
-      case 'trash-hero': return 'Professional Cleaner';
-      case 'impact-warrior': return 'Community Volunteer';
-      case 'eco-defender': return 'Environmental Investor';
-      case 'admin': return 'System Administrator';
+      case 'TRASH_HERO': return 'Professional Cleaner';
+      case 'IMPACT_WARRIOR': return 'Community Volunteer';
+      case 'ECO_DEFENDER': return 'Environmental Investor';
+      case 'ADMIN': return 'System Administrator';
       default: return 'PEAR User';
     }
   };
@@ -107,7 +108,7 @@ const MyCard: React.FC<MyCardProps> = ({ navigation, route }) => {
   // Role-specific 6-metric layout using dynamic stats
   const getMetrics = () => {
     switch (role) {
-      case 'trash-hero':
+      case 'TRASH_HERO':
         return [
           { label: 'Jobs Completed', value: stats.jobsCompleted?.toString() || '0', icon: 'briefcase', color: theme.primary },
           { label: 'Total Earned', value: stats.totalEarned || '$0', icon: 'card', color: theme.primary },
@@ -116,7 +117,7 @@ const MyCard: React.FC<MyCardProps> = ({ navigation, route }) => {
           { label: 'Hours Worked', value: stats.hoursWorked || '0h', icon: 'time', color: theme.primary },
           { label: 'Verified Events', value: stats.verifiedEvents.toString(), icon: 'shield-checkmark', color: '#10b981' },
         ];
-      case 'impact-warrior':
+      case 'IMPACT_WARRIOR':
         return [
           { label: 'Events Joined', value: stats.eventsJoined?.toString() || '0', icon: 'people', color: theme.primary },
           { label: 'Impact Points', value: stats.impactPoints || '0', icon: 'star', color: theme.primary },
@@ -125,7 +126,7 @@ const MyCard: React.FC<MyCardProps> = ({ navigation, route }) => {
           { label: 'Volunteer Hours', value: stats.volunteerHours || '0h', icon: 'time', color: theme.primary },
           { label: 'Verified Events', value: stats.verifiedEvents.toString(), icon: 'shield-checkmark', color: '#10b981' },
         ];
-      case 'eco-defender':
+      case 'ECO_DEFENDER':
         return [
           { label: 'Funded Jobs', value: stats.fundedJobs?.toString() || '0', icon: 'briefcase', color: theme.primary },
           { label: 'Total Investment', value: stats.totalInvestment || '$0', icon: 'card', color: theme.primary },
@@ -134,7 +135,7 @@ const MyCard: React.FC<MyCardProps> = ({ navigation, route }) => {
           { label: 'CO₂ Offset', value: stats.co2Offset || '0 tons', icon: 'leaf', color: theme.primary },
           { label: 'Verified Events', value: stats.verifiedEvents.toString(), icon: 'shield-checkmark', color: '#10b981' },
         ];
-      case 'admin':
+      case 'ADMIN':
         return [
           { label: 'Users Managed', value: stats.usersManaged?.toString() || '0', icon: 'people', color: theme.primary },
           { label: 'System Uptime', value: stats.systemUptime || '100%', icon: 'speedometer', color: theme.primary },
@@ -213,24 +214,21 @@ const MyCard: React.FC<MyCardProps> = ({ navigation, route }) => {
   );
 
   return (
-    <ScreenLayout>
-      {/* Header */}
-      <View style={[styles.header, { backgroundColor: theme.background }]}>
-        <TouchableOpacity 
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
-          <Ionicons name="arrow-back" size={24} color={roleConfig.color} />
-        </TouchableOpacity>
-        
-        <Text style={[styles.headerTitle, { color: theme.textColor }]}>My PEAR Card</Text>
-        
-        <View style={[styles.pearBadge, { backgroundColor: roleConfig.color }]}>
-          <Text style={styles.pearIcon}>🍐</Text>
-        </View>
-      </View>
-
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+    <PEARScreen
+      title="My PEAR Card"
+      role={role}
+      showHeader={true}
+      showScroll={true}
+      enableRefresh={false}
+      contentPadding={true}
+    >
+      {/* Back Button */}
+      <TouchableOpacity 
+        style={styles.backButton}
+        onPress={() => navigation.goBack()}
+      >
+        <Ionicons name="arrow-back" size={24} color={roleConfig.color} />
+      </TouchableOpacity>
         {/* Verification Badge Section */}
         <View style={styles.verificationSection}>
           {user && isUserVerified(user) ? (
@@ -394,7 +392,7 @@ const MyCard: React.FC<MyCardProps> = ({ navigation, route }) => {
         </View>
 
         {/* Park Restoration Lab Progress - Only for Impact Warriors */}
-        {role === 'impact-warrior' && (
+        {role === 'IMPACT_WARRIOR' && (
           <LabProgressCard
             progress={{
               totalQuests: 12,
@@ -410,7 +408,6 @@ const MyCard: React.FC<MyCardProps> = ({ navigation, route }) => {
         )}
 
         <View style={styles.bottomSpacing} />
-      </ScrollView>
 
       {/* Evolution Animation */}
       {evolutionData && (
@@ -422,40 +419,13 @@ const MyCard: React.FC<MyCardProps> = ({ navigation, route }) => {
           roleColor={roleConfig.color}
         />
       )}
-    </ScreenLayout>
+    </PEARScreen>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: THEME.SPACING.md,
-    paddingVertical: THEME.SPACING.sm + 4,
-    paddingTop: THEME.SPACING.sm,
-  },
-  backButton: {},
-  headerTitle: {
-    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
-    fontWeight: '700',
-    flex: 1,
-    textAlign: 'center',
-    marginRight: THEME.SPACING.xl, // Compensate for back button
-  },
-  pearBadge: {
-    width: 32,
-    height: 32,
-    borderRadius: THEME.BORDER_RADIUS.xl,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  pearIcon: {
-    fontSize: THEME.TYPOGRAPHY.fontSize.base,
-    textAlign: 'center',
+  backButton: {
+    marginBottom: THEME.SPACING.sm,
   },
   verificationSection: {
     alignItems: 'center',
@@ -470,9 +440,6 @@ const styles = StyleSheet.create({
   verifiedText: {
     fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '600',
-  },
-  content: {
-    flex: 1,
   },
   myCard: {
     margin: THEME.SPACING.md,

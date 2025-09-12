@@ -1,449 +1,681 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
+  Modal,
+  ScrollView,
   Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { Mission } from '../types/missions';
 import { useTheme } from '../context/ThemeContext';
-import { useMissions } from '../context/MissionContext';
-import { Mission, DIFFICULTY_CONFIG } from '../types/missions';
+import { useXP } from '../context/XPContext';
+import { THEME } from '../styles/theme';
+import { getRoleColor } from '../utils/roleColors';
 
 interface MissionCardProps {
   mission: Mission;
-  userRole: string;
-  onMissionPress?: (mission: Mission) => void;
+  onAccept?: (mission: Mission) => void;
+  onComplete?: (mission: Mission) => void;
+  showDetails?: boolean;
 }
 
-const MissionCard: React.FC<MissionCardProps> = ({ 
-  mission, 
-  userRole,
-  onMissionPress 
+export const MissionCard: React.FC<MissionCardProps> = ({
+  mission,
+  onAccept,
+  onComplete,
+  showDetails = true,
 }) => {
   const { theme } = useTheme();
-  const { state: missionState, acceptMission, boostMission, joinMission } = useMissions();
-  const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
-  const [progress, setProgress] = useState(0);
+  const { addXP } = useXP();
+  const [showModal, setShowModal] = useState(false);
+  const [isAccepted, setIsAccepted] = useState(false);
+  const [isCompleted, setIsCompleted] = useState(mission.status === 'completed');
 
-  // Get mission progress from context
-  const missionProgress = missionState.missionProgress[mission.id];
-  const isActive = mission.status === 'active';
-  const isCompleted = mission.status === 'completed';
-  const canJoin = mission.joinedUsers.length < mission.requiresUsers && mission.status === 'available';
-  const canBoost = isActive && mission.canBoost && !mission.boostUsed;
-  const boostCost = 20; // eco-points cost for boost
-  
-  useEffect(() => {
-    if (missionProgress?.timeRemaining !== undefined) {
-      setTimeRemaining(missionProgress.timeRemaining);
-      setProgress(missionProgress.progress || 0);
-    }
-  }, [missionProgress]);
+  const roleColor = getRoleColor(mission.requiredRole);
+  const urgencyColor = getUrgencyColor(mission.urgency);
+  const difficultyColor = getDifficultyColor(mission.difficulty);
 
-  const formatTime = (seconds: number): string => {
-    if (seconds <= 0) return 'Complete!';
-    
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
-    
-    if (hours > 0) {
-      return `${hours}h ${minutes}m`;
-    } else if (minutes > 0) {
-      return `${minutes}m ${secs}s`;
-    } else {
-      return `${secs}s`;
-    }
-  };
-
-  const getDifficultyColor = () => {
-    return DIFFICULTY_CONFIG[mission.difficulty].color;
-  };
-
-  const handleAcceptMission = () => {
-    if (mission.requiresUsers > 1 && mission.joinedUsers.length < mission.requiresUsers) {
-      Alert.alert(
-        'Mission Requirements',
-        `This mission requires ${mission.requiresUsers} participants. Currently ${mission.joinedUsers.length} joined.`,
-        [{ text: 'OK' }]
-      );
-      return;
-    }
-    acceptMission(mission.id);
-  };
-
-  const handleJoinMission = () => {
-    joinMission(mission.id, 'current_user_id'); // In real app, use actual user ID
-    if (mission.joinedUsers.length + 1 >= mission.requiresUsers) {
-      Alert.alert(
-        'Mission Ready!',
-        'All required participants have joined. Mission can now be started.',
-        [
-          { text: 'Start Now', onPress: () => acceptMission(mission.id) },
-          { text: 'Wait', style: 'cancel' }
-        ]
-      );
-    }
-  };
-
-  const handleBoostMission = () => {
-    if (missionState.userEcoPoints < boostCost) {
-      Alert.alert(
-        'Insufficient Eco-Points',
-        `You need ${boostCost} eco-points to boost this mission. You have ${missionState.userEcoPoints}.`,
-        [{ text: 'OK' }]
-      );
-      return;
-    }
-    
+  const handleAccept = () => {
+    setIsAccepted(true);
+    onAccept?.(mission);
     Alert.alert(
-      'Boost Mission',
-      `Spend ${boostCost} eco-points to reduce mission time by 10 minutes?`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Boost', onPress: () => boostMission(mission.id, boostCost) }
-      ]
+      'Mission Accepted! 🎯',
+      `You've joined ${mission.title}. Good luck, ${mission.requiredRole}!`,
+      [{ text: 'Let\'s Go!', style: 'default' }]
     );
   };
 
-  const getStatusColor = () => {
-    switch (mission.status) {
-      case 'active': return theme.primary;
-      case 'completed': return '#22c55e';
-      case 'expired': return '#ef4444';
-      default: return theme.secondaryText;
+  const handleComplete = () => {
+    if (!isAccepted) {
+      Alert.alert('Mission Not Started', 'Please accept the mission first!');
+      return;
+    }
+
+    // Award XP and Eco Points
+    addXP(mission.xpReward, `mission_${mission.type}`);
+    
+    setIsCompleted(true);
+    onComplete?.(mission);
+    
+    Alert.alert(
+      'Mission Complete! 🎉',
+      `Great work! You earned ${mission.xpReward} XP and ${mission.ecoPointsReward} Eco Points!`,
+      [{ text: 'Awesome!', style: 'default' }]
+    );
+  };
+
+  const getUrgencyColor = (urgency: Mission['urgency']): string => {
+    switch (urgency) {
+      case 'urgent': return '#FF5722';
+      case 'high': return '#FF9800';
+      case 'medium': return '#FFC107';
+      case 'low': return '#4CAF50';
+      default: return '#9E9E9E';
     }
   };
 
-  const getTypeIcon = () => {
-    switch (mission.type) {
-      case 'Quick Clean': return 'flash-outline';
-      case 'Timed Mission': return 'timer-outline';
-      case 'Community Quest': return 'people-outline';
-      case 'Business Mission': return 'business-outline';
-      default: return 'leaf-outline';
+  const getDifficultyColor = (difficulty: Mission['difficulty']): string => {
+    switch (difficulty) {
+      case 'easy': return '#4CAF50';
+      case 'medium': return '#FF9800';
+      case 'hard': return '#F44336';
+      default: return '#9E9E9E';
     }
+  };
+
+  const getUrgencyIcon = (urgency: Mission['urgency']): string => {
+    switch (urgency) {
+      case 'urgent': return 'flash';
+      case 'high': return 'trending-up';
+      case 'medium': return 'time';
+      case 'low': return 'leaf';
+      default: return 'help';
+    }
+  };
+
+  const getDifficultyIcon = (difficulty: Mission['difficulty']): string => {
+    switch (difficulty) {
+      case 'easy': return 'checkmark-circle';
+      case 'medium': return 'help-circle';
+      case 'hard': return 'warning';
+      default: return 'help';
+    }
+  };
+
+  const formatDate = (date: Date): string => {
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
+  const formatDuration = (minutes: number): string => {
+    if (minutes < 60) return `${minutes}m`;
+    const hours = Math.floor(minutes / 60);
+    const remainingMinutes = minutes % 60;
+    return remainingMinutes > 0 ? `${hours}h ${remainingMinutes}m` : `${hours}h`;
   };
 
   return (
-    <TouchableOpacity
-      style={[
-        styles.card,
-        { 
-          backgroundColor: theme.cardBackground,
-          borderColor: getDifficultyColor(),
-        },
-        isCompleted && { opacity: 0.7 }
-      ]}
-      onPress={() => onMissionPress && onMissionPress(mission)}
-      activeOpacity={0.8}
-    >
-      {/* Header with mission type and difficulty */}
-      <View style={styles.cardHeader}>
-        <View style={styles.typeContainer}>
-          <Ionicons 
-            name={getTypeIcon()} 
-            size={16} 
-            color={getDifficultyColor()}
-          />
-          <Text style={[styles.missionType, { color: getDifficultyColor() }]}>
-            {mission.type}
-          </Text>
+    <>
+      <TouchableOpacity
+        style={[
+          styles.card,
+          {
+            backgroundColor: theme.cardBackground,
+            borderLeftColor: roleColor,
+          },
+          isCompleted && styles.completedCard,
+        ]}
+        onPress={() => setShowModal(true)}
+        activeOpacity={0.7}
+      >
+        {/* Header */}
+        <View style={styles.header}>
+          <View style={styles.titleContainer}>
+            <Text style={[styles.title, { color: theme.textColor }]}>
+              {mission.title}
+            </Text>
+            <View style={[styles.roleBadge, { backgroundColor: roleColor }]}>
+              <Text style={styles.roleText}>
+                {mission.requiredRole.replace('-', ' ').toUpperCase()}
+              </Text>
+            </View>
+          </View>
+          
+          <View style={styles.statusContainer}>
+            <View style={[styles.urgencyBadge, { backgroundColor: urgencyColor }]}>
+              <Ionicons 
+                name={getUrgencyIcon(mission.urgency)} 
+                size={12} 
+                color="white" 
+              />
+            </View>
+            <View style={[styles.difficultyBadge, { backgroundColor: difficultyColor }]}>
+              <Ionicons 
+                name={getDifficultyIcon(mission.difficulty)} 
+                size={12} 
+                color="white" 
+              />
+            </View>
+          </View>
         </View>
-        
-        <View style={[styles.difficultyBadge, { backgroundColor: getDifficultyColor() }]}>
-          <Text style={styles.difficultyText}>{mission.difficulty}</Text>
-        </View>
-      </View>
 
-      {/* Mission Title and Description */}
-      <View style={styles.contentSection}>
-        <Text style={[styles.missionTitle, { color: theme.textColor }]}>
-          {mission.title}
-        </Text>
-        <Text style={[styles.missionDescription, { color: theme.secondaryText }]}>
+        {/* Description */}
+        <Text style={[styles.description, { color: theme.secondaryText }]}>
           {mission.description}
         </Text>
-      </View>
 
-      {/* Progress Bar (for active missions) */}
-      {isActive && timeRemaining !== null && (
-        <View style={styles.progressSection}>
-          <View style={styles.progressHeader}>
-            <Text style={[styles.progressLabel, { color: theme.textColor }]}>
-              Progress
-            </Text>
-            <Text style={[styles.timeRemaining, { color: theme.primary }]}>
-              {formatTime(timeRemaining)}
+        {/* Details Row */}
+        <View style={styles.detailsRow}>
+          <View style={styles.detailItem}>
+            <Ionicons name="location" size={14} color={theme.secondaryText} />
+            <Text style={[styles.detailText, { color: theme.secondaryText }]}>
+              {mission.location.name}
             </Text>
           </View>
-          <View style={[styles.progressTrack, { backgroundColor: theme.accent }]}>
-            <View
-              style={[
-                styles.progressFill,
-                { 
-                  width: `${Math.min(progress, 100)}%`,
-                  backgroundColor: theme.primary 
-                }
-              ]}
-            />
+          
+          <View style={styles.detailItem}>
+            <Ionicons name="time" size={14} color={theme.secondaryText} />
+            <Text style={[styles.detailText, { color: theme.secondaryText }]}>
+              {formatDuration(mission.estimatedDuration)}
+            </Text>
           </View>
         </View>
-      )}
 
-      {/* Participants Info (for multiplayer missions) */}
-      {mission.requiresUsers > 1 && (
-        <View style={styles.participantsSection}>
-          <Ionicons name="people-outline" size={16} color={theme.secondaryText} />
-          <Text style={[styles.participantsText, { color: theme.secondaryText }]}>
-            {mission.joinedUsers.length}/{mission.requiresUsers} joined
-          </Text>
-          {mission.maxUsers && (
-            <Text style={[styles.maxParticipants, { color: theme.secondaryText }]}>
-              (max {mission.maxUsers})
+        {/* Rewards */}
+        <View style={styles.rewardsContainer}>
+          <View style={styles.rewardItem}>
+            <Text style={[styles.rewardIcon, { color: roleColor }]}>⭐</Text>
+            <Text style={[styles.rewardText, { color: theme.textColor }]}>
+              {mission.xpReward} XP
             </Text>
+          </View>
+          
+          <View style={styles.rewardItem}>
+            <Text style={[styles.rewardIcon, { color: roleColor }]}>🍐</Text>
+            <Text style={[styles.rewardText, { color: theme.textColor }]}>
+              {mission.ecoPointsReward} Eco Points
+            </Text>
+          </View>
+          
+          {mission.badgeReward && (
+            <View style={styles.rewardItem}>
+              <Text style={[styles.rewardIcon, { color: roleColor }]}>🏆</Text>
+              <Text style={[styles.rewardText, { color: theme.textColor }]}>
+                {mission.badgeReward}
+              </Text>
+            </View>
           )}
         </View>
-      )}
 
-      {/* Rewards Section */}
-      <View style={styles.rewardsSection}>
-        <View style={styles.rewardItem}>
-          <Ionicons name="flash-outline" size={16} color="#fbbf24" />
-          <Text style={[styles.rewardText, { color: theme.textColor }]}>
-            +{mission.reward.xp} XP
-          </Text>
-        </View>
-        <View style={styles.rewardItem}>
-          <Ionicons name="leaf-outline" size={16} color="#22c55e" />
-          <Text style={[styles.rewardText, { color: theme.textColor }]}>
-            +{mission.reward.ecoPoints} Points
-          </Text>
-        </View>
-        {mission.reward.badge && (
-          <View style={styles.rewardItem}>
-            <Ionicons name="trophy-outline" size={16} color="#8b5cf6" />
-            <Text style={[styles.rewardText, { color: theme.textColor }]}>
-              {mission.reward.badge}
-            </Text>
-          </View>
-        )}
-      </View>
-
-      {/* Action Buttons */}
-      <View style={styles.actionsSection}>
-        {mission.status === 'available' && !canJoin && (
+        {/* Action Button */}
+        {!isCompleted ? (
           <TouchableOpacity
-            style={[styles.actionButton, styles.acceptButton, { backgroundColor: theme.primary }]}
-            onPress={handleAcceptMission}
+            style={[
+              styles.actionButton,
+              { backgroundColor: isAccepted ? '#FF9800' : roleColor },
+            ]}
+            onPress={isAccepted ? handleComplete : handleAccept}
             activeOpacity={0.8}
           >
-            <Ionicons name="checkmark-outline" size={18} color="white" />
-            <Text style={styles.actionButtonText}>Accept Mission</Text>
-          </TouchableOpacity>
-        )}
-        
-        {canJoin && (
-          <TouchableOpacity
-            style={[styles.actionButton, styles.joinButton, { borderColor: theme.primary }]}
-            onPress={handleJoinMission}
-            activeOpacity={0.8}
-          >
-            <Ionicons name="add-outline" size={18} color={theme.primary} />
-            <Text style={[styles.actionButtonText, { color: theme.primary }]}>
-              Join Mission
+            <Ionicons 
+              name={isAccepted ? 'checkmark' : 'play'} 
+              size={16} 
+              color="white" 
+            />
+            <Text style={styles.actionButtonText}>
+              {isAccepted ? 'Complete Mission' : 'Accept Mission'}
             </Text>
           </TouchableOpacity>
-        )}
-        
-        {canBoost && (
-          <TouchableOpacity
-            style={[styles.actionButton, styles.boostButton, { backgroundColor: '#f59e0b' }]}
-            onPress={handleBoostMission}
-            activeOpacity={0.8}
-          >
-            <Ionicons name="rocket-outline" size={18} color="white" />
-            <Text style={styles.actionButtonText}>Boost ({boostCost})</Text>
-          </TouchableOpacity>
-        )}
-        
-        {isCompleted && (
-          <View style={[styles.actionButton, styles.completedButton, { backgroundColor: '#22c55e' }]}>
-            <Ionicons name="checkmark-circle-outline" size={18} color="white" />
-            <Text style={styles.actionButtonText}>Completed</Text>
+        ) : (
+          <View style={[styles.completedBadge, { backgroundColor: '#4CAF50' }]}>
+            <Ionicons name="checkmark-circle" size={16} color="white" />
+            <Text style={styles.completedText}>Mission Complete!</Text>
           </View>
         )}
-      </View>
+      </TouchableOpacity>
 
-      {/* Status Indicator */}
-      <View style={styles.statusIndicator}>
-        <View style={[styles.statusDot, { backgroundColor: getStatusColor() }]} />
-        <Text style={[styles.statusText, { color: getStatusColor() }]}>
-          {mission.status.charAt(0).toUpperCase() + mission.status.slice(1)}
-        </Text>
-      </View>
-    </TouchableOpacity>
+      {/* Mission Details Modal */}
+      <Modal
+        visible={showModal}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setShowModal(false)}
+      >
+        <View style={[styles.modalContainer, { backgroundColor: theme.background }]}>
+          <View style={[styles.modalHeader, { backgroundColor: theme.cardBackground }]}>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setShowModal(false)}
+            >
+              <Ionicons name="close" size={24} color={theme.textColor} />
+            </TouchableOpacity>
+            <Text style={[styles.modalTitle, { color: theme.textColor }]}>
+              Mission Details
+            </Text>
+            <View style={{ width: 24 }} />
+          </View>
+
+          <ScrollView style={styles.modalContent}>
+            {/* Mission Header */}
+            <View style={[styles.modalMissionHeader, { backgroundColor: theme.cardBackground }]}>
+              <Text style={[styles.modalMissionTitle, { color: theme.textColor }]}>
+                {mission.title}
+              </Text>
+              <Text style={[styles.modalMissionDescription, { color: theme.secondaryText }]}>
+                {mission.description}
+              </Text>
+              
+              <View style={styles.modalBadges}>
+                <View style={[styles.modalBadge, { backgroundColor: roleColor }]}>
+                  <Text style={styles.modalBadgeText}>
+                    {mission.requiredRole.replace('-', ' ').toUpperCase()}
+                  </Text>
+                </View>
+                <View style={[styles.modalBadge, { backgroundColor: difficultyColor }]}>
+                  <Text style={styles.modalBadgeText}>
+                    {mission.difficulty.toUpperCase()}
+                  </Text>
+                </View>
+                <View style={[styles.modalBadge, { backgroundColor: urgencyColor }]}>
+                  <Text style={styles.modalBadgeText}>
+                    {mission.urgency.toUpperCase()}
+                  </Text>
+                </View>
+              </View>
+            </View>
+
+            {/* Mission Info */}
+            <View style={[styles.modalSection, { backgroundColor: theme.cardBackground }]}>
+              <Text style={[styles.modalSectionTitle, { color: theme.textColor }]}>
+                Mission Information
+              </Text>
+              
+              <View style={styles.modalInfoRow}>
+                <Ionicons name="location" size={16} color={theme.secondaryText} />
+                <Text style={[styles.modalInfoText, { color: theme.secondaryText }]}>
+                  {mission.location.address}
+                </Text>
+              </View>
+              
+              <View style={styles.modalInfoRow}>
+                <Ionicons name="time" size={16} color={theme.secondaryText} />
+                <Text style={[styles.modalInfoText, { color: theme.secondaryText }]}>
+                  Estimated Duration: {formatDuration(mission.estimatedDuration)}
+                </Text>
+              </View>
+              
+              <View style={styles.modalInfoRow}>
+                <Ionicons name="people" size={16} color={theme.secondaryText} />
+                <Text style={[styles.modalInfoText, { color: theme.secondaryText }]}>
+                  Participants: {mission.currentParticipants}/{mission.maxParticipants}
+                </Text>
+              </View>
+              
+              <View style={styles.modalInfoRow}>
+                <Ionicons name="calendar" size={16} color={theme.secondaryText} />
+                <Text style={[styles.modalInfoText, { color: theme.secondaryText }]}>
+                  Available until: {formatDate(mission.endDate)}
+                </Text>
+              </View>
+            </View>
+
+            {/* Instructions */}
+            <View style={[styles.modalSection, { backgroundColor: theme.cardBackground }]}>
+              <Text style={[styles.modalSectionTitle, { color: theme.textColor }]}>
+                Instructions
+              </Text>
+              {mission.instructions.map((instruction, index) => (
+                <View key={index} style={styles.modalInstructionItem}>
+                  <Text style={[styles.modalInstructionNumber, { color: roleColor }]}>
+                    {index + 1}.
+                  </Text>
+                  <Text style={[styles.modalInstructionText, { color: theme.textColor }]}>
+                    {instruction}
+                  </Text>
+                </View>
+              ))}
+            </View>
+
+            {/* Equipment */}
+            <View style={[styles.modalSection, { backgroundColor: theme.cardBackground }]}>
+              <Text style={[styles.modalSectionTitle, { color: theme.textColor }]}>
+                Required Equipment
+              </Text>
+              <View style={styles.modalEquipmentList}>
+                {mission.equipment.map((item, index) => (
+                  <View key={index} style={styles.modalEquipmentItem}>
+                    <Ionicons name="checkmark-circle" size={16} color={roleColor} />
+                    <Text style={[styles.modalEquipmentText, { color: theme.textColor }]}>
+                      {item}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+            </View>
+
+            {/* Rewards */}
+            <View style={[styles.modalSection, { backgroundColor: theme.cardBackground }]}>
+              <Text style={[styles.modalSectionTitle, { color: theme.textColor }]}>
+                Rewards
+              </Text>
+              <View style={styles.modalRewardsList}>
+                <View style={styles.modalRewardItem}>
+                  <Text style={[styles.modalRewardIcon, { color: roleColor }]}>⭐</Text>
+                  <Text style={[styles.modalRewardText, { color: theme.textColor }]}>
+                    {mission.xpReward} XP Points
+                  </Text>
+                </View>
+                <View style={styles.modalRewardItem}>
+                  <Text style={[styles.modalRewardIcon, { color: roleColor }]}>🍐</Text>
+                  <Text style={[styles.modalRewardText, { color: theme.textColor }]}>
+                    {mission.ecoPointsReward} Eco Points
+                  </Text>
+                </View>
+                {mission.badgeReward && (
+                  <View style={styles.modalRewardItem}>
+                    <Text style={[styles.modalRewardIcon, { color: roleColor }]}>🏆</Text>
+                    <Text style={[styles.modalRewardText, { color: theme.textColor }]}>
+                      {mission.badgeReward} Badge
+                    </Text>
+                  </View>
+                )}
+              </View>
+            </View>
+          </ScrollView>
+
+          {/* Modal Action Button */}
+          <View style={[styles.modalFooter, { backgroundColor: theme.cardBackground }]}>
+            {!isCompleted && (
+              <TouchableOpacity
+                style={[
+                  styles.modalActionButton,
+                  { backgroundColor: isAccepted ? '#FF9800' : roleColor },
+                ]}
+                onPress={() => {
+                  setShowModal(false);
+                  isAccepted ? handleComplete() : handleAccept();
+                }}
+                activeOpacity={0.8}
+              >
+                <Ionicons 
+                  name={isAccepted ? 'checkmark' : 'play'} 
+                  size={20} 
+                  color="white" 
+                />
+                <Text style={styles.modalActionButtonText}>
+                  {isAccepted ? 'Complete Mission' : 'Accept Mission'}
+                </Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        </View>
+      </Modal>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: 16,
-    padding: 16,
-    marginVertical: 8,
-    marginHorizontal: 16,
-    borderWidth: 2,
+    borderRadius: THEME.BORDER_RADIUS.lg,
+    padding: THEME.SPACING.md,
+    marginBottom: THEME.SPACING.md,
+    borderLeftWidth: 4,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
+    shadowRadius: 4,
+    elevation: 3,
   },
-  cardHeader: {
+  completedCard: {
+    backgroundColor: '#E8F5E8',
+    borderLeftColor: '#4CAF50',
+  },
+  header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
+    alignItems: 'flex-start',
+    marginBottom: THEME.SPACING.sm,
   },
-  typeContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  titleContainer: {
+    flex: 1,
+    marginRight: THEME.SPACING.sm,
   },
-  missionType: {
-    fontSize: 12,
+  title: {
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
+    fontWeight: '700',
+    marginBottom: THEME.SPACING.xs,
+  },
+  roleBadge: {
+    paddingHorizontal: THEME.SPACING.sm,
+    paddingVertical: THEME.SPACING.xs,
+    borderRadius: THEME.BORDER_RADIUS.sm,
+    alignSelf: 'flex-start',
+  },
+  roleText: {
+    color: 'white',
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '600',
-    marginLeft: 4,
+  },
+  statusContainer: {
+    flexDirection: 'row',
+    gap: THEME.SPACING.xs,
+  },
+  urgencyBadge: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   difficultyBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    width: 24,
+    height: 24,
     borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  difficultyText: {
-    fontSize: 10,
-    fontWeight: '700',
-    color: 'white',
-  },
-  contentSection: {
-    marginBottom: 16,
-  },
-  missionTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    marginBottom: 6,
-  },
-  missionDescription: {
-    fontSize: 14,
-    fontWeight: '400',
+  description: {
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
     lineHeight: 20,
+    marginBottom: THEME.SPACING.sm,
   },
-  progressSection: {
-    marginBottom: 16,
-  },
-  progressHeader: {
+  detailsRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: THEME.SPACING.sm,
+    gap: THEME.SPACING.md,
   },
-  progressLabel: {
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  timeRemaining: {
-    fontSize: 14,
-    fontWeight: '700',
-  },
-  progressTrack: {
-    height: 8,
-    borderRadius: 4,
-    overflow: 'hidden',
-  },
-  progressFill: {
-    height: '100%',
-    borderRadius: 4,
-  },
-  participantsSection: {
+  detailItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 16,
+    gap: THEME.SPACING.xs,
   },
-  participantsText: {
-    fontSize: 12,
-    fontWeight: '500',
-    marginLeft: 4,
+  detailText: {
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
   },
-  maxParticipants: {
-    fontSize: 12,
-    fontWeight: '400',
-    marginLeft: 4,
-  },
-  rewardsSection: {
+  rewardsContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    marginBottom: 16,
+    gap: THEME.SPACING.sm,
+    marginBottom: THEME.SPACING.md,
   },
   rewardItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginRight: 16,
-    marginBottom: 4,
+    gap: THEME.SPACING.xs,
+  },
+  rewardIcon: {
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
   },
   rewardText: {
-    fontSize: 12,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '600',
-    marginLeft: 4,
-  },
-  actionsSection: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginBottom: 8,
   },
   actionButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    marginRight: 8,
-    marginBottom: 8,
-  },
-  acceptButton: {
-    backgroundColor: '#22c55e',
-  },
-  joinButton: {
-    backgroundColor: 'transparent',
-    borderWidth: 1,
-  },
-  boostButton: {
-    backgroundColor: '#f59e0b',
-  },
-  completedButton: {
-    backgroundColor: '#22c55e',
+    justifyContent: 'center',
+    paddingVertical: THEME.SPACING.sm,
+    paddingHorizontal: THEME.SPACING.md,
+    borderRadius: THEME.BORDER_RADIUS.md,
+    gap: THEME.SPACING.xs,
   },
   actionButtonText: {
-    fontSize: 12,
-    fontWeight: '600',
     color: 'white',
-    marginLeft: 4,
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
+    fontWeight: '600',
   },
-  statusIndicator: {
+  completedBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    position: 'absolute',
-    top: 12,
-    right: 12,
+    justifyContent: 'center',
+    paddingVertical: THEME.SPACING.sm,
+    paddingHorizontal: THEME.SPACING.md,
+    borderRadius: THEME.BORDER_RADIUS.md,
+    gap: THEME.SPACING.xs,
   },
-  statusDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    marginRight: 4,
+  completedText: {
+    color: 'white',
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
+    fontWeight: '600',
   },
-  statusText: {
-    fontSize: 10,
+  // Modal Styles
+  modalContainer: {
+    flex: 1,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: THEME.SPACING.md,
+    paddingVertical: THEME.SPACING.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E0E0E0',
+  },
+  closeButton: {
+    padding: THEME.SPACING.xs,
+  },
+  modalTitle: {
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
+    fontWeight: '700',
+  },
+  modalContent: {
+    flex: 1,
+    padding: THEME.SPACING.md,
+  },
+  modalMissionHeader: {
+    borderRadius: THEME.BORDER_RADIUS.lg,
+    padding: THEME.SPACING.md,
+    marginBottom: THEME.SPACING.md,
+  },
+  modalMissionTitle: {
+    fontSize: THEME.TYPOGRAPHY.fontSize.xl,
+    fontWeight: '700',
+    marginBottom: THEME.SPACING.sm,
+  },
+  modalMissionDescription: {
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
+    lineHeight: 22,
+    marginBottom: THEME.SPACING.md,
+  },
+  modalBadges: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: THEME.SPACING.sm,
+  },
+  modalBadge: {
+    paddingHorizontal: THEME.SPACING.sm,
+    paddingVertical: THEME.SPACING.xs,
+    borderRadius: THEME.BORDER_RADIUS.sm,
+  },
+  modalBadgeText: {
+    color: 'white',
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
+    fontWeight: '600',
+  },
+  modalSection: {
+    borderRadius: THEME.BORDER_RADIUS.lg,
+    padding: THEME.SPACING.md,
+    marginBottom: THEME.SPACING.md,
+  },
+  modalSectionTitle: {
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
+    fontWeight: '700',
+    marginBottom: THEME.SPACING.sm,
+  },
+  modalInfoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: THEME.SPACING.sm,
+    marginBottom: THEME.SPACING.sm,
+  },
+  modalInfoText: {
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
+    flex: 1,
+  },
+  modalInstructionItem: {
+    flexDirection: 'row',
+    marginBottom: THEME.SPACING.sm,
+    gap: THEME.SPACING.sm,
+  },
+  modalInstructionNumber: {
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
+    fontWeight: '700',
+    minWidth: 20,
+  },
+  modalInstructionText: {
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
+    flex: 1,
+    lineHeight: 20,
+  },
+  modalEquipmentList: {
+    gap: THEME.SPACING.sm,
+  },
+  modalEquipmentItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: THEME.SPACING.sm,
+  },
+  modalEquipmentText: {
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
+  },
+  modalRewardsList: {
+    gap: THEME.SPACING.sm,
+  },
+  modalRewardItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: THEME.SPACING.sm,
+  },
+  modalRewardIcon: {
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
+  },
+  modalRewardText: {
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
+    fontWeight: '600',
+  },
+  modalFooter: {
+    padding: THEME.SPACING.md,
+    borderTopWidth: 1,
+    borderTopColor: '#E0E0E0',
+  },
+  modalActionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: THEME.SPACING.md,
+    borderRadius: THEME.BORDER_RADIUS.lg,
+    gap: THEME.SPACING.sm,
+  },
+  modalActionButtonText: {
+    color: 'white',
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
     fontWeight: '600',
   },
 });

@@ -3,7 +3,6 @@ import {
   View,
   Text,
   StyleSheet,
-  ScrollView,
   TouchableOpacity,
   Dimensions,
 } from 'react-native';
@@ -11,7 +10,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { getRoleColor } from '../utils/roleColors';
 import { useTheme } from '../context/ThemeContext';
 import { THEME } from '../styles/theme';
-import ScreenLayout from '../components/ScreenLayout';
+import PEARScreen from '../components/PEARScreen';
 import { useAuth } from '../context/AuthContext';
 import MenuModal from '../components/MenuModal';
 import UnifiedHeader from '../components/UnifiedHeader';
@@ -27,13 +26,13 @@ const EcoDefenderDashboard: React.FC<EcoDefenderDashboardProps> = ({ navigation 
   const { theme } = useTheme();
   const { logout } = useAuth();
   const [showMenu, setShowMenu] = useState(false);
-  const userRole = 'BUSINESS';
+  const userRole = 'ECO_DEFENDER';
   
   // EcoDefender role configuration
   const roleConfig = {
     title: 'EcoDefender Corp',
     subtitle: 'EcoDefender',
-    color: getRoleColor('business'),
+    color: getRoleColor('eco-defender'),
     level: 6,
     points: 3450,
     progress: 93,
@@ -44,19 +43,19 @@ const EcoDefenderDashboard: React.FC<EcoDefenderDashboardProps> = ({ navigation 
 
   // Key metrics for EcoDefender
   const keyMetrics = [
-    { label: 'Jobs Created', value: '47', icon: 'briefcase', color: getRoleColor('business') },
-    { label: 'CO₂ Offset', value: '850 kg', icon: 'leaf', color: getRoleColor('trash-hero') },
+    { label: 'Jobs Created', value: '47', icon: 'briefcase', color: getRoleColor('eco-defender') },
+    { label: 'CO₂ Offset', value: '850 kg', icon: 'leaf', color: getRoleColor('eco-defender') },
     { label: 'ESG Rank', value: '#8', icon: 'trophy', color: '#8b5cf6' },
   ];
 
   // Quick actions (2x3 grid)
   const quickActions = [
-    { title: 'Post New Job', icon: 'add-circle', color: getRoleColor('business'), onPress: () => navigation.navigate('PostJob') },
-    { title: 'Manage Missions', icon: 'list', color: getRoleColor('trash-hero'), onPress: () => navigation.navigate('EcoDefenderMissions') },
+    { title: 'Post New Job', icon: 'add-circle', color: getRoleColor('eco-defender'), onPress: () => navigation.navigate('PostJob') },
+    { title: 'Manage Missions', icon: 'list', color: getRoleColor('eco-defender'), onPress: () => navigation.navigate('EcoDefenderMissions') },
     { title: 'Eco Missions', icon: 'rocket', color: '#8b5cf6', onPress: () => navigation.navigate('EcoDefenderMissions') },
-    { title: 'Fund Wallet', icon: 'card', color: theme.warning, onPress: () => navigation.navigate('WalletScreen', { role: 'business' }) },
-    { title: 'View Impact', icon: 'analytics', color: getRoleColor('admin'), onPress: () => navigation.navigate('EcoDefenderImpact') },
-    { title: 'View Map', icon: 'map', color: theme.primary, onPress: () => navigation.navigate('MapScreen') },
+    { title: 'Fund Wallet', icon: 'card', color: '#FF9800', onPress: () => navigation.navigate('WalletScreen', { role: 'eco-defender' }) },
+    { title: 'View Impact', icon: 'analytics', color: '#FF9800', onPress: () => navigation.navigate('EcoDefenderImpact') },
+    { title: 'View Map', icon: 'map', color: getRoleColor('eco-defender'), onPress: () => navigation.navigate('MapScreen') },
   ];
 
   // Recent activity
@@ -134,27 +133,36 @@ const EcoDefenderDashboard: React.FC<EcoDefenderDashboardProps> = ({ navigation 
 
   return (
     <RoleGuard allowedRoles={['ECO_DEFENDER']}>
-      <ScreenLayout>
-      {/* Header */}
-      <UnifiedHeader
-        onMenuPress={() => setShowMenu(true)}
+      <PEARScreen
+        title="Eco Defender Dashboard"
         role={userRole}
-        points={roleConfig.points}
-        onNotificationPress={() => navigation.navigate('Notifications')}
-        onProfilePress={() => navigation.navigate('ProfileScreen', { 
-          role: 'business',
-          onSignOut: () => navigation.navigate('Login')
-        })}
-      />
-
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+        showHeader={true}
+        showScroll={true}
+        enableRefresh={true}
+        onRefresh={() => {
+          // Refresh dashboard data
+          console.log('Refreshing EcoDefender dashboard...');
+        }}
+        refreshing={false}
+      >
+        {/* Unified Header */}
+        <UnifiedHeader
+          onMenuPress={() => setShowMenu(true)}
+          role={userRole}
+          points={roleConfig.points}
+          onNotificationPress={() => navigation.navigate('Notifications')}
+          onProfilePress={() => navigation.navigate('ProfileScreen', { 
+            role: 'eco-defender',
+            onSignOut: () => navigation.navigate('Login')
+          })}
+        />
         {/* My Card Section */}
         <View style={[styles.myCard, { backgroundColor: theme.cardBackground }]}>
           <View style={styles.cardHeader}>
             <Text style={[styles.cardTitle, { color: theme.textColor }]}>My Card</Text>
             <View style={styles.verifiedBadge}>
-              <Ionicons name="checkmark-circle" size={16} color={getRoleColor('business')} />
-              <Text style={[styles.verifiedText, { color: getRoleColor('business') }]}>PEAR Verified</Text>
+              <Ionicons name="checkmark-circle" size={16} color={getRoleColor('eco-defender')} />
+              <Text style={[styles.verifiedText, { color: getRoleColor('eco-defender') }]}>PEAR Verified</Text>
             </View>
           </View>
           
@@ -187,7 +195,7 @@ const EcoDefenderDashboard: React.FC<EcoDefenderDashboardProps> = ({ navigation 
               <Text style={[styles.progressTitle, { color: theme.textColor }]}>
                 Progress to 🏆 Impact Investor
               </Text>
-              <View style={[styles.evolutionBadge, { backgroundColor: getRoleColor('business') }]}>
+              <View style={[styles.evolutionBadge, { backgroundColor: getRoleColor('eco-defender') }]}>
                 <Ionicons name="trending-up" size={12} color="white" />
                 <Text style={styles.evolutionText}>Evolution</Text>
               </View>
@@ -231,7 +239,7 @@ const EcoDefenderDashboard: React.FC<EcoDefenderDashboardProps> = ({ navigation 
           <View style={styles.recentHeader}>
             <Text style={[styles.sectionTitle, { color: theme.textColor }]}>Recent Missions</Text>
             <TouchableOpacity>
-              <Text style={[styles.viewAllText, { color: getRoleColor('business') }]}>View All</Text>
+              <Text style={[styles.viewAllText, { color: getRoleColor('eco-defender') }]}>View All</Text>
             </TouchableOpacity>
           </View>
           
@@ -243,39 +251,32 @@ const EcoDefenderDashboard: React.FC<EcoDefenderDashboardProps> = ({ navigation 
         </View>
 
         <View style={styles.bottomSpacing} />
-      </ScrollView>
 
-      {/* Menu Modal */}
-      <MenuModal
-        visible={showMenu}
-        onClose={() => setShowMenu(false)}
-        userRole="ECO_DEFENDER"
-        userName={roleConfig.title}
-        userLevel={roleConfig.level}
-        onNavigate={(screen, params) => {
-          navigation.navigate(screen, params);
-        }}
-        onSignOut={async () => {
-          try {
-            await logout();
-            navigation.navigate('Login');
-          } catch (error) {
-            console.error('Sign out failed:', error);
-          }
-        }}
-      />
-      </ScreenLayout>
+        {/* Menu Modal */}
+        <MenuModal
+          visible={showMenu}
+          onClose={() => setShowMenu(false)}
+          userRole="ECO_DEFENDER"
+          userName={roleConfig.title}
+          userLevel={roleConfig.level}
+          onNavigate={(screen, params) => {
+            navigation.navigate(screen, params);
+          }}
+          onSignOut={async () => {
+            try {
+              await logout();
+              navigation.navigate('Login');
+            } catch (error) {
+              console.error('Sign out failed:', error);
+            }
+          }}
+        />
+      </PEARScreen>
     </RoleGuard>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  content: {
-    flex: 1,
-  },
   myCard: {
     margin: THEME.SPACING.md,
     marginTop: THEME.SPACING.sm,
