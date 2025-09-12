@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { useXP } from '../context/XPContext';
 import { useAuth } from '../context/AuthContext';
 import { EcoStation, StationMission, mockEcoStations, mockStationMissions } from '../utils/mockData';
+import { normalizeRole } from '../types/roles';
 
 interface StationResult {
   xpEarned: number;
@@ -20,7 +21,7 @@ export const useEcoStations = () => {
   const getAvailableStations = useCallback((): EcoStation[] => {
     return mockEcoStations.filter(station => {
       // Show all stations if no role restriction or if user has required role
-      if (!station.requiredRole || currentRole === station.requiredRole) {
+      if (!station.requiredRole || normalizeRole(currentRole) === normalizeRole(station.requiredRole)) {
         return station.isActive;
       }
       return false;
@@ -35,7 +36,7 @@ export const useEcoStations = () => {
   // Check if user can access a station
   const canAccessStation = useCallback((station: EcoStation): boolean => {
     if (!station.requiredRole) return true;
-    return currentRole === station.requiredRole;
+    return normalizeRole(currentRole) === normalizeRole(station.requiredRole);
   }, [currentRole]);
 
   // Complete a station mission

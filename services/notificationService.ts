@@ -1,5 +1,4 @@
 import * as Notifications from 'expo-notifications';
-import * as Location from 'expo-location';
 import { Alert } from 'react-native';
 
 // Configure notification behavior
@@ -101,8 +100,10 @@ class NotificationService {
       },
       trigger: {
         type: 'location',
-        ...location,
-      },
+        latitude: location.latitude,
+        longitude: location.longitude,
+        radius: location.radius,
+      } as Notifications.NotificationTriggerInput,
     });
   }
 
