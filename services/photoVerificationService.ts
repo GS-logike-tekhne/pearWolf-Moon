@@ -1,349 +1,243 @@
-import * as ImagePicker from 'expo-image-picker';
-import * as Location from 'expo-location';
 import { Alert } from 'react-native';
 
-export interface PhotoVerification {
-  id: string;
+export interface PhotoVerificationResult {
+  isVerified: boolean;
+  confidence: number;
+  analysis: {
+    hasTrash: boolean;
+    hasCleanup: boolean;
+    beforeAfter: boolean;
+    locationMatch: boolean;
+    timestampValid: boolean;
+  };
+  suggestions: string[];
+  verificationId: string;
+}
+
+export interface MissionPhotoData {
   missionId: string;
-  photoUri: string;
+  userId: string;
+  photos: string[];
   location: {
     latitude: number;
     longitude: number;
-    accuracy?: number;
+    address?: string;
   };
-  timestamp: string;
-  metadata?: {
-    fileSize: number;
-    width: number;
-    height: number;
-    format: string;
-  };
-  verificationStatus: 'pending' | 'verified' | 'rejected';
-  rejectionReason?: string;
+  timestamp: Date;
+  beforePhotos?: string[];
+  afterPhotos?: string[];
 }
 
-export interface VerificationRequest {
-  missionId: string;
-  missionType: 'cleanup' | 'restoration' | 'data-collection' | 'community-event';
-  requiredPhotos: number;
-  description: string;
-  location?: {
-    latitude: number;
-    longitude: number;
-    radius: number; // meters
-  };
-}
-
-class PhotoVerificationService {
-  private verifications: Map<string, PhotoVerification[]> = new Map();
-
-  // Request camera permissions
-  async requestCameraPermissions(): Promise<boolean> {
-    try {
-      const { status: cameraStatus } = await ImagePicker.requestCameraPermissionsAsync();
-      const { status: mediaStatus } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      
-      if (cameraStatus !== 'granted' || mediaStatus !== 'granted') {
-        Alert.alert(
-          'Camera Permission',
-          'PEAR needs camera access to verify your environmental missions. This helps ensure real impact and prevents fraud.',
-          [
-            { text: 'Cancel', style: 'cancel' },
-            { text: 'Settings', onPress: () => ImagePicker.requestCameraPermissionsAsync() }
-          ]
-        );
-        return false;
-      }
-      return true;
-    } catch (error) {
-      console.error('Error requesting camera permissions:', error);
-      return false;
+export class PhotoVerificationService {
+  private static instance: PhotoVerificationService;
+  
+  public static getInstance(): PhotoVerificationService {
+    if (!PhotoVerificationService.instance) {
+      PhotoVerificationService.instance = new PhotoVerificationService();
     }
+    return PhotoVerificationService.instance;
   }
 
-  // Take photo for verification
-  async takeVerificationPhoto(missionId: string): Promise<PhotoVerification | null> {
+  /**
+   * Verify photos for mission completion
+   */
+  async verifyMissionPhotos(photoData: MissionPhotoData): Promise<PhotoVerificationResult> {
     try {
-      const hasPermission = await this.requestCameraPermissions();
-      if (!hasPermission) return null;
-
-      // Get current location
-      const location = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.Balanced,
-      });
-
-      // Take photo
-      const result = await ImagePicker.launchCameraAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        aspect: [4, 3],
-        quality: 0.8,
-        exif: true, // Include metadata
-      });
-
-      if (result.canceled || !result.assets[0]) {
-        return null;
-      }
-
-      const asset = result.assets[0];
+      // Simulate AI verification process
+      await this.simulateProcessingDelay();
       
-      // Create verification object
-      const verification: PhotoVerification = {
-        id: `photo_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        missionId,
-        photoUri: asset.uri,
-        location: {
-          latitude: location.coords.latitude,
-          longitude: location.coords.longitude,
-          accuracy: location.coords.accuracy,
-        },
-        timestamp: new Date().toISOString(),
-        metadata: {
-          fileSize: asset.fileSize || 0,
-          width: asset.width,
-          height: asset.height,
-          format: asset.type || 'jpeg',
-        },
-        verificationStatus: 'pending',
+      const analysis = await this.analyzePhotos(photoData);
+      const isVerified = this.determineVerification(analysis);
+      const confidence = this.calculateConfidence(analysis);
+      const suggestions = this.generateSuggestions(analysis);
+      
+      const result: PhotoVerificationResult = {
+        isVerified,
+        confidence,
+        analysis,
+        suggestions,
+        verificationId: `verify_${Date.now()}_${photoData.missionId}`,
       };
 
-      // Store verification
-      if (!this.verifications.has(missionId)) {
-        this.verifications.set(missionId, []);
-      }
-      this.verifications.get(missionId)!.push(verification);
-
-      return verification;
-    } catch (error) {
-      console.error('Error taking verification photo:', error);
-      Alert.alert('Error', 'Failed to take photo. Please try again.');
-      return null;
-    }
-  }
-
-  // Select photo from library
-  async selectVerificationPhoto(missionId: string): Promise<PhotoVerification | null> {
-    try {
-      const hasPermission = await this.requestCameraPermissions();
-      if (!hasPermission) return null;
-
-      // Get current location
-      const location = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.Balanced,
-      });
-
-      // Select photo
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        aspect: [4, 3],
-        quality: 0.8,
-        exif: true,
-      });
-
-      if (result.canceled || !result.assets[0]) {
-        return null;
-      }
-
-      const asset = result.assets[0];
+      // Log verification result
+      console.log('Photo Verification Result:', result);
       
-      // Create verification object
-      const verification: PhotoVerification = {
-        id: `photo_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        missionId,
-        photoUri: asset.uri,
-        location: {
-          latitude: location.coords.latitude,
-          longitude: location.coords.longitude,
-          accuracy: location.coords.accuracy,
-        },
-        timestamp: new Date().toISOString(),
-        metadata: {
-          fileSize: asset.fileSize || 0,
-          width: asset.width,
-          height: asset.height,
-          format: asset.type || 'jpeg',
-        },
-        verificationStatus: 'pending',
-      };
-
-      // Store verification
-      if (!this.verifications.has(missionId)) {
-        this.verifications.set(missionId, []);
-      }
-      this.verifications.get(missionId)!.push(verification);
-
-      return verification;
+      return result;
     } catch (error) {
-      console.error('Error selecting verification photo:', error);
-      Alert.alert('Error', 'Failed to select photo. Please try again.');
-      return null;
+      console.error('Photo verification failed:', error);
+      throw new Error('Failed to verify photos. Please try again.');
     }
   }
 
-  // Get verification photos for a mission
-  getMissionVerifications(missionId: string): PhotoVerification[] {
-    return this.verifications.get(missionId) || [];
-  }
-
-  // Verify if location is within mission area
-  verifyLocation(
-    photoLocation: { latitude: number; longitude: number },
-    missionLocation: { latitude: number; longitude: number; radius: number }
-  ): boolean {
-    const distance = this.calculateDistance(
-      photoLocation.latitude,
-      photoLocation.longitude,
-      missionLocation.latitude,
-      missionLocation.longitude
-    );
-
-    return distance <= missionLocation.radius;
-  }
-
-  // Calculate distance between two points
-  private calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
-    const R = 6371000; // Earth's radius in meters
-    const dLat = (lat2 - lat1) * Math.PI / 180;
-    const dLon = (lon2 - lon1) * Math.PI / 180;
-    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-      Math.sin(dLon/2) * Math.sin(dLon/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    return R * c;
-  }
-
-  // Validate photo quality
-  validatePhotoQuality(verification: PhotoVerification): { isValid: boolean; issues: string[] } {
-    const issues: string[] = [];
-
-    // Check file size (max 10MB)
-    if (verification.metadata && verification.metadata.fileSize > 10 * 1024 * 1024) {
-      issues.push('Photo file size too large');
-    }
-
-    // Check dimensions (min 800x600)
-    if (verification.metadata) {
-      if (verification.metadata.width < 800 || verification.metadata.height < 600) {
-        issues.push('Photo resolution too low');
-      }
-    }
-
-    // Check location accuracy (max 50m uncertainty)
-    if (verification.location.accuracy && verification.location.accuracy > 50) {
-      issues.push('Location accuracy too low');
-    }
-
+  /**
+   * Analyze photos for cleanup evidence
+   */
+  private async analyzePhotos(photoData: MissionPhotoData) {
+    // Mock AI analysis - in production, this would call actual AI services
+    const { photos, beforePhotos, afterPhotos } = photoData;
+    
     return {
-      isValid: issues.length === 0,
-      issues,
+      hasTrash: this.detectTrashInPhotos(photos),
+      hasCleanup: this.detectCleanupEvidence(photos),
+      beforeAfter: this.compareBeforeAfter(beforePhotos, afterPhotos),
+      locationMatch: this.verifyLocationMatch(photoData.location),
+      timestampValid: this.validateTimestamp(photoData.timestamp),
     };
   }
 
-  // Submit verification for review
-  async submitVerification(missionId: string, description?: string): Promise<boolean> {
-    try {
-      const verifications = this.getMissionVerifications(missionId);
-      
-      if (verifications.length === 0) {
-        Alert.alert('No Photos', 'Please take at least one photo for verification.');
-        return false;
-      }
+  /**
+   * Detect trash in photos (mock implementation)
+   */
+  private detectTrashInPhotos(photos: string[]): boolean {
+    // Mock: Assume photos contain trash if there are multiple photos
+    return photos.length >= 2;
+  }
 
-      // Validate all photos
-      const validationResults = verifications.map(v => this.validatePhotoQuality(v));
-      const invalidPhotos = validationResults.filter(r => !r.isValid);
-      
-      if (invalidPhotos.length > 0) {
-        const issues = invalidPhotos.flatMap(r => r.issues);
-        Alert.alert(
-          'Photo Quality Issues',
-          `Please retake photos with these issues: ${issues.join(', ')}`
-        );
-        return false;
-      }
+  /**
+   * Detect cleanup evidence (mock implementation)
+   */
+  private detectCleanupEvidence(photos: string[]): boolean {
+    // Mock: Assume cleanup if photos are recent and multiple
+    return photos.length >= 1;
+  }
 
-      // In a real app, upload photos to backend
-      console.log('Submitting verification:', {
-        missionId,
-        verifications: verifications.length,
-        description,
-      });
+  /**
+   * Compare before and after photos
+   */
+  private compareBeforeAfter(beforePhotos?: string[], afterPhotos?: string[]): boolean {
+    if (!beforePhotos || !afterPhotos) return false;
+    
+    // Mock: Assume valid comparison if both sets exist
+    return beforePhotos.length > 0 && afterPhotos.length > 0;
+  }
 
-      // Mock successful submission
-      Alert.alert(
-        'Verification Submitted!',
-        `Your ${verifications.length} photo(s) have been submitted for review. You'll receive XP once verified.`,
-        [{ text: 'Great!' }]
-      );
+  /**
+   * Verify location matches mission location
+   */
+  private verifyLocationMatch(location: MissionPhotoData['location']): boolean {
+    // Mock: Always return true for demo
+    return location.latitude !== 0 && location.longitude !== 0;
+  }
 
-      return true;
-    } catch (error) {
-      console.error('Error submitting verification:', error);
-      Alert.alert('Error', 'Failed to submit verification. Please try again.');
-      return false;
+  /**
+   * Validate timestamp is recent
+   */
+  private validateTimestamp(timestamp: Date): boolean {
+    const now = new Date();
+    const diffMinutes = (now.getTime() - timestamp.getTime()) / (1000 * 60);
+    
+    // Photos must be taken within last 24 hours
+    return diffMinutes <= 24 * 60;
+  }
+
+  /**
+   * Determine if photos pass verification
+   */
+  private determineVerification(analysis: any): boolean {
+    const { hasTrash, hasCleanup, locationMatch, timestampValid } = analysis;
+    
+    // Require at least 3 out of 4 criteria
+    const passedCriteria = [hasTrash, hasCleanup, locationMatch, timestampValid].filter(Boolean).length;
+    return passedCriteria >= 3;
+  }
+
+  /**
+   * Calculate verification confidence score
+   */
+  private calculateConfidence(analysis: any): number {
+    const { hasTrash, hasCleanup, beforeAfter, locationMatch, timestampValid } = analysis;
+    
+    let score = 0;
+    if (hasTrash) score += 25;
+    if (hasCleanup) score += 25;
+    if (beforeAfter) score += 20;
+    if (locationMatch) score += 15;
+    if (timestampValid) score += 15;
+    
+    return Math.min(score, 100);
+  }
+
+  /**
+   * Generate suggestions for improvement
+   */
+  private generateSuggestions(analysis: any): string[] {
+    const suggestions: string[] = [];
+    
+    if (!analysis.hasTrash) {
+      suggestions.push('Include photos showing the trash before cleanup');
     }
+    
+    if (!analysis.hasCleanup) {
+      suggestions.push('Take photos showing the cleaned area');
+    }
+    
+    if (!analysis.beforeAfter) {
+      suggestions.push('Consider taking before and after photos for better verification');
+    }
+    
+    if (!analysis.locationMatch) {
+      suggestions.push('Ensure photos are taken at the mission location');
+    }
+    
+    if (!analysis.timestampValid) {
+      suggestions.push('Photos should be taken during or shortly after the mission');
+    }
+    
+    if (suggestions.length === 0) {
+      suggestions.push('Great job! Your photos look good for verification.');
+    }
+    
+    return suggestions;
   }
 
-  // Delete verification photo
-  deleteVerification(missionId: string, verificationId: string): boolean {
-    const verifications = this.verifications.get(missionId);
-    if (!verifications) return false;
-
-    const index = verifications.findIndex(v => v.id === verificationId);
-    if (index === -1) return false;
-
-    verifications.splice(index, 1);
-    return true;
-  }
-
-  // Get all verifications
-  getAllVerifications(): Map<string, PhotoVerification[]> {
-    return new Map(this.verifications);
-  }
-
-  // Clear verification data
-  clearVerifications(): void {
-    this.verifications.clear();
-  }
-
-  // Get verification statistics
-  getVerificationStats(): {
-    totalPhotos: number;
-    verifiedPhotos: number;
-    pendingPhotos: number;
-    rejectedPhotos: number;
-  } {
-    let totalPhotos = 0;
-    let verifiedPhotos = 0;
-    let pendingPhotos = 0;
-    let rejectedPhotos = 0;
-
-    this.verifications.forEach(verifications => {
-      verifications.forEach(verification => {
-        totalPhotos++;
-        switch (verification.verificationStatus) {
-          case 'verified':
-            verifiedPhotos++;
-            break;
-          case 'pending':
-            pendingPhotos++;
-            break;
-          case 'rejected':
-            rejectedPhotos++;
-            break;
-        }
-      });
+  /**
+   * Simulate processing delay for realistic UX
+   */
+  private async simulateProcessingDelay(): Promise<void> {
+    return new Promise(resolve => {
+      setTimeout(resolve, 2000 + Math.random() * 1000); // 2-3 seconds
     });
+  }
 
-    return {
-      totalPhotos,
-      verifiedPhotos,
-      pendingPhotos,
-      rejectedPhotos,
-    };
+  /**
+   * Upload photos to cloud storage (mock implementation)
+   */
+  async uploadPhotos(photos: string[], missionId: string): Promise<string[]> {
+    try {
+      // Mock upload process
+      await this.simulateProcessingDelay();
+      
+      // Return mock URLs
+      return photos.map((_, index) => 
+        `https://pear-photos.s3.amazonaws.com/missions/${missionId}/photo_${index}_${Date.now()}.jpg`
+      );
+    } catch (error) {
+      console.error('Photo upload failed:', error);
+      throw new Error('Failed to upload photos. Please try again.');
+    }
+  }
+
+  /**
+   * Get verification history for a user
+   */
+  async getVerificationHistory(userId: string): Promise<PhotoVerificationResult[]> {
+    // Mock implementation
+    return [
+      {
+        isVerified: true,
+        confidence: 95,
+        analysis: {
+          hasTrash: true,
+          hasCleanup: true,
+          beforeAfter: true,
+          locationMatch: true,
+          timestampValid: true,
+        },
+        suggestions: ['Great job! Your photos look good for verification.'],
+        verificationId: 'verify_001',
+      },
+    ];
   }
 }
 
-// Export singleton instance
-export const photoVerificationService = new PhotoVerificationService();
+export default PhotoVerificationService.getInstance();

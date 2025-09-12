@@ -14,23 +14,32 @@ import { useTheme } from '../context/ThemeContext';
 import { useXP } from '../context/XPContext';
 import { THEME } from '../styles/theme';
 import { getRoleColor } from '../utils/roleColors';
+import MissionCompletionModal from './mission/MissionCompletionModal';
+import { PhotoVerificationResult } from '../services/photoVerificationService';
+import { useGamification } from '../hooks/useGamification';
+import CelebrationAnimation from './animations/CelebrationAnimation';
+import LevelUpModal from './animations/LevelUpModal';
 
 interface MissionCardProps {
   mission: Mission;
   onAccept?: (mission: Mission) => void;
-  onComplete?: (mission: Mission) => void;
+  onComplete?: (mission: Mission, verificationResult?: PhotoVerificationResult) => void;
   showDetails?: boolean;
+  userRole?: string;
 }
 
 export const MissionCard: React.FC<MissionCardProps> = ({
-  mission,
+  mission, 
   onAccept,
   onComplete,
   showDetails = true,
+  userRole = 'trash-hero',
 }) => {
   const { theme } = useTheme();
   const { addXP } = useXP();
+  const { processMissionCompletion, showCelebration, showLevelUp, levelUpData, hideCelebration, hideLevelUpModal } = useGamification('current_user');
   const [showModal, setShowModal] = useState(false);
+  const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [isAccepted, setIsAccepted] = useState(false);
   const [isCompleted, setIsCompleted] = useState(mission.status === 'completed');
 
@@ -54,17 +63,28 @@ export const MissionCard: React.FC<MissionCardProps> = ({
       return;
     }
 
-    // Award XP and Eco Points
-    addXP(mission.xpReward, `mission_${mission.type}`);
-    
-    setIsCompleted(true);
-    onComplete?.(mission);
-    
-    Alert.alert(
-      'Mission Complete! 🎉',
-      `Great work! You earned ${mission.xpReward} XP and ${mission.ecoPointsReward} Eco Points!`,
-      [{ text: 'Awesome!', style: 'default' }]
-    );
+    // Show photo verification modal
+    setShowCompletionModal(true);
+  };
+
+  const handleMissionCompleted = async (verificationResult: PhotoVerificationResult) => {
+    try {
+      // Process mission completion with gamification
+      const rewards = await processMissionCompletion(mission, verificationResult);
+      
+      setIsCompleted(true);
+      onComplete?.(mission, verificationResult);
+      
+      // Show success message
+      Alert.alert(
+        'Mission Complete! 🎉',
+        `Great work! Your mission was verified with ${verificationResult.confidence}% confidence. You earned ${rewards.find(r => r.type === 'xp')?.value || mission.xpReward} XP and ${rewards.find(r => r.type === 'eco_points')?.value || mission.ecoPointsReward} Eco Points!`,
+        [{ text: 'Awesome!', style: 'default' }]
+      );
+    } catch (error) {
+      console.error('Failed to process mission completion:', error);
+      Alert.alert('Error', 'Failed to process mission rewards. Please try again.');
+    }
   };
 
   const getUrgencyColor = (urgency: Mission['urgency']): string => {
@@ -123,11 +143,11 @@ export const MissionCard: React.FC<MissionCardProps> = ({
 
   return (
     <>
-      <TouchableOpacity
-        style={[
-          styles.card,
-          {
-            backgroundColor: theme.cardBackground,
+    <TouchableOpacity
+      style={[
+        styles.card,
+        { 
+          backgroundColor: theme.cardBackground,
             borderLeftColor: roleColor,
           },
           isCompleted && styles.completedCard,
@@ -144,10 +164,10 @@ export const MissionCard: React.FC<MissionCardProps> = ({
             <View style={[styles.roleBadge, { backgroundColor: roleColor }]}>
               <Text style={styles.roleText}>
                 {mission.requiredRole.replace('-', ' ').toUpperCase()}
-              </Text>
+          </Text>
             </View>
-          </View>
-          
+        </View>
+        
           <View style={styles.statusContainer}>
             <View style={[styles.urgencyBadge, { backgroundColor: urgencyColor }]}>
               <Ionicons 
@@ -164,7 +184,7 @@ export const MissionCard: React.FC<MissionCardProps> = ({
               />
             </View>
           </View>
-        </View>
+      </View>
 
         {/* Description */}
         <Text style={[styles.description, { color: theme.secondaryText }]}>
@@ -185,17 +205,17 @@ export const MissionCard: React.FC<MissionCardProps> = ({
             <Text style={[styles.detailText, { color: theme.secondaryText }]}>
               {formatDuration(mission.estimatedDuration)}
             </Text>
-          </View>
+        </View>
         </View>
 
         {/* Rewards */}
         <View style={styles.rewardsContainer}>
-          <View style={styles.rewardItem}>
+        <View style={styles.rewardItem}>
             <Text style={[styles.rewardIcon, { color: roleColor }]}>⭐</Text>
-            <Text style={[styles.rewardText, { color: theme.textColor }]}>
+          <Text style={[styles.rewardText, { color: theme.textColor }]}>
               {mission.xpReward} XP
-            </Text>
-          </View>
+          </Text>
+        </View>
           
           <View style={styles.rewardItem}>
             <Text style={[styles.rewardIcon, { color: roleColor }]}>🍐</Text>
@@ -209,10 +229,10 @@ export const MissionCard: React.FC<MissionCardProps> = ({
               <Text style={[styles.rewardIcon, { color: roleColor }]}>🏆</Text>
               <Text style={[styles.rewardText, { color: theme.textColor }]}>
                 {mission.badgeReward}
-              </Text>
-            </View>
-          )}
-        </View>
+            </Text>
+          </View>
+        )}
+      </View>
 
         {/* Action Button */}
         {!isCompleted ? (
@@ -250,7 +270,7 @@ export const MissionCard: React.FC<MissionCardProps> = ({
       >
         <View style={[styles.modalContainer, { backgroundColor: theme.background }]}>
           <View style={[styles.modalHeader, { backgroundColor: theme.cardBackground }]}>
-            <TouchableOpacity
+          <TouchableOpacity
               style={styles.closeButton}
               onPress={() => setShowModal(false)}
             >
@@ -393,7 +413,7 @@ export const MissionCard: React.FC<MissionCardProps> = ({
           {/* Modal Action Button */}
           <View style={[styles.modalFooter, { backgroundColor: theme.cardBackground }]}>
             {!isCompleted && (
-              <TouchableOpacity
+          <TouchableOpacity
                 style={[
                   styles.modalActionButton,
                   { backgroundColor: isAccepted ? '#FF9800' : roleColor },
@@ -402,8 +422,8 @@ export const MissionCard: React.FC<MissionCardProps> = ({
                   setShowModal(false);
                   isAccepted ? handleComplete() : handleAccept();
                 }}
-                activeOpacity={0.8}
-              >
+            activeOpacity={0.8}
+          >
                 <Ionicons 
                   name={isAccepted ? 'checkmark' : 'play'} 
                   size={20} 
@@ -412,11 +432,37 @@ export const MissionCard: React.FC<MissionCardProps> = ({
                 <Text style={styles.modalActionButtonText}>
                   {isAccepted ? 'Complete Mission' : 'Accept Mission'}
                 </Text>
-              </TouchableOpacity>
-            )}
+          </TouchableOpacity>
+        )}
           </View>
-        </View>
+      </View>
       </Modal>
+
+      {/* Mission Completion Modal with Photo Verification */}
+      <MissionCompletionModal
+        visible={showCompletionModal}
+        mission={mission}
+        onClose={() => setShowCompletionModal(false)}
+        onComplete={handleMissionCompleted}
+        userRole={userRole}
+      />
+
+      {/* Celebration Animation */}
+      <CelebrationAnimation
+        visible={showCelebration}
+        rewards={[]} // Will be populated by the gamification hook
+        userRole={userRole}
+        onComplete={hideCelebration}
+      />
+
+      {/* Level Up Modal */}
+      <LevelUpModal
+        visible={showLevelUp}
+        oldLevel={levelUpData?.oldLevel || { level: 1, xp: 0, title: 'Level 1' }}
+        newLevel={levelUpData?.newLevel || { level: 2, xp: 250, title: 'Level 2' }}
+        userRole={userRole}
+        onClose={hideLevelUpModal}
+      />
     </>
   );
 };
