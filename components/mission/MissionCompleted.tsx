@@ -9,7 +9,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { Mission } from '../../types/missions';
 import { PhotoVerificationResult } from '../../services/photoVerificationService';
-import { useTheme } from '../context/ThemeContext';
+import { useTheme } from '../../context/ThemeContext';
 import { THEME } from '../../styles/theme';
 import { getRoleColor } from '../../utils/roleColors';
 

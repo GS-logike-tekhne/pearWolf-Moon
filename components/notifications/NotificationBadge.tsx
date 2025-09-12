@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from '../context/ThemeContext';
-import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
+import { useAuth } from '../../context/AuthContext';
 import { useNotifications } from '../../hooks/useNotifications';
 import { getRoleColor } from '../../utils/roleColors';
+import { normalizeRole } from '../../types/roles';
 
 interface NotificationBadgeProps {
   onPress: () => void;
@@ -21,7 +22,7 @@ const NotificationBadge: React.FC<NotificationBadgeProps> = ({
 }) => {
   const { theme } = useTheme();
   const { user } = useAuth();
-  const userRole = user?.role || 'trash-hero';
+  const userRole = normalizeRole(user?.role || 'trash-hero');
   const roleColor = getRoleColor(userRole);
   
   const [unreadCount, setUnreadCount] = useState(0);
@@ -110,7 +111,7 @@ const NotificationBadge: React.FC<NotificationBadgeProps> = ({
           {
             transform: [{ scale: animated ? pulseAnim : 1 }],
           },
-        ]}
+        ] as any}
       >
         <Ionicons
           name="notifications"

@@ -162,7 +162,7 @@ const CelebrationAnimation: React.FC<CelebrationAnimationProps> = ({
               ],
               opacity,
             },
-          ]}
+          ] as any}
         />
       );
     });
@@ -224,7 +224,7 @@ const CelebrationAnimation: React.FC<CelebrationAnimationProps> = ({
               transform: [{ scale: scaleAnim }],
               opacity: opacityAnim,
             },
-          ]}
+          ] as any}
         >
           {/* Celebration header */}
           <View style={styles.header}>
@@ -264,7 +264,7 @@ const CelebrationAnimation: React.FC<CelebrationAnimationProps> = ({
                       },
                     ],
                   },
-                ]}
+                ] as any}
               >
                 <Ionicons
                   name={getRewardIcon(reward.type) as any}
@@ -299,7 +299,7 @@ const CelebrationAnimation: React.FC<CelebrationAnimationProps> = ({
                       outputRange: ['0%', '100%'],
                     }),
                   },
-                ]}
+                ] as any}
               />
             </View>
             <Text style={[styles.progressText, { color: theme.secondaryText }]}>

@@ -9,6 +9,7 @@ import {
   ScrollView,
   ActivityIndicator,
   Dimensions,
+  FlatList,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
@@ -39,6 +40,13 @@ interface PhotoItem {
     longitude: number;
   };
 }
+
+interface AddButtonItem {
+  id: string;
+  isAddButton: true;
+}
+
+type PhotoGridItem = PhotoItem | AddButtonItem;
 
 const MissionPhotoVerification: React.FC<MissionPhotoVerificationProps> = ({
   missionId,
@@ -245,7 +253,7 @@ const MissionPhotoVerification: React.FC<MissionPhotoVerificationProps> = ({
       <Image source={{ uri: photo.uri }} style={styles.photoImage} />
       <TouchableOpacity
         style={[styles.removeButton, { backgroundColor: theme.error }]}
-        onPress={() => removePhoto(photo.id, photo.type)}
+        onPress={() => removePhoto(photo.id, photo.type as 'before' | 'after')}
         disabled={disabled}
       >
         <Ionicons name="close" size={16} color="white" />
@@ -315,30 +323,34 @@ const MissionPhotoVerification: React.FC<MissionPhotoVerificationProps> = ({
       </View>
 
       {/* Photo Grid */}
-      <ScrollView 
+      <FlatList<PhotoGridItem>
+        data={[
+          ...currentPhotos,
+          ...(currentPhotos.length < maxPhotos ? [{ id: 'add-button', isAddButton: true as const }] : [])
+        ]}
         horizontal
         showsHorizontalScrollIndicator={false}
         style={styles.photoGrid}
-      >
-        {currentPhotos.map((photo) => (
-          <PhotoItem key={photo.id} photo={photo} />
-        ))}
-        
-        {/* Add Photo Button */}
-        {currentPhotos.length < maxPhotos && (
-          <TouchableOpacity
-            style={[styles.addPhotoButton, { borderColor: roleColor }]}
-            onPress={() => showPhotoOptions(activeTab)}
-            disabled={disabled}
-            activeOpacity={0.7}
-          >
-            <Ionicons name="camera" size={32} color={roleColor} />
-            <Text style={[styles.addPhotoText, { color: roleColor }]}>
-              Add {activeTab === 'before' ? 'Before' : 'After'} Photo
-            </Text>
-          </TouchableOpacity>
-        )}
-      </ScrollView>
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => {
+          if ('isAddButton' in item) {
+            return (
+              <TouchableOpacity
+                style={[styles.addPhotoButton, { borderColor: roleColor }]}
+                onPress={() => showPhotoOptions(activeTab)}
+                disabled={disabled}
+                activeOpacity={0.7}
+              >
+                <Ionicons name="camera" size={32} color={roleColor} />
+                <Text style={[styles.addPhotoText, { color: roleColor }]}>
+                  Add {activeTab === 'before' ? 'Before' : 'After'} Photo
+                </Text>
+              </TouchableOpacity>
+            );
+          }
+          return <PhotoItem photo={item} />;
+        }}
+      />
 
       {/* Verification Status */}
       {verificationResult && (

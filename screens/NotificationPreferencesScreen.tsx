@@ -14,11 +14,12 @@ import { useAuth } from '../context/AuthContext';
 import PEARScreen from '../components/PEARScreen';
 import { smartNotificationManager, NotificationPreferences } from '../services/smartNotificationManager';
 import { getRoleColor } from '../utils/roleColors';
+import { normalizeRole } from '../types/roles';
 
 const NotificationPreferencesScreen: React.FC = () => {
   const { theme } = useTheme();
   const { user } = useAuth();
-  const userRole = user?.role || 'trash-hero';
+  const userRole = normalizeRole(user?.role || 'trash-hero');
   const roleColor = getRoleColor(userRole);
   
   const [preferences, setPreferences] = useState<NotificationPreferences | null>(null);
@@ -44,7 +45,7 @@ const NotificationPreferencesScreen: React.FC = () => {
     try {
       setPreferences(newPreferences);
       if (user?.id) {
-        await smartNotificationManager.savePreferences(user.id, newPreferences);
+        await smartNotificationManager.savePreferences(user.id.toString(), newPreferences);
       }
     } catch (error) {
       console.error('Failed to save preferences:', error);

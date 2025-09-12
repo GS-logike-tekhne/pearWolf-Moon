@@ -1,6 +1,15 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Mission, MissionProgress, MissionCompletion, MissionStatus } from '../types/missions';
+import { Mission, MissionCompletion, MissionStatus } from '../types/missions';
+
+// Define MissionProgress interface locally since it's not exported from types
+interface MissionProgress {
+  missionId: string;
+  progress: number;
+  timeRemaining?: number;
+  stepsCompleted: string[];
+  currentStep?: string;
+}
 import { useXP } from './XPContext';
 
 interface MissionState {
@@ -55,7 +64,7 @@ const missionReducer = (state: MissionState, action: MissionAction): MissionStat
         ...mission,
         status: 'active' as MissionStatus,
         startedAt: new Date(),
-        joinedUsers: [mission.joinedUsers[0] || 'current_user']
+        currentParticipants: mission.currentParticipants + 1
       };
       
       return {
@@ -67,7 +76,7 @@ const missionReducer = (state: MissionState, action: MissionAction): MissionStat
           [mission.id]: {
             missionId: mission.id,
             progress: 0,
-            timeRemaining: mission.duration,
+            timeRemaining: mission.estimatedDuration * 60, // Convert minutes to seconds
             stepsCompleted: []
           }
         }
@@ -88,7 +97,7 @@ const missionReducer = (state: MissionState, action: MissionAction): MissionStat
         ...state,
         activeMissions: state.activeMissions.filter(m => m.id !== action.payload.missionId),
         completedMissions: [...state.completedMissions, completedMission],
-        userEcoPoints: state.userEcoPoints + mission.reward.ecoPoints
+        userEcoPoints: state.userEcoPoints + mission.ecoPointsReward
       };
     }
     
@@ -99,8 +108,8 @@ const missionReducer = (state: MissionState, action: MissionAction): MissionStat
       const updatedMissions = [...state.activeMissions];
       updatedMissions[missionIndex] = {
         ...updatedMissions[missionIndex],
-        boostUsed: true,
-        pointsSpentOnBoost: updatedMissions[missionIndex].pointsSpentOnBoost + action.payload.cost
+        // Note: boostUsed and pointsSpentOnBoost are not part of Mission interface
+        // These would need to be tracked separately or added to the interface
       };
       
       const currentProgress = state.missionProgress[action.payload.missionId];
@@ -125,12 +134,12 @@ const missionReducer = (state: MissionState, action: MissionAction): MissionStat
       if (missionIndex === -1) return state;
       
       const mission = state.availableMissions[missionIndex];
-      const updatedJoinedUsers = [...mission.joinedUsers, action.payload.userId];
+      const updatedParticipants = mission.currentParticipants + 1;
       
       const updatedMissions = [...state.availableMissions];
       updatedMissions[missionIndex] = {
         ...mission,
-        joinedUsers: updatedJoinedUsers
+        currentParticipants: updatedParticipants
       };
       
       return {
@@ -187,8 +196,11 @@ const missionReducer = (state: MissionState, action: MissionAction): MissionStat
               missionId,
               completion: {
                 missionId,
+                userId: 'current_user',
                 completedAt: new Date(),
-                actualReward: mission.reward
+                xpEarned: mission.xpReward,
+                ecoPointsEarned: mission.ecoPointsReward,
+                badgesEarned: mission.badgeReward ? [mission.badgeReward] : []
               }
             }
           });
@@ -281,7 +293,7 @@ export const MissionProvider: React.FC<MissionProviderProps> = ({ children }) =>
     const mission = state.activeMissions.find(m => m.id === missionId);
     if (mission) {
       // Add XP to evolution system
-      addXP(mission.reward.xp, `Mission: ${mission.title}`);
+      addXP(mission.xpReward, `Mission: ${mission.title}`);
       
       dispatch({ 
         type: 'COMPLETE_MISSION', 
@@ -289,8 +301,11 @@ export const MissionProvider: React.FC<MissionProviderProps> = ({ children }) =>
           missionId,
           completion: {
             missionId,
+            userId: 'current_user',
             completedAt: new Date(),
-            actualReward: mission.reward
+            xpEarned: mission.xpReward,
+            ecoPointsEarned: mission.ecoPointsReward,
+            badgesEarned: mission.badgeReward ? [mission.badgeReward] : []
           }
         } 
       });
@@ -353,37 +368,58 @@ const generateInitialMissions = (): Mission[] => {
       id: 'cleanup_street_01',
       title: 'Street Cleanup Quest',
       description: 'Pick up litter on your street for 15 minutes and document your impact',
-      type: 'Quick Clean',
-      role: 'TRASH_HERO',
-      duration: 900, // 15 minutes
-      reward: { xp: 15, ecoPoints: 10 },
-      canBoost: false,
-      requiresUsers: 1,
-      difficulty: 'Easy',
-      category: 'Cleanup & Collection',
-      icon: 'trash-outline',
+      type: 'cleanup',
+      requiredRole: 'trash-hero',
+      estimatedDuration: 15, // 15 minutes
+      xpReward: 15,
+      ecoPointsReward: 10,
+      difficulty: 'easy',
+      urgency: 'low',
       status: 'available',
-      joinedUsers: [],
-      boostUsed: false,
-      pointsSpentOnBoost: 0
+      currentParticipants: 0,
+      location: {
+        name: 'Local Street',
+        coordinates: { latitude: 0, longitude: 0 },
+        address: 'Your Street'
+      },
+      startDate: new Date(),
+      endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
+      progress: { current: 0, target: 1, unit: 'cleanup' },
+      instructions: ['Pick up litter', 'Document your work'],
+      requiresPhotoVerification: true,
+      requiresLocationVerification: true,
+      createdBy: 'system',
+      createdAt: new Date(),
+      updatedAt: new Date()
     },
     {
       id: 'park_restoration_01',
       title: 'Park Restoration Project',
       description: 'Join a 24-hour community effort to restore local park areas',
-      type: 'Timed Mission',
-      role: 'TRASH_HERO',
-      duration: 86400, // 24 hours
-      reward: { xp: 50, ecoPoints: 35, badge: 'Park Guardian' },
-      canBoost: true,
-      requiresUsers: 1,
-      difficulty: 'Medium',
-      category: 'Habitat Restoration',
-      icon: 'leaf-outline',
+      type: 'restoration',
+      requiredRole: 'trash-hero',
+      estimatedDuration: 1440, // 24 hours in minutes
+      xpReward: 50,
+      ecoPointsReward: 35,
+      badgeReward: 'Park Guardian',
+      difficulty: 'medium',
+      urgency: 'medium',
       status: 'available',
-      joinedUsers: [],
-      boostUsed: false,
-      pointsSpentOnBoost: 0
+      currentParticipants: 0,
+      location: {
+        name: 'Local Park',
+        coordinates: { latitude: 0, longitude: 0 },
+        address: 'Community Park'
+      },
+      startDate: new Date(),
+      endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      progress: { current: 0, target: 1, unit: 'restoration' },
+      instructions: ['Join community effort', 'Help restore park areas'],
+      requiresPhotoVerification: true,
+      requiresLocationVerification: true,
+      createdBy: 'system',
+      createdAt: new Date(),
+      updatedAt: new Date()
     },
     
     // Volunteer/Impact Warrior Missions
@@ -391,20 +427,32 @@ const generateInitialMissions = (): Mission[] => {
       id: 'community_event_01',
       title: 'Organize Eco Workshop',
       description: 'Plan and host an environmental awareness workshop in your community',
-      type: 'Community Quest',
-      role: 'IMPACT_WARRIOR',
-      duration: 259200, // 3 days
-      reward: { xp: 75, ecoPoints: 50, badge: 'Community Leader' },
-      canBoost: true,
-      requiresUsers: 3,
-      maxUsers: 10,
-      difficulty: 'Hard',
-      category: 'Community Engagement',
-      icon: 'people-outline',
+      type: 'community-event',
+      requiredRole: 'impact-warrior',
+      estimatedDuration: 4320, // 3 days in minutes
+      xpReward: 75,
+      ecoPointsReward: 50,
+      badgeReward: 'Community Leader',
+      minParticipants: 3,
+      maxParticipants: 10,
+      difficulty: 'hard',
+      urgency: 'high',
       status: 'available',
-      joinedUsers: [],
-      boostUsed: false,
-      pointsSpentOnBoost: 0
+      currentParticipants: 0,
+      location: {
+        name: 'Community Center',
+        coordinates: { latitude: 0, longitude: 0 },
+        address: 'Local Community Center'
+      },
+      startDate: new Date(),
+      endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      progress: { current: 0, target: 1, unit: 'workshop' },
+      instructions: ['Plan workshop', 'Host event', 'Document impact'],
+      requiresPhotoVerification: true,
+      requiresLocationVerification: true,
+      createdBy: 'system',
+      createdAt: new Date(),
+      updatedAt: new Date()
     },
     
     // Business Missions
@@ -412,37 +460,58 @@ const generateInitialMissions = (): Mission[] => {
       id: 'sponsor_cleanup_01',
       title: 'Corporate Cleanup Sponsorship',
       description: 'Fund and organize a large-scale cleanup event for 50+ participants',
-      type: 'Business Mission',
-      role: 'ECO_DEFENDER',
-      duration: 604800, // 7 days
-      reward: { xp: 100, ecoPoints: 200, tokenReward: 500 },
-      canBoost: true,
-      requiresUsers: 1,
-      difficulty: 'Epic',
-      category: 'Corporate Sustainability',
-      icon: 'business-outline',
+      type: 'data-collection',
+      requiredRole: 'eco-defender',
+      estimatedDuration: 10080, // 7 days in minutes
+      xpReward: 100,
+      ecoPointsReward: 200,
+      difficulty: 'hard',
+      urgency: 'urgent',
       status: 'available',
-      joinedUsers: [],
-      boostUsed: false,
-      pointsSpentOnBoost: 0
+      currentParticipants: 0,
+      location: {
+        name: 'Corporate Office',
+        coordinates: { latitude: 0, longitude: 0 },
+        address: 'Business District'
+      },
+      startDate: new Date(),
+      endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      progress: { current: 0, target: 1, unit: 'sponsorship' },
+      instructions: ['Fund cleanup event', 'Organize participants', 'Document results'],
+      requiresPhotoVerification: true,
+      requiresLocationVerification: true,
+      createdBy: 'system',
+      createdAt: new Date(),
+      updatedAt: new Date()
     },
     {
       id: 'waste_audit_01',
       title: 'Office Waste Audit',
       description: 'Conduct a comprehensive waste audit of your business operations',
-      type: 'Timed Mission',
-      role: 'ECO_DEFENDER',
-      duration: 172800, // 2 days
-      reward: { xp: 60, ecoPoints: 80, badge: 'Efficiency Expert' },
-      canBoost: true,
-      requiresUsers: 1,
-      difficulty: 'Medium',
-      category: 'Corporate Sustainability',
-      icon: 'analytics-outline',
+      type: 'analytics',
+      requiredRole: 'eco-defender',
+      estimatedDuration: 2880, // 2 days in minutes
+      xpReward: 60,
+      ecoPointsReward: 80,
+      badgeReward: 'Efficiency Expert',
+      difficulty: 'medium',
+      urgency: 'medium',
       status: 'available',
-      joinedUsers: [],
-      boostUsed: false,
-      pointsSpentOnBoost: 0
+      currentParticipants: 0,
+      location: {
+        name: 'Office Building',
+        coordinates: { latitude: 0, longitude: 0 },
+        address: 'Business Office'
+      },
+      startDate: new Date(),
+      endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      progress: { current: 0, target: 1, unit: 'audit' },
+      instructions: ['Conduct waste audit', 'Analyze data', 'Create report'],
+      requiresPhotoVerification: true,
+      requiresLocationVerification: true,
+      createdBy: 'system',
+      createdAt: new Date(),
+      updatedAt: new Date()
     }
   ];
 };

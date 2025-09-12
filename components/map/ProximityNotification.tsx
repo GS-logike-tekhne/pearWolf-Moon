@@ -125,7 +125,7 @@ const ProximityNotification: React.FC<ProximityNotificationProps> = ({
             { scale: pulseAnim },
           ],
         },
-      ]}
+      ] as any}
     >
       <TouchableOpacity
         style={styles.content}
@@ -181,7 +181,7 @@ const ProximityNotification: React.FC<ProximityNotificationProps> = ({
                 extrapolate: 'clamp',
               }),
             },
-          ]}
+          ] as any}
         />
       </View>
     </Animated.View>

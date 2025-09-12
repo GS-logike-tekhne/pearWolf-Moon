@@ -36,7 +36,7 @@ const FundingSection: React.FC<FundingSectionProps> = ({ mission }) => {
           currentAmount: mission.raised,
           supporters: mission.donors,
           deadline: mission.endDate,
-          category: 'verified-mission'
+          category: 'cleanup'
         }}
         onDonate={() => {}}
         onViewDetails={() => {}}

@@ -5,6 +5,11 @@ interface LocationCoordinates {
   lng: number;
 }
 
+interface MissionWithPriority extends Mission {
+  priority?: number;
+  distance?: number;
+}
+
 interface UserLocation {
   coordinates: LocationCoordinates;
   address?: {
@@ -42,13 +47,13 @@ export const filterMissionsByProximity = (
   if (!userLocation?.coordinates) return missions;
 
   return missions.filter(mission => {
-    if (!mission.region?.coordinates) return false;
+    if (!mission.location?.coordinates) return false;
     
     const distance = calculateDistance(
       userLocation.coordinates.lat,
       userLocation.coordinates.lng,
-      mission.region.coordinates.lat,
-      mission.region.coordinates.lng
+      mission.location.coordinates.latitude,
+      mission.location.coordinates.longitude
     );
     
     return distance <= maxDistance;
@@ -67,14 +72,17 @@ export const filterMissionsByRegion = (
   }
 
   return missions.filter(mission => {
-    // Exact city match
-    if (mission.region?.city?.toLowerCase() === userLocation.address?.city?.toLowerCase() &&
-        mission.region?.state?.toLowerCase() === userLocation.address?.state?.toLowerCase()) {
+    // For now, we'll use location name matching since Mission interface doesn't have city/state
+    // In a real app, you might want to add city/state to the Mission interface
+    const missionLocation = mission.location?.name?.toLowerCase() || '';
+    const userCity = userLocation.address?.city?.toLowerCase() || '';
+    const userState = userLocation.address?.state?.toLowerCase() || '';
+    
+    // Check if mission location contains user's city or state
+    if (userCity && missionLocation.includes(userCity)) {
       return true;
     }
-    
-    // State fallback
-    if (mission.region?.state?.toLowerCase() === userLocation.address?.state?.toLowerCase()) {
+    if (userState && missionLocation.includes(userState)) {
       return true;
     }
     
@@ -93,26 +101,26 @@ export const getPrioritizedMissions = (
   missions: Mission[],
   userLocation: UserLocation,
   userRole: string
-): Mission[] => {
+): MissionWithPriority[] => {
   if (!userLocation?.coordinates) return missions;
 
   const roleMissions = missions.filter(mission => 
-    mission.role === userRole
+    mission.requiredRole === userRole
   );
 
-  const prioritizedMissions: Mission[] = [];
+  const prioritizedMissions: MissionWithPriority[] = [];
   const processed = new Set<string>();
 
   // Priority 1: Within 2 miles
   roleMissions.forEach(mission => {
     if (processed.has(mission.id)) return;
     
-    if (mission.region?.coordinates) {
+    if (mission.location?.coordinates) {
       const distance = calculateDistance(
         userLocation.coordinates.lat,
         userLocation.coordinates.lng,
-        mission.region.coordinates.lat,
-        mission.region.coordinates.lng
+        mission.location.coordinates.latitude,
+        mission.location.coordinates.longitude
       );
       
       if (distance <= 2) {
@@ -126,13 +134,13 @@ export const getPrioritizedMissions = (
   roleMissions.forEach(mission => {
     if (processed.has(mission.id)) return;
     
-    if (mission.region?.coordinates && 
-        mission.region?.city?.toLowerCase() === userLocation.address?.city?.toLowerCase()) {
+    if (mission.location?.coordinates && 
+        mission.location?.name?.toLowerCase().includes(userLocation.address?.city?.toLowerCase() || '')) {
       const distance = calculateDistance(
         userLocation.coordinates.lat,
         userLocation.coordinates.lng,
-        mission.region.coordinates.lat,
-        mission.region.coordinates.lng
+        mission.location.coordinates.latitude,
+        mission.location.coordinates.longitude
       );
       
       if (distance <= 5) {
@@ -146,12 +154,12 @@ export const getPrioritizedMissions = (
   roleMissions.forEach(mission => {
     if (processed.has(mission.id)) return;
     
-    if (mission.region?.coordinates) {
+    if (mission.location?.coordinates) {
       const distance = calculateDistance(
         userLocation.coordinates.lat,
         userLocation.coordinates.lng,
-        mission.region.coordinates.lat,
-        mission.region.coordinates.lng
+        mission.location.coordinates.latitude,
+        mission.location.coordinates.longitude
       );
       
       if (distance <= 15) {
@@ -165,7 +173,7 @@ export const getPrioritizedMissions = (
   roleMissions.forEach(mission => {
     if (processed.has(mission.id)) return;
     
-    if (mission.region?.state?.toLowerCase() === userLocation.address?.state?.toLowerCase()) {
+    if (mission.location?.name?.toLowerCase().includes(userLocation.address?.state?.toLowerCase() || '')) {
       prioritizedMissions.push({ ...mission, priority: 4, distance: 999 });
       processed.add(mission.id);
     }
@@ -184,11 +192,11 @@ export const getPrioritizedMissions = (
  * Get region display name from mission
  */
 export const getRegionDisplayName = (mission: Mission): string => {
-  if (mission.region?.city && mission.region?.state) {
-    return `${mission.region.city}, ${mission.region.state}`;
+  if (mission.location?.name) {
+    return mission.location.name;
   }
-  if (mission.region?.state) {
-    return mission.region.state;
+  if (mission.location?.address) {
+    return mission.location.address;
   }
   return 'Unknown Location';
 };
@@ -201,19 +209,19 @@ export const isInSameRegion = (
   mission: Mission,
   proximityMiles: number = 10
 ): boolean => {
-  // Check city match
-  if (userLocation.address?.city && mission.region?.city &&
-      userLocation.address.city.toLowerCase() === mission.region.city.toLowerCase()) {
+  // Check location name match
+  if (userLocation.address?.city && mission.location?.name &&
+      mission.location.name.toLowerCase().includes(userLocation.address.city.toLowerCase())) {
     return true;
   }
 
   // Check proximity
-  if (userLocation.coordinates && mission.region?.coordinates) {
+  if (userLocation.coordinates && mission.location?.coordinates) {
     const distance = calculateDistance(
       userLocation.coordinates.lat,
       userLocation.coordinates.lng,
-      mission.region.coordinates.lat,
-      mission.region.coordinates.lng
+      mission.location.coordinates.latitude,
+      mission.location.coordinates.longitude
     );
     return distance <= proximityMiles;
   }

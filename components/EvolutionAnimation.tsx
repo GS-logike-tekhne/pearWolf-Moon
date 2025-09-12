@@ -129,7 +129,7 @@ export const EvolutionAnimation: React.FC<EvolutionAnimationProps> = ({
         {
           opacity: fadeAnim,
         },
-      ]}
+      ] as any}
     >
       <View style={styles.container}>
         {/* Background Blur Effect */}
@@ -145,7 +145,7 @@ export const EvolutionAnimation: React.FC<EvolutionAnimationProps> = ({
                 { rotate: rotation },
               ],
             },
-          ]}
+          ] as any}
         >
           {/* Current Level */}
           <View style={styles.levelSection}>
@@ -159,7 +159,7 @@ export const EvolutionAnimation: React.FC<EvolutionAnimationProps> = ({
                   opacity: textAnim,
                   transform: [{ translateY: textTranslateY }],
                 },
-              ]}
+              ] as any}
             >
               {currentLevel.title}
             </Animated.Text>
@@ -174,7 +174,7 @@ export const EvolutionAnimation: React.FC<EvolutionAnimationProps> = ({
                   backgroundColor: roleColor,
                   transform: [{ scale: scaleAnim }],
                 },
-              ]}
+              ] as any}
             >
               <Ionicons name="arrow-down" size={24} color="white" />
             </Animated.View>
@@ -194,7 +194,7 @@ export const EvolutionAnimation: React.FC<EvolutionAnimationProps> = ({
                   color: roleColor,
                   fontWeight: '700',
                 },
-              ]}
+              ] as any}
             >
               {newLevel.title}
             </Animated.Text>
@@ -210,7 +210,7 @@ export const EvolutionAnimation: React.FC<EvolutionAnimationProps> = ({
                     width: progressWidth,
                     backgroundColor: roleColor,
                   },
-                ]}
+                ] as any}
               />
             </View>
             <Animated.Text
@@ -220,7 +220,7 @@ export const EvolutionAnimation: React.FC<EvolutionAnimationProps> = ({
                   opacity: textAnim,
                   color: roleColor,
                 },
-              ]}
+              ] as any}
             >
               LEVEL UP COMPLETE!
             </Animated.Text>
@@ -234,7 +234,7 @@ export const EvolutionAnimation: React.FC<EvolutionAnimationProps> = ({
                 opacity: textAnim,
                 transform: [{ translateY: textTranslateY }],
               },
-            ]}
+            ] as any}
           >
             {newLevel.description}
           </Animated.Text>
@@ -247,7 +247,7 @@ export const EvolutionAnimation: React.FC<EvolutionAnimationProps> = ({
                 opacity: textAnim,
                 transform: [{ translateY: textTranslateY }],
               },
-            ]}
+            ] as any}
           >
             <TouchableOpacity
               style={[styles.completeButton, { backgroundColor: roleColor }]}

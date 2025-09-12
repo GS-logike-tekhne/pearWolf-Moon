@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Dimensions,
+  ScrollView,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { getRoleColor } from '../utils/roleColors';
@@ -120,8 +121,8 @@ const MyCard: React.FC<MyCardProps> = ({ navigation, route }) => {
       case 'IMPACT_WARRIOR':
         return [
           { label: 'Events Joined', value: stats.eventsJoined?.toString() || '0', icon: 'people', color: theme.primary },
-          { label: 'Impact Points', value: stats.impactPoints || '0', icon: 'star', color: theme.primary },
-          { label: 'Community Radius', value: stats.communityRadius || '0km', icon: 'location', color: theme.primary },
+          { label: 'Impact Points', value: stats.totalXP.toString(), icon: 'star', color: theme.primary },
+          { label: 'Community Radius', value: stats.impactRadius || '0km', icon: 'location', color: theme.primary },
           { label: 'Cleanups Led', value: stats.cleanupsLed?.toString() || '0', icon: 'people-circle', color: theme.primary },
           { label: 'Volunteer Hours', value: stats.volunteerHours || '0h', icon: 'time', color: theme.primary },
           { label: 'Verified Events', value: stats.verifiedEvents.toString(), icon: 'shield-checkmark', color: '#10b981' },

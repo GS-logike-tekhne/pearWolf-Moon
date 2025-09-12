@@ -151,7 +151,7 @@ const LevelUpModal: React.FC<LevelUpModalProps> = ({
               transform: [{ scale: scaleAnim }],
               opacity: opacityAnim,
             },
-          ]}
+          ] as any}
         >
           {/* Glow effect */}
           <Animated.View
@@ -161,7 +161,7 @@ const LevelUpModal: React.FC<LevelUpModalProps> = ({
                 backgroundColor: roleColor,
                 opacity: glowOpacity,
               },
-            ]}
+            ] as any}
           />
 
           {/* Level number */}
@@ -172,7 +172,7 @@ const LevelUpModal: React.FC<LevelUpModalProps> = ({
                 backgroundColor: roleColor,
                 transform: [{ scale: levelNumberScale }],
               },
-            ]}
+            ] as any}
           >
             <Text style={styles.levelNumber}>{newLevel.level}</Text>
           </Animated.View>
@@ -184,7 +184,7 @@ const LevelUpModal: React.FC<LevelUpModalProps> = ({
               {
                 transform: [{ scale: titleScale }],
               },
-            ]}
+            ] as any}
           >
             <Text style={[styles.levelUpText, { color: theme.textColor }]}>
               LEVEL UP!

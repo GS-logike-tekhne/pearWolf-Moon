@@ -13,6 +13,7 @@ import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
 import { smartNotificationManager, NotificationAnalytics } from '../../services/smartNotificationManager';
 import { getRoleColor } from '../../utils/roleColors';
+import { normalizeRole } from '../../types/roles';
 
 export interface NotificationItem {
   id: string;
@@ -37,7 +38,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({
 }) => {
   const { theme } = useTheme();
   const { user } = useAuth();
-  const userRole = user?.role || 'trash-hero';
+  const userRole = normalizeRole(user?.role || 'trash-hero');
   const roleColor = getRoleColor(userRole);
   
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
@@ -333,16 +334,11 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({
         data={notifications}
         renderItem={renderNotificationItem}
         keyExtractor={(item) => item.id}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            tintColor={roleColor}
-          />
-        }
         ListEmptyComponent={renderEmptyState}
-        contentContainerStyle={styles.listContainer}
         showsVerticalScrollIndicator={false}
+        refreshing={refreshing}
+        onRefresh={onRefresh}
+        style={styles.listContainer}
       />
     </View>
   );

@@ -226,7 +226,7 @@ const MissionPinModal: React.FC<MissionPinModalProps> = ({
               </Text>
               
               <View style={styles.equipmentList}>
-                {mission.metadata.equipment.map((item, index) => (
+                {mission.metadata.equipment.map((item: string, index: number) => (
                   <View key={index} style={styles.equipmentItem}>
                     <Ionicons name="checkmark-circle" size={16} color={roleColor} />
                     <Text style={[styles.equipmentText, { color: theme.textColor }]}>

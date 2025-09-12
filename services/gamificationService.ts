@@ -6,7 +6,7 @@ import { Mission } from '../types/missions';
 import { XPData } from '../types/xp';
 import { PhotoVerificationResult } from './photoVerificationService';
 
-export { GamificationReward, StreakData, LeaderboardEntry, AchievementData };
+export type { GamificationReward, StreakData, LeaderboardEntry, AchievementData };
 
 export class GamificationService {
   private static instance: GamificationService;

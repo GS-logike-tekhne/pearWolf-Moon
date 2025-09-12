@@ -13,7 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
 import { useMissions } from '../context/MissionContext';
 import { useXP } from '../context/XPContext';
-import { Mission, MissionType, MISSION_CATEGORIES } from '../types/missions';
+import { Mission, MissionType } from '../types/missions';
 import MissionCard from './MissionCard';
 
 const { width } = Dimensions.get('window');
@@ -36,26 +36,26 @@ const MissionFeed: React.FC<MissionFeedProps> = ({ userRole, navigation }) => {
     let missions = [...missionState.availableMissions, ...missionState.activeMissions];
     
     // Filter by user role
-    missions = missions.filter(mission => mission.role === userRole);
+    missions = missions.filter(mission => mission.requiredRole === userRole.toLowerCase().replace('_', '-'));
     
     // Filter by mission type
     if (activeFilter !== 'all') {
       missions = missions.filter(mission => mission.type === activeFilter);
     }
     
-    // Filter by category
+    // Filter by category (using mission type as category)
     if (selectedCategory !== 'all') {
-      missions = missions.filter(mission => mission.category === selectedCategory);
+      missions = missions.filter(mission => mission.type === selectedCategory);
     }
     
-    // Sort by status (active first), then by difficulty, then by reward
+    // Sort by status (available first), then by difficulty, then by reward
     return missions.sort((a, b) => {
-      // Active missions first
-      if (a.status === 'active' && b.status !== 'active') return -1;
-      if (b.status === 'active' && a.status !== 'active') return 1;
+      // Available missions first
+      if (a.status === 'available' && b.status !== 'available') return -1;
+      if (b.status === 'available' && a.status !== 'available') return 1;
       
       // Then by difficulty (easier missions first for new users)
-      const difficultyOrder = ['Easy', 'Medium', 'Hard', 'Epic'];
+      const difficultyOrder = ['easy', 'medium', 'hard'];
       const aDiff = difficultyOrder.indexOf(a.difficulty);
       const bDiff = difficultyOrder.indexOf(b.difficulty);
       
@@ -66,14 +66,14 @@ const MissionFeed: React.FC<MissionFeedProps> = ({ userRole, navigation }) => {
         return aDiff - bDiff;
       } else {
         // Experienced users see higher rewards first
-        return b.reward.xp - a.reward.xp;
+        return b.xpReward - a.xpReward;
       }
     });
   };
 
   const getAvailableCategories = () => {
-    const missions = missionState.availableMissions.filter(mission => mission.role === userRole);
-    const categories = new Set(missions.map(mission => mission.category));
+    const missions = missionState.availableMissions.filter(mission => mission.requiredRole === userRole.toLowerCase().replace('_', '-'));
+    const categories = new Set(missions.map(mission => mission.type));
     return Array.from(categories);
   };
 
@@ -115,10 +115,11 @@ const MissionFeed: React.FC<MissionFeedProps> = ({ userRole, navigation }) => {
 
   const missionTypeFilters: Array<{ key: 'all' | MissionType; label: string; icon: string }> = [
     { key: 'all', label: 'All', icon: 'grid-outline' },
-    { key: 'Quick Clean', label: 'Quick', icon: 'flash-outline' },
-    { key: 'Timed Mission', label: 'Timed', icon: 'timer-outline' },
-    { key: 'Community Quest', label: 'Community', icon: 'people-outline' },
-    { key: 'Business Mission', label: 'Business', icon: 'business-outline' },
+    { key: 'cleanup', label: 'Cleanup', icon: 'flash-outline' },
+    { key: 'restoration', label: 'Restoration', icon: 'leaf-outline' },
+    { key: 'data-collection', label: 'Data Collection', icon: 'analytics-outline' },
+    { key: 'community-event', label: 'Community', icon: 'people-outline' },
+    { key: 'recycling', label: 'Recycling', icon: 'recycle-outline' },
   ];
 
   return (
@@ -256,8 +257,7 @@ const MissionFeed: React.FC<MissionFeedProps> = ({ userRole, navigation }) => {
             <MissionCard
               key={mission.id}
               mission={mission}
-              userRole={userRole}
-              onMissionPress={handleMissionPress}
+              userRole={userRole.toLowerCase().replace('_', '-')}
             />
           ))
         ) : (

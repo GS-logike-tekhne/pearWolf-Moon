@@ -82,7 +82,7 @@ export const useXP = (initialXP: number = 0): XPData => {
   const getNextMilestone = useCallback(() => {
     if (levelData.isMaxLevel) {
       return {
-        type: 'max_level',
+        type: 'max_level' as const,
         description: 'You\'ve reached the highest level!',
         xpNeeded: 0,
         progress: 100,
@@ -90,7 +90,7 @@ export const useXP = (initialXP: number = 0): XPData => {
     }
 
     return {
-      type: 'level_up',
+      type: 'level_up' as const,
       description: `Reach ${levelData.nextLevel?.title} (Level ${levelData.nextLevel?.level})`,
       xpNeeded: levelData.xpToNext,
       progress: levelData.progressPercent,
@@ -118,22 +118,18 @@ export const useXP = (initialXP: number = 0): XPData => {
   }, []);
 
   return {
-    // Core XP data
-    currentXP,
-    levelData,
+    // Level information (from XPLevelData)
+    currentLevel: levelData.currentLevel,
+    nextLevel: levelData.nextLevel,
+    xpToNext: levelData.xpToNext,
+    progressPercent: levelData.progressPercent,
+    isMaxLevel: levelData.isMaxLevel,
     
     // XP actions
     addXP,
     subtractXP,
     setXP,
     resetXP,
-    
-    // Level information
-    currentLevel: levelData.currentLevel,
-    nextLevel: levelData.nextLevel,
-    xpToNext: levelData.xpToNext,
-    progressPercent: levelData.progressPercent,
-    isMaxLevel: levelData.isMaxLevel,
     
     // History and analytics
     recentRewards,

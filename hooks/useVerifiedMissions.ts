@@ -22,13 +22,13 @@ interface UseVerifiedMissionsReturn {
 }
 
 export const useVerifiedMissions = (): UseVerifiedMissionsReturn => {
-  const { addXP, level } = useXP();
-  const { currentUser } = useAuth();
+  const { addXP, state: xpState } = useXP();
+  const { user } = useAuth();
   
   const [isJoined, setIsJoined] = useState(false);
   const [showJoinModal, setShowJoinModal] = useState(false);
   const [showLevelUpModal, setShowLevelUpModal] = useState(false);
-  const [previousLevel, setPreviousLevel] = useState(level);
+  const [previousLevel, setPreviousLevel] = useState(xpState.currentLevel);
 
   // Constants
   const XP_REWARD = 250;
@@ -77,18 +77,18 @@ export const useVerifiedMissions = (): UseVerifiedMissionsReturn => {
           style: 'default',
           onPress: () => {
             // Award XP and Eco Points
-            setPreviousLevel(level);
-            addXP(XP_REWARD, ECO_POINTS_REWARD);
+            setPreviousLevel(xpState.currentLevel);
+            addXP(XP_REWARD, 'Verified Mission Completion');
             
             // Award PEAR Verified Cleanup Badge
-            if (currentUser) {
+            if (user) {
               // In a real app, this would update the user's badge collection
               // For now, we'll just show a notification
               console.log('PEAR Verified Cleanup Badge awarded!');
             }
             
             // Check if user leveled up
-            if (level !== previousLevel) {
+            if (xpState.currentLevel !== previousLevel) {
               setShowLevelUpModal(true);
             }
             
@@ -101,7 +101,7 @@ export const useVerifiedMissions = (): UseVerifiedMissionsReturn => {
         }
       ]
     );
-  }, [isJoined, level, previousLevel, addXP, currentUser, XP_REWARD, ECO_POINTS_REWARD]);
+  }, [isJoined, xpState.currentLevel, previousLevel, addXP, user, XP_REWARD, ECO_POINTS_REWARD]);
 
   return {
     // State

@@ -43,6 +43,25 @@ export const MissionCard: React.FC<MissionCardProps> = ({
   const [isAccepted, setIsAccepted] = useState(false);
   const [isCompleted, setIsCompleted] = useState(mission.status === 'completed');
 
+  const getUrgencyColor = (urgency: Mission['urgency']): string => {
+    switch (urgency) {
+      case 'urgent': return '#FF5722';
+      case 'high': return '#FF9800';
+      case 'medium': return '#FFC107';
+      case 'low': return '#4CAF50';
+      default: return '#9E9E9E';
+    }
+  };
+
+  const getDifficultyColor = (difficulty: Mission['difficulty']): string => {
+    switch (difficulty) {
+      case 'easy': return '#4CAF50';
+      case 'medium': return '#FF9800';
+      case 'hard': return '#F44336';
+      default: return '#9E9E9E';
+    }
+  };
+
   const roleColor = getRoleColor(mission.requiredRole);
   const urgencyColor = getUrgencyColor(mission.urgency);
   const difficultyColor = getDifficultyColor(mission.difficulty);
@@ -84,25 +103,6 @@ export const MissionCard: React.FC<MissionCardProps> = ({
     } catch (error) {
       console.error('Failed to process mission completion:', error);
       Alert.alert('Error', 'Failed to process mission rewards. Please try again.');
-    }
-  };
-
-  const getUrgencyColor = (urgency: Mission['urgency']): string => {
-    switch (urgency) {
-      case 'urgent': return '#FF5722';
-      case 'high': return '#FF9800';
-      case 'medium': return '#FFC107';
-      case 'low': return '#4CAF50';
-      default: return '#9E9E9E';
-    }
-  };
-
-  const getDifficultyColor = (difficulty: Mission['difficulty']): string => {
-    switch (difficulty) {
-      case 'easy': return '#4CAF50';
-      case 'medium': return '#FF9800';
-      case 'hard': return '#F44336';
-      default: return '#9E9E9E';
     }
   };
 
@@ -369,7 +369,7 @@ export const MissionCard: React.FC<MissionCardProps> = ({
                 Required Equipment
               </Text>
               <View style={styles.modalEquipmentList}>
-                {mission.equipment.map((item, index) => (
+                {mission.equipment?.map((item, index) => (
                   <View key={index} style={styles.modalEquipmentItem}>
                     <Ionicons name="checkmark-circle" size={16} color={roleColor} />
                     <Text style={[styles.modalEquipmentText, { color: theme.textColor }]}>
@@ -443,7 +443,7 @@ export const MissionCard: React.FC<MissionCardProps> = ({
         visible={showCompletionModal}
         mission={mission}
         onClose={() => setShowCompletionModal(false)}
-        onComplete={handleMissionCompleted}
+        onComplete={(missionId, verificationResult) => handleMissionCompleted(verificationResult)}
         userRole={userRole}
       />
 

@@ -1,4 +1,5 @@
-import { Mission, MissionTemplate, UserRole } from '../types/missions';
+import { Mission, MissionTemplate } from '../types/missions';
+import { UserRole } from '../types/roles';
 
 // Mission templates for each role
 export const missionTemplates: MissionTemplate[] = [
@@ -311,7 +312,15 @@ export const missions = generateMissions();
 
 // Helper functions for filtering missions
 export const getMissionsByRole = (role: UserRole): Mission[] => {
-  return missions.filter(mission => mission.requiredRole === role);
+  // Convert role to lowercase format to match mission.requiredRole
+  const roleMap: Record<UserRole, string> = {
+    'TRASH_HERO': 'trash-hero',
+    'IMPACT_WARRIOR': 'impact-warrior', 
+    'ECO_DEFENDER': 'eco-defender',
+    'ADMIN': 'admin'
+  };
+  const roleString = roleMap[role];
+  return missions.filter(mission => mission.requiredRole === roleString);
 };
 
 export const getMissionsByStatus = (status: Mission['status']): Mission[] => {

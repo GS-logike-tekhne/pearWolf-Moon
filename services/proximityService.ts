@@ -9,6 +9,7 @@ export interface ProximityAlert {
   type: 'mission_nearby' | 'mission_entered' | 'mission_exited';
   timestamp: Date;
   acknowledged: boolean;
+  role: string; // Role required for the mission
 }
 
 export class ProximityService {
@@ -68,6 +69,10 @@ export class ProximityService {
    * Create proximity alert
    */
   private createProximityAlert(missionId: string, distance: number, type: ProximityAlert['type']): void {
+    // Get mission to extract role
+    const mission = MissionPinService.getMission(missionId);
+    const role = mission?.role || mission?.requiredRole || 'trash-hero';
+    
     const alert: ProximityAlert = {
       id: `alert_${Date.now()}_${missionId}`,
       missionId,
@@ -75,6 +80,7 @@ export class ProximityService {
       type,
       timestamp: new Date(),
       acknowledged: false,
+      role,
     };
 
     this.proximityAlerts.push(alert);

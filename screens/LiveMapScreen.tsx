@@ -11,6 +11,7 @@ import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
 import { getRoleColor } from '../utils/roleColors';
+import { normalizeRole } from '../types/roles';
 import PEARScreen from '../components/PEARScreen';
 import MissionPin from '../components/map/MissionPin';
 import MissionPinModal from '../components/map/MissionPinModal';
@@ -28,7 +29,7 @@ interface LiveMapScreenProps {
 
 const LiveMapScreen: React.FC<LiveMapScreenProps> = ({ route, navigation }) => {
   const { theme } = useTheme();
-  const userRole = route?.params?.role || 'trash-hero';
+  const userRole = normalizeRole(route?.params?.role || 'trash-hero');
   const roleColor = getRoleColor(userRole);
   
   const mapRef = useRef<MapView>(null);

@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Mission } from '../../types/missions';
-import { useTheme } from '../context/ThemeContext';
+import { useTheme } from '../../context/ThemeContext';
 import { THEME } from '../../styles/theme';
 import { getRoleColor } from '../../utils/roleColors';
 
@@ -156,7 +156,7 @@ const MissionDetailsModal: React.FC<MissionDetailsModalProps> = ({
               Required Equipment
             </Text>
             <View style={styles.equipmentList}>
-              {mission.equipment.map((item, index) => (
+              {mission.equipment?.map((item, index) => (
                 <View key={index} style={styles.equipmentItem}>
                   <Ionicons name="checkmark-circle" size={16} color={roleColor} />
                   <Text style={[styles.equipmentText, { color: theme.textColor }]}>

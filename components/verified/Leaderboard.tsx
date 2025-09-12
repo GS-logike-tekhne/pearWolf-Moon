@@ -23,7 +23,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({
   title, 
   subtitle, 
   onViewAll,
-  maxItems = 5 
+  maxItems = 10 
 }) => {
   const { theme } = useTheme();
 
@@ -173,7 +173,6 @@ const Leaderboard: React.FC<LeaderboardProps> = ({
         data={data.slice(0, maxItems)}
         renderItem={renderLeaderboardItem}
         keyExtractor={(item) => item.id}
-        scrollEnabled={false}
         showsVerticalScrollIndicator={false}
       />
       

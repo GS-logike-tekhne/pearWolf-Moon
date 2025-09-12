@@ -29,7 +29,7 @@ export interface NotificationActions {
 
 export const useNotifications = (): NotificationState & NotificationActions => {
   const { user } = useAuth();
-  const { currentXP, currentLevel } = useXP();
+  const { state: xpState } = useXP();
   
   const [state, setState] = useState<NotificationState>({
     preferences: null,
@@ -52,12 +52,12 @@ export const useNotifications = (): NotificationState & NotificationActions => {
     if (state.isInitialized && user?.id) {
       smartNotificationManager.updateContext({
         userRole: user.role,
-        currentLevel,
-        currentXP,
+        currentLevel: xpState.currentLevel,
+        currentXP: xpState.totalXP,
         streakCount: state.streakData?.currentStreak || 0,
       });
     }
-  }, [currentXP, currentLevel, user?.role, state.isInitialized, state.streakData]);
+  }, [xpState.totalXP, xpState.currentLevel, user?.role, state.isInitialized, state.streakData]);
 
   const initializeNotifications = async (): Promise<void> => {
     if (!user?.id) return;
@@ -66,10 +66,10 @@ export const useNotifications = (): NotificationState & NotificationActions => {
       setState(prev => ({ ...prev, loading: true }));
 
       // Initialize smart notification manager
-      const smartNotificationsInitialized = await smartNotificationManager.initialize(user.id);
+      const smartNotificationsInitialized = await smartNotificationManager.initialize(user.id.toString());
       
       // Initialize streak reminder service
-      const streakRemindersInitialized = await streakReminderService.initialize(user.id);
+      const streakRemindersInitialized = await streakReminderService.initialize(user.id.toString());
       
       // Initialize basic notification service
       const basicNotificationsInitialized = await notificationService.initialize();
@@ -141,7 +141,7 @@ export const useNotifications = (): NotificationState & NotificationActions => {
     if (!user?.id) return;
 
     try {
-      await smartNotificationManager.savePreferences(user.id, preferences);
+      await smartNotificationManager.savePreferences(user.id.toString(), preferences);
       setState(prev => ({ ...prev, preferences }));
     } catch (error) {
       console.error('Failed to update preferences:', error);
@@ -153,7 +153,7 @@ export const useNotifications = (): NotificationState & NotificationActions => {
     if (!user?.id) return;
 
     try {
-      await streakReminderService.saveReminderConfig(user.id, config);
+      await streakReminderService.saveReminderConfig(user.id.toString(), config);
       setState(prev => ({ ...prev, reminderConfig: config }));
     } catch (error) {
       console.error('Failed to update reminder config:', error);
@@ -169,7 +169,7 @@ export const useNotifications = (): NotificationState & NotificationActions => {
     if (!user?.id) return;
 
     try {
-      await streakReminderService.recordActivity(user.id, activity);
+      await streakReminderService.recordActivity(user.id.toString(), activity);
       
       // Update streak data in state
       const updatedStreakData = streakReminderService.getStreakData();
@@ -206,7 +206,7 @@ export const useNotifications = (): NotificationState & NotificationActions => {
     if (!user?.id) return;
 
     try {
-      await streakReminderService.checkAndSendReminders(user.id);
+      await streakReminderService.checkAndSendReminders(user.id.toString());
     } catch (error) {
       console.error('Failed to check reminders:', error);
     }

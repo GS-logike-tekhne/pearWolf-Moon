@@ -114,8 +114,7 @@ export const mockUserStats: Record<UserRole, UserStats> = {
     currentLevel: 4,
     levelTitle: 'Urban Guardian',
     eventsJoined: 23,
-    impactPoints: '1,680',
-    communityRadius: '25km',
+    impactRadius: '25km',
     cleanupsLed: 8,
     volunteerHours: '89h',
     verifiedEvents: 7,
@@ -205,6 +204,7 @@ export const mockUserStats: Record<UserRole, UserStats> = {
     platformReach: 'Global',
     issuesResolved: 89,
     jobsOverseen: 234,
+    impactRadius: 'Global',
     verifiedEvents: 3,
     streak: 45,
     badges: [

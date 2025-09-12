@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { Mission } from '../../types/missions';
-import { useTheme } from '../context/ThemeContext';
+import { useTheme } from '../../context/ThemeContext';
 import { THEME } from '../../styles/theme';
 import { getRoleColor } from '../../utils/roleColors';
 import MissionCardHeader from './MissionCardHeader';
@@ -112,7 +112,7 @@ const MissionCard: React.FC<MissionCardProps> = ({
         visible={showCompletionModal}
         mission={mission}
         onClose={() => setShowCompletionModal(false)}
-        onComplete={handleMissionCompleted}
+        onComplete={(missionId, verificationResult) => handleMissionCompleted(verificationResult)}
         userRole={userRole}
       />
 

@@ -22,7 +22,8 @@ interface GamificationData {
 }
 
 export const useGamification = (userId: string, initialXP: number = 0) => {
-  const { addXP, currentLevel, nextLevel, xpToNext, progressPercent, levelUpHistory } = useXP(initialXP);
+  const xpData = useXP(initialXP);
+  const { addXP, currentLevel, nextLevel, xpToNext, progressPercent, levelUpHistory } = xpData;
   
   const [gamificationData, setGamificationData] = useState<GamificationData>({
     rewards: [],
@@ -80,7 +81,7 @@ export const useGamification = (userId: string, initialXP: number = 0) => {
         userId,
         mission,
         verificationResult,
-        { currentXP: 0, currentLevel, nextLevel, xpToNext, progressPercent } as XPData
+        xpData
       );
 
       // Add XP
@@ -93,7 +94,7 @@ export const useGamification = (userId: string, initialXP: number = 0) => {
       const missionData = { totalMissions: 1 }; // Mock data
       const unlockedBadges = await GamificationService.checkBadgeUnlocks(
         userId,
-        { currentXP: 0, currentLevel, nextLevel, xpToNext, progressPercent } as XPData,
+        xpData,
         missionData
       );
 

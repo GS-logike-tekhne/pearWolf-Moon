@@ -78,7 +78,7 @@ const MissionActions: React.FC<MissionActionsProps> = ({
         visible={showLevelUpModal}
         onClose={closeLevelUpModal}
         newLevel={5} // This would come from XP context
-        xpGained={250}
+        role="TRASH_HERO" // Default role, could be dynamic based on user
       />
     </>
   );

@@ -8,47 +8,48 @@ import { XPProgressBar } from './XPProgressBar';
  * This can be used in any screen to show XP progress and allow XP gains
  */
 export const XPExample: React.FC = () => {
-  const { level, xp, progress, nextXP, gainXP } = useXP(230); // Start with 230 XP
+  const xpData = useXP(230); // Start with 230 XP
+  const { currentLevel, progressPercent, xpToNext, addXP } = xpData;
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>XP System Demo</Text>
       
       <XPProgressBar 
-        progress={progress} 
-        level={level} 
-        nextXP={nextXP}
+        progress={progressPercent / 100} 
+        level={currentLevel.level} 
+        nextXP={xpToNext}
         color="#4CAF50"
       />
       
       <View style={styles.buttonContainer}>
         <TouchableOpacity 
           style={[styles.button, { backgroundColor: '#4CAF50' }]}
-          onPress={() => gainXP(25)}
+          onPress={() => addXP(25, 'Demo')}
         >
           <Text style={styles.buttonText}>+25 XP</Text>
         </TouchableOpacity>
         
         <TouchableOpacity 
           style={[styles.button, { backgroundColor: '#2196F3' }]}
-          onPress={() => gainXP(50)}
+          onPress={() => addXP(50, 'Demo')}
         >
           <Text style={styles.buttonText}>+50 XP</Text>
         </TouchableOpacity>
         
         <TouchableOpacity 
           style={[styles.button, { backgroundColor: '#FF9800' }]}
-          onPress={() => gainXP(100)}
+          onPress={() => addXP(100, 'Demo')}
         >
           <Text style={styles.buttonText}>+100 XP</Text>
         </TouchableOpacity>
       </View>
       
       <View style={styles.statsContainer}>
-        <Text style={styles.statText}>Current Level: {level}</Text>
-        <Text style={styles.statText}>Total XP: {xp}</Text>
-        <Text style={styles.statText}>Progress: {Math.round(progress * 100)}%</Text>
-        <Text style={styles.statText}>XP to Next Level: {nextXP - Math.floor(progress * nextXP)}</Text>
+        <Text style={styles.statText}>Current Level: {currentLevel.level}</Text>
+        <Text style={styles.statText}>Total XP: {currentLevel.xp}</Text>
+        <Text style={styles.statText}>Progress: {Math.round(progressPercent)}%</Text>
+        <Text style={styles.statText}>XP to Next Level: {xpToNext}</Text>
       </View>
     </View>
   );

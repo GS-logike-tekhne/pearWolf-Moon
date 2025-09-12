@@ -261,7 +261,6 @@ const RouteOptimizationModal: React.FC<RouteOptimizationModalProps> = ({
                 <MissionItem mission={item} index={index} />
               )}
               keyExtractor={(item) => item.id}
-              scrollEnabled={false}
               ItemSeparatorComponent={() => <View style={styles.separator} />}
             />
           </View>

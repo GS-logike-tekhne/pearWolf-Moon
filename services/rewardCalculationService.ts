@@ -31,7 +31,7 @@ export class RewardCalculationService {
     let baseXP = mission.xpReward || 50;
     
     // Bonus for photo verification
-    if (verificationResult?.confidence >= 90) {
+    if (verificationResult?.confidence && verificationResult.confidence >= 90) {
       baseXP += Math.floor(baseXP * 0.2); // 20% bonus for high confidence
     }
     
@@ -54,7 +54,7 @@ export class RewardCalculationService {
     let basePoints = mission.ecoPointsReward || 25;
     
     // Bonus for verification confidence
-    if (verificationResult?.confidence >= 85) {
+    if (verificationResult?.confidence && verificationResult.confidence >= 85) {
       basePoints += Math.floor(basePoints * 0.15); // 15% bonus
     }
     

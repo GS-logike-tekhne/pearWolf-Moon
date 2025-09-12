@@ -15,11 +15,12 @@ import PEARScreen from '../components/PEARScreen';
 import NotificationCenter from '../components/notifications/NotificationCenter';
 import NotificationBadge from '../components/notifications/NotificationBadge';
 import { getRoleColor } from '../utils/roleColors';
+import { normalizeRole } from '../types/roles';
 
 const NotificationIntegrationScreen: React.FC = () => {
   const { theme } = useTheme();
   const { user } = useAuth();
-  const userRole = user?.role || 'trash-hero';
+  const userRole = normalizeRole(user?.role || 'trash-hero');
   const roleColor = getRoleColor(userRole);
   
   const [showNotificationCenter, setShowNotificationCenter] = useState(false);

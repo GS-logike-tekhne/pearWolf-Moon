@@ -2,12 +2,56 @@ import LocationService from './locationService';
 import MissionPinService from './missionPinService';
 import ProximityService from './proximityService';
 import RouteOptimizationService from './routeOptimizationService';
-import { MissionPin } from './missionPinService';
 import { UserLocation } from './locationService';
 import { ProximityAlert } from './proximityService';
 import { RouteOptimization } from './routeOptimizationService';
 
-export { MissionPin, UserLocation, ProximityAlert, RouteOptimization };
+// Define MissionPin interface here to avoid circular dependency
+export interface MissionPin {
+  id: string;
+  title: string;
+  description: string;
+  location: {
+    latitude: number;
+    longitude: number;
+    address: string;
+  };
+  status: 'available' | 'in_progress' | 'completed' | 'expired';
+  difficulty: 'easy' | 'medium' | 'hard';
+  estimatedDuration: number;
+  xpReward: number;
+  ecoPointsReward: number;
+  requiredRole: string;
+  role: string; // Alias for requiredRole for backward compatibility
+  distance?: number;
+  type: string;
+  urgency: 'low' | 'medium' | 'high' | 'urgent';
+  priority: 'low' | 'medium' | 'high' | 'urgent'; // Alias for urgency
+  startDate: Date;
+  endDate: Date;
+  currentParticipants: number;
+  minParticipants: number;
+  maxParticipants: number;
+  participants: number; // Alias for currentParticipants
+  progress: {
+    current: number;
+    target: number;
+    unit: string;
+  };
+  instructions: string[];
+  equipment: string[];
+  requiresPhotoVerification: boolean;
+  requiresLocationVerification: boolean;
+  createdBy: string;
+  createdAt: Date;
+  updatedAt: Date;
+  metadata?: {
+    equipment: string[];
+    [key: string]: any;
+  };
+}
+
+export type { UserLocation, ProximityAlert, RouteOptimization };
 
 export class LiveMapService {
   private static instance: LiveMapService;
