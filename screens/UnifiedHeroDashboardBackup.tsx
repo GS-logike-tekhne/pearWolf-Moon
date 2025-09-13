@@ -79,6 +79,35 @@ const UnifiedHeroDashboardBackup: React.FC<UnifiedHeroDashboardBackupProps> = ({
       />
 
       <View style={styles.content}>
+        {/* My Card Section */}
+        <View style={[styles.myCard, { backgroundColor: theme.cardBackground }]}>
+          <View style={styles.cardHeader}>
+            <Text style={[styles.cardTitle, { color: theme.textColor }]}>My Card</Text>
+            <View style={styles.verifiedBadge}>
+              <Ionicons name="checkmark-circle" size={16} color={roleConfig.color} />
+              <Text style={[styles.verifiedText, { color: roleConfig.color }]}>PEAR Verified</Text>
+            </View>
+          </View>
+          
+          <View style={styles.profileSection}>
+            <View style={[styles.profileAvatar, { backgroundColor: roleConfig.color }]}>
+              <Text style={styles.avatarText}>{roleConfig.badgeIcon}</Text>
+              <View style={styles.avatarBadge}>
+                <Ionicons name="checkmark" size={12} color="white" />
+              </View>
+            </View>
+            
+            <View style={styles.profileInfo}>
+              <Text style={[styles.profileName, { color: theme.textColor }]}>{roleConfig.title}</Text>
+              <Text style={[styles.profileRole, { color: theme.secondaryText }]}>{roleConfig.subtitle}</Text>
+              <View style={styles.badgeContainer}>
+                <Text style={styles.badgeEmoji}>{roleConfig.badgeIcon}</Text>
+                <Text style={[styles.badgeText, { color: roleConfig.color }]}>{roleConfig.badge}</Text>
+              </View>
+            </View>
+          </View>
+        </View>
+
         {/* Role Toggle Section */}
         <View style={[styles.roleToggleSection, { backgroundColor: theme.cardBackground }]}>
           <View style={styles.roleToggleHeader}>
@@ -87,6 +116,42 @@ const UnifiedHeroDashboardBackup: React.FC<UnifiedHeroDashboardBackupProps> = ({
             </Text>
             <Text style={[styles.roleToggleSubtitle, { color: theme.textSecondary }]}>
               {roleConfig.subtitle}
+            </Text>
+          </View>
+          
+          {/* Role Toggle Switch */}
+          <View style={styles.toggleContainer}>
+            <Text style={[
+              styles.toggleLabel, 
+              { color: userRole === 'TRASH_HERO' ? '#4CAF50' : theme.secondaryText }
+            ]}>
+              Trash Hero
+            </Text>
+            
+            <TouchableOpacity
+              style={[
+                styles.toggleSwitch,
+                { backgroundColor: userRole === 'TRASH_HERO' ? '#4CAF50' : '#E0E0E0' }
+              ]}
+              onPress={() => {
+                // Toggle between TRASH_HERO and IMPACT_WARRIOR
+                console.log('Role toggle pressed');
+              }}
+            >
+              <View style={[
+                styles.toggleThumb,
+                { 
+                  backgroundColor: 'white',
+                  transform: [{ translateX: userRole === 'TRASH_HERO' ? 0 : 20 }]
+                }
+              ]} />
+            </TouchableOpacity>
+            
+            <Text style={[
+              styles.toggleLabel, 
+              { color: userRole === 'IMPACT_WARRIOR' ? '#FF5722' : theme.secondaryText }
+            ]}>
+              Impact Warrior
             </Text>
           </View>
         </View>
@@ -134,6 +199,88 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: THEME.SPACING.md,
   },
+  myCard: {
+    borderRadius: THEME.BORDER_RADIUS.lg,
+    padding: THEME.SPACING.lg,
+    marginBottom: THEME.SPACING.lg,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: THEME.SPACING.md,
+  },
+  cardTitle: {
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
+    fontWeight: '700',
+  },
+  verifiedBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: THEME.SPACING.xs,
+  },
+  verifiedText: {
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
+    fontWeight: '600',
+  },
+  profileSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  profileAvatar: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: THEME.SPACING.md,
+    position: 'relative',
+  },
+  avatarText: {
+    fontSize: 24,
+  },
+  avatarBadge: {
+    position: 'absolute',
+    bottom: -2,
+    right: -2,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: '#4CAF50',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: 'white',
+  },
+  profileInfo: {
+    flex: 1,
+  },
+  profileName: {
+    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
+    fontWeight: '700',
+    marginBottom: THEME.SPACING.xs,
+  },
+  profileRole: {
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
+    marginBottom: THEME.SPACING.sm,
+  },
+  badgeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: THEME.SPACING.xs,
+  },
+  badgeEmoji: {
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
+  },
+  badgeText: {
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
+    fontWeight: '600',
+  },
   roleToggleSection: {
     borderRadius: THEME.BORDER_RADIUS.lg,
     padding: THEME.SPACING.lg,
@@ -155,6 +302,34 @@ const styles = StyleSheet.create({
   roleToggleSubtitle: {
     fontSize: THEME.TYPOGRAPHY.fontSize.base,
     textAlign: 'center',
+  },
+  toggleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: THEME.SPACING.md,
+    gap: THEME.SPACING.md,
+  },
+  toggleLabel: {
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
+    fontWeight: '600',
+  },
+  toggleSwitch: {
+    width: 50,
+    height: 30,
+    borderRadius: 15,
+    padding: 2,
+    justifyContent: 'center',
+  },
+  toggleThumb: {
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 2,
   },
   quickActionsSection: {
     marginBottom: THEME.SPACING.lg,

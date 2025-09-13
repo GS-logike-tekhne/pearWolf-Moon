@@ -12,6 +12,7 @@ import { useTheme } from '../context/ThemeContext';
 import { THEME } from '../styles/theme';
 import ScreenLayout from '../components/ScreenLayout';
 import { useAuth } from '../context/AuthContext';
+import { useRoleManager } from '../hooks/useRoleManager';
 import UnifiedHeader from '../components/UnifiedHeader';
 import MenuModal from '../components/MenuModal';
 import { generateWalletId } from '../utils/generateWalletId';
@@ -19,8 +20,12 @@ import { generateWalletId } from '../utils/generateWalletId';
 const ProfileScreen = ({ navigation, route }: { navigation: any; route: any }) => {
   const { theme } = useTheme();
   const { user } = useAuth();
-  const { role = 'impact-warrior', onSignOut } = route.params || {};
+  const { currentRole } = useRoleManager();
+  const { onSignOut } = route.params || {};
   const [showMenu, setShowMenu] = useState(false);
+
+  // Use current role from role manager, fallback to route param, then default
+  const role = currentRole ? currentRole.toLowerCase().replace('_', '-') : 'impact-warrior';
 
   // Generate wallet ID based on user and role
   const walletId = generateWalletId(user?.id || 1, role);
@@ -83,7 +88,7 @@ const ProfileScreen = ({ navigation, route }: { navigation: any; route: any }) =
     <ScreenLayout>
       <UnifiedHeader
         onMenuPress={() => setShowMenu(true)}
-        role={role === 'admin' ? 'ADMIN' : role === 'business' ? 'BUSINESS' : role === 'trash-hero' ? 'TRASH_HERO' : 'VOLUNTEER'}
+        role={role}
         points={role === 'admin' ? 0 : (role === 'trash-hero' ? 1240 : (role === 'business' ? 3450 : 2450))}
         onNotificationPress={() => navigation.navigate('Notifications')}
         onProfilePress={() => {}}

@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
-import { UserRole, normalizeRole, canSwitchRole, getAvailableRoles } from '../types/roles';
+import { UserRole, normalizeRole, canSwitchRole, getAvailableRoles, getRoleColor, getRoleDisplayName, getRoleIcon } from '../types/roles';
 
 /**
  * Centralized role management hook that handles:
@@ -47,11 +47,23 @@ export const useRoleManager = () => {
 
   // Toggle between Trash Hero and Impact Warrior (if user has both roles)
   const toggleHeroRoles = (): boolean => {
-    if (!user || !canSwitchRole(user.role, 'TRASH_HERO') || !canSwitchRole(user.role, 'IMPACT_WARRIOR')) {
+    console.log('toggleHeroRoles called');
+    console.log('User:', user?.role);
+    console.log('Current role:', currentRole);
+    
+    if (!user) {
+      console.log('No user found');
+      return false;
+    }
+    
+    // Check if user can switch between the unified hero roles
+    if (!canSwitchRole(user.role, 'TRASH_HERO') && !canSwitchRole(user.role, 'IMPACT_WARRIOR')) {
+      console.log('User cannot switch to either hero role');
       return false;
     }
 
     const newRole = currentRole === 'TRASH_HERO' ? 'IMPACT_WARRIOR' : 'TRASH_HERO';
+    console.log('Switching to role:', newRole);
     return switchToRole(newRole);
   };
 
@@ -64,32 +76,32 @@ export const useRoleManager = () => {
         return {
           title: 'TrashHero Pro',
           subtitle: 'Professional Cleaner',
-          color: '#28A745',
-          icon: 'leaf',
+          color: getRoleColor('TRASH_HERO'),
+          icon: getRoleIcon('TRASH_HERO'),
           canToggle: canSwitchToRole('IMPACT_WARRIOR'),
         };
       case 'IMPACT_WARRIOR':
         return {
           title: 'Impact Warrior',
           subtitle: 'Community Volunteer',
-          color: '#dc2626',
-          icon: 'flame',
+          color: getRoleColor('IMPACT_WARRIOR'),
+          icon: getRoleIcon('IMPACT_WARRIOR'),
           canToggle: canSwitchToRole('TRASH_HERO'),
         };
       case 'ECO_DEFENDER':
         return {
           title: 'EcoDefender Corp',
           subtitle: 'Environmental Sponsor',
-          color: '#007bff',
-          icon: 'business',
+          color: getRoleColor('ECO_DEFENDER'),
+          icon: getRoleIcon('ECO_DEFENDER'),
           canToggle: false,
         };
       case 'ADMIN':
         return {
           title: 'Platform Admin',
           subtitle: 'System Administrator',
-          color: '#ea580c',
-          icon: 'shield-checkmark',
+          color: getRoleColor('ADMIN'),
+          icon: getRoleIcon('ADMIN'),
           canToggle: false,
         };
       default:

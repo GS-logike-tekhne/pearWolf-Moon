@@ -10,8 +10,11 @@ import {
   Dimensions,
 } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
+import { useAuth } from '../context/AuthContext';
+import { useXP } from '../hooks/useXP';
 import { THEME } from '../styles/theme';
 import { UserRole } from '../types/roles';
+import UnifiedHeader from './UnifiedHeader';
 
 const { width, height } = Dimensions.get('window');
 
@@ -29,6 +32,7 @@ interface PEARScreenProps {
   safeAreaEdges?: ('top' | 'bottom' | 'left' | 'right')[];
   statusBarStyle?: 'light-content' | 'dark-content' | 'default';
   statusBarBackgroundColor?: string;
+  navigation?: any;
 }
 
 export const PEARScreen: React.FC<PEARScreenProps> = ({
@@ -45,21 +49,30 @@ export const PEARScreen: React.FC<PEARScreenProps> = ({
   safeAreaEdges = ['top', 'bottom'],
   statusBarStyle = 'dark-content',
   statusBarBackgroundColor,
+  navigation,
 }) => {
   const { theme } = useTheme();
+  const { user, currentRole } = useAuth();
+  const { currentLevel, getXPSummary } = useXP();
+  
+  const xpSummary = getXPSummary();
+  const xpTotal = xpSummary.totalXP;
+  
+  // Use current role from auth context, fallback to provided role
+  const userRole = currentRole ? currentRole.toLowerCase().replace('_', '-') : (role ? role.toLowerCase().replace('_', '-') : 'trash-hero');
 
   // Get role-based background color
   const getRoleBackgroundColor = (userRole?: UserRole): string => {
     if (backgroundColor) return backgroundColor;
     
     switch (userRole) {
-      case 'trash-hero':
+      case 'TRASH_HERO':
         return 'linear-gradient(135deg, #4CAF50 0%, #81C784 100%)';
-      case 'impact-warrior':
+      case 'IMPACT_WARRIOR':
         return 'linear-gradient(135deg, #FF5722 0%, #FF8A65 100%)';
-      case 'eco-defender':
+      case 'ECO_DEFENDER':
         return 'linear-gradient(135deg, #2196F3 0%, #64B5F6 100%)';
-      case 'admin':
+      case 'ADMIN':
         return 'linear-gradient(135deg, #9C27B0 0%, #BA68C8 100%)';
       default:
         return theme.background;
@@ -73,22 +86,13 @@ export const PEARScreen: React.FC<PEARScreenProps> = ({
     if (showScroll) {
       return (
         <ScrollView
-          style={[styles.scrollView, { backgroundColor: theme.background }]}
-          contentContainerStyle={[
+          style={[
+            styles.scrollView, 
+            { backgroundColor: theme.background },
             styles.scrollContent,
             contentPadding && styles.contentPadding,
           ]}
           showsVerticalScrollIndicator={false}
-          refreshControl={
-            enableRefresh && onRefresh ? (
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={onRefresh}
-                tintColor={theme.primary}
-                colors={[theme.primary]}
-              />
-            ) : undefined
-          }
         >
           {children}
         </ScrollView>
@@ -114,7 +118,6 @@ export const PEARScreen: React.FC<PEARScreenProps> = ({
         styles.container,
         { backgroundColor: finalStatusBarColor },
       ]}
-      edges={safeAreaEdges}
     >
       <StatusBar
         barStyle={statusBarStyle}
@@ -128,83 +131,31 @@ export const PEARScreen: React.FC<PEARScreenProps> = ({
           style={[
             styles.roleBackground,
             {
-              backgroundColor: role === 'trash-hero' ? '#4CAF50' :
-                              role === 'impact-warrior' ? '#FF5722' :
-                              role === 'eco-defender' ? '#2196F3' :
-                              role === 'admin' ? '#9C27B0' : theme.primary,
+              backgroundColor: role === 'TRASH_HERO' ? '#4CAF50' :
+                              role === 'IMPACT_WARRIOR' ? '#FF5722' :
+                              role === 'ECO_DEFENDER' ? '#2196F3' :
+                              role === 'ADMIN' ? '#9C27B0' : theme.primary,
               opacity: 0.05,
             },
           ]}
         />
       )}
 
-      {/* Header */}
-      {showHeader && title && (
-        <View
-          style={[
-            styles.header,
-            {
-              backgroundColor: theme.cardBackground,
-              borderBottomColor: theme.borderColor || '#E0E0E0',
-            },
-          ]}
-        >
-          <View style={styles.headerContent}>
-            <View style={styles.headerLeft}>
-              {/* PEAR Logo/Badge */}
-              <View
-                style={[
-                  styles.pearBadge,
-                  {
-                    backgroundColor: role === 'trash-hero' ? '#4CAF50' :
-                                    role === 'impact-warrior' ? '#FF5722' :
-                                    role === 'eco-defender' ? '#2196F3' :
-                                    role === 'admin' ? '#9C27B0' : theme.primary,
-                  },
-                ]}
-              >
-                <Text style={styles.pearIcon}>🍐</Text>
-              </View>
-            </View>
-            
-            <View style={styles.headerCenter}>
-              <Text
-                style={[
-                  styles.headerTitle,
-                  { color: theme.textColor },
-                ]}
-                numberOfLines={1}
-                ellipsizeMode="tail"
-              >
-                {title}
-              </Text>
-            </View>
-            
-            <View style={styles.headerRight}>
-              {/* Role indicator */}
-              {role && (
-                <View
-                  style={[
-                    styles.roleIndicator,
-                    {
-                      backgroundColor: role === 'trash-hero' ? '#4CAF50' :
-                                      role === 'impact-warrior' ? '#FF5722' :
-                                      role === 'eco-defender' ? '#2196F3' :
-                                      role === 'admin' ? '#9C27B0' : theme.primary,
-                    },
-                  ]}
-                >
-                  <Text style={styles.roleText}>
-                    {role === 'trash-hero' ? 'TH' :
-                     role === 'impact-warrior' ? 'IW' :
-                     role === 'eco-defender' ? 'ED' :
-                     role === 'admin' ? 'AD' : 'U'}
-                  </Text>
-                </View>
-              )}
-            </View>
-          </View>
-        </View>
+      {/* Unified Header */}
+      {showHeader && navigation && (
+        <UnifiedHeader
+          onMenuPress={() => {
+            // Handle menu press - could be passed as prop or use navigation
+            console.log('Menu pressed');
+          }}
+          role={userRole}
+          points={xpTotal}
+          onNotificationPress={() => navigation.navigate('Notifications')}
+          onProfilePress={() => navigation.navigate('ProfileScreen', { 
+            role: userRole,
+            onSignOut: () => navigation.navigate('Login')
+          })}
+        />
       )}
 
       {/* Main Content */}

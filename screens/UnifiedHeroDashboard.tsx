@@ -5,7 +5,9 @@ import {
   StyleSheet,
   TouchableOpacity,
   Dimensions,
+  StatusBar,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { getRoleColor } from '../utils/roleColors';
 import { useTheme } from "../context/ThemeContext";
@@ -117,7 +119,7 @@ const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({
           { title: 'Performance', icon: 'analytics', color: getRoleColor('trash-hero'), onPress: () => navigation.navigate('TrashHeroEarnings') },
           { title: 'Map View', icon: 'map', color: getRoleColor('trash-hero'), onPress: () => navigation.navigate('MapScreen') },
           { title: 'My Badges', icon: 'medal', color: '#8b5cf6', onPress: () => navigation.navigate('BadgeSystem', { userRole: 'TRASH_HERO' }) },
-          { title: 'Profile', icon: 'person', color: theme.secondaryText, onPress: () => navigation.navigate('ProfileScreen', { role: 'trash-hero' }) },
+          { title: 'Profile', icon: 'person', color: theme.secondaryText, onPress: () => navigation.navigate('ProfileScreen') },
         ];
       case 'IMPACT_WARRIOR':
         return [
@@ -126,7 +128,7 @@ const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({
           { title: 'My Impact', icon: 'analytics', color: getRoleColor('impact-warrior'), onPress: () => navigation.navigate('ImpactWarriorImpact') },
           { title: 'PEAR Verified Missions', icon: 'people', color: getRoleColor('impact-warrior'), onPress: () => navigation.navigate('PearVerifiedMissions') },
           { title: 'My Badges', icon: 'medal', color: '#8b5cf6', onPress: () => navigation.navigate('BadgeSystem', { userRole: 'IMPACT_WARRIOR' }) },
-          { title: 'Profile', icon: 'person', color: theme.secondaryText, onPress: () => navigation.navigate('ProfileScreen', { role: 'impact-warrior' }) },
+          { title: 'Profile', icon: 'person', color: theme.secondaryText, onPress: () => navigation.navigate('ProfileScreen') },
         ];
       case 'ECO_DEFENDER':
         return [
@@ -281,30 +283,35 @@ const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({
   );
 
   return (
-    <PEARScreen
-      title="Dashboard"
-      role={activeRole || 'TRASH_HERO'}
-      showHeader={true}
-      showScroll={true}
-      enableRefresh={true}
-      onRefresh={() => {
-        // Refresh dashboard data
-        console.log('Refreshing dashboard...');
-      }}
-      refreshing={false}
-    >
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
+      <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
+      <PEARScreen
+        title="Dashboard"
+        role={activeRole || 'TRASH_HERO'}
+        showHeader={true}
+        showScroll={true}
+        enableRefresh={true}
+        onRefresh={() => {
+          // Refresh dashboard data
+          console.log('Refreshing dashboard...');
+        }}
+        refreshing={false}
+      >
       <UnifiedHeader
         onMenuPress={() => setShowMenu(true)}
         role={activeRole}
         points={roleConfig.points}
         onNotificationPress={() => navigation.navigate('Notifications')}
         onProfilePress={() => navigation.navigate('ProfileScreen', { 
-          role: activeRole === 'TRASH_HERO' ? 'trash-hero' : 'impact-warrior',
           onSignOut: () => navigation.navigate('Login')
         })}
       />
         {/* My Card Section */}
-        <View style={[styles.myCard, { backgroundColor: theme.cardBackground }]}>
+        <View style={[styles.myCard, { 
+          backgroundColor: theme.cardBackground,
+          borderTopWidth: 3,
+          borderTopColor: roleConfig.color
+        }]}>
           <View style={styles.cardHeader}>
             <Text style={[styles.cardTitle, { color: theme.textColor }]}>My Card</Text>
             <View style={styles.verifiedBadge}>
@@ -319,7 +326,7 @@ const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({
               <View style={styles.toggleContainer}>
                 <Text style={[
                   styles.toggleLabel, 
-                  { color: activeRole === 'TRASH_HERO' ? '#4CAF50' : theme.secondaryText }
+                  { color: activeRole === 'TRASH_HERO' ? getRoleColor('TRASH_HERO') : theme.secondaryText }
                 ]}>
                   Trash Hero
                 </Text>
@@ -327,7 +334,7 @@ const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({
                 <TouchableOpacity
                   style={[
                     styles.toggleSwitch,
-                    { backgroundColor: activeRole === 'IMPACT_WARRIOR' ? '#FF5722' : '#4CAF50' }
+                    { backgroundColor: activeRole === 'IMPACT_WARRIOR' ? getRoleColor('IMPACT_WARRIOR') : getRoleColor('TRASH_HERO') }
                   ]}
                   onPress={toggleRole}
                   activeOpacity={0.8}
@@ -345,7 +352,7 @@ const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({
                 
                 <Text style={[
                   styles.toggleLabel, 
-                  { color: activeRole === 'IMPACT_WARRIOR' ? '#FF5722' : theme.secondaryText }
+                  { color: activeRole === 'IMPACT_WARRIOR' ? getRoleColor('IMPACT_WARRIOR') : theme.secondaryText }
                 ]}>
                   Impact Warrior
                 </Text>
@@ -362,7 +369,7 @@ const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({
           <View style={styles.profileSection}>
             <View style={[styles.profileAvatar, { backgroundColor: roleConfig.color }]}>
               <Text style={styles.avatarText}>EC</Text>
-              <View style={styles.avatarBadge}>
+              <View style={[styles.avatarBadge, { backgroundColor: roleConfig.color }]}>
                 <Ionicons name="checkmark" size={12} color="white" />
               </View>
             </View>
@@ -467,6 +474,7 @@ const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({
         }}
       />
     </PEARScreen>
+    </SafeAreaView>
   );
 };
 
@@ -516,7 +524,7 @@ const styles = StyleSheet.create({
     marginRight: THEME.SPACING.md,
   },
   avatarText: {
-    // color: theme.background,
+    color: 'white',
     fontSize: THEME.TYPOGRAPHY.fontSize.xl,
     fontWeight: '700',
   },
@@ -524,12 +532,13 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 2,
     right: 2,
-    backgroundColor: '#28a745',
     borderRadius: 10,
     width: 20,
     height: 20,
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: 'white',
   },
   profileInfo: {
     flex: 1,
@@ -662,10 +671,10 @@ const styles = StyleSheet.create({
   actionsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 12,
+    justifyContent: 'space-between',
   },
   actionCard: {
-    width: (width - 56) / 2,
+    width: '48%',
     alignItems: 'center',
     paddingVertical: THEME.SPACING.md + 4,
     paddingHorizontal: THEME.SPACING.sm + 4,
@@ -675,6 +684,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
+    marginBottom: 12,
   },
   actionIcon: {
     width: 48,

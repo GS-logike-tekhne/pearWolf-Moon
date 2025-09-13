@@ -9,6 +9,7 @@ interface TransactionItemProps {
   icon: string;
   iconColor: string;
   onPress?: () => void;
+  isLast?: boolean;
 }
 
 const TransactionItem: React.FC<TransactionItemProps> = ({
@@ -18,10 +19,11 @@ const TransactionItem: React.FC<TransactionItemProps> = ({
   icon,
   iconColor,
   onPress,
+  isLast = false,
 }) => {
   return (
-    <TouchableOpacity style={styles.container} onPress={onPress}>
-      <View style={[styles.iconContainer, { backgroundColor: iconColor }]}>
+    <TouchableOpacity style={[styles.container, isLast && styles.lastContainer]} onPress={onPress}>
+      <View style={[styles.iconContainer, { backgroundColor: '#000000' }]}>
         <Ionicons name={icon as any} size={20} color="white" />
       </View>
       
@@ -39,15 +41,17 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#2D5A3D',
+    backgroundColor: '#9AE630',
     borderRadius: 12,
     padding: 16,
     marginBottom: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+  },
+  lastContainer: {
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 6,
   },
   iconContainer: {
     width: 40,
@@ -63,17 +67,17 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     fontWeight: '600',
-    color: 'white',
+    color: '#000000',
     marginBottom: 2,
   },
   timestamp: {
     fontSize: 12,
-    color: 'rgba(255, 255, 255, 0.6)',
+    color: 'rgba(0, 0, 0, 0.6)',
   },
   amount: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#35B87F',
+    color: '#000000',
   },
 });
 

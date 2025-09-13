@@ -253,7 +253,7 @@ const MenuModal: React.FC<MenuModalProps> = ({
                 </View>
                 <View style={styles.userDetails}>
                   <Text style={[styles.userName, { color: theme.textColor }]}>
-                    User
+                    {userName}
                   </Text>
                   <Text style={[styles.userRole, { color: theme.secondaryText }]}>
                     {roleConfig.title}

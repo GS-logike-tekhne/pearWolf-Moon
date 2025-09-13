@@ -270,7 +270,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   questList: {
-    maxHeight: 300,
+    flex: 1,
   },
   questCard: {
     borderWidth: 1,

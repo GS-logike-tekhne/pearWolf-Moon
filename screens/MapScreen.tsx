@@ -17,6 +17,9 @@ import { useTheme } from '../context/ThemeContext';
 import { THEME } from '../styles/theme';
 import { missionsAPI, Mission, apiUtils } from '../services/api';
 import ScreenLayout from '../components/ScreenLayout';
+import UnifiedHeader from '../components/UnifiedHeader';
+import MenuModal from '../components/MenuModal';
+import { useRoleManager } from '../hooks/useRoleManager';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 // Trash Encounter imports
@@ -44,13 +47,15 @@ type MapScreenProps = {
 
 const MapScreen: React.FC<MapScreenProps> = ({ navigation, route }) => {
   const { theme } = useTheme();
-  const role = route?.params?.role || 'business';
+  const { currentRole } = useRoleManager();
+  const role = currentRole;
   
   const [userLocation, setUserLocation] = useState<Location.LocationObject | null>(null);
   const [missions, setMissions] = useState<Mission[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedMission, setSelectedMission] = useState<Mission | null>(null);
   const [selectedVerifiedMission, setSelectedVerifiedMission] = useState<any>(null);
+  const [showMenuModal, setShowMenuModal] = useState(false);
 
   // Trash Encounter state
   const [selectedTrashEncounter, setSelectedTrashEncounter] = useState<TrashEncounter | null>(null);
@@ -359,27 +364,18 @@ const MapScreen: React.FC<MapScreenProps> = ({ navigation, route }) => {
 
   return (
     <ScreenLayout scrollable={false} padding={{ horizontal: 0, vertical: 0 }}>
-      {/* Header */}
-      <View style={[styles.header, { backgroundColor: theme.background }]}>
-        <TouchableOpacity 
-          style={[styles.backButton, { backgroundColor: theme.background }]}
-          onPress={handleBack}
-        >
-          <Ionicons name="arrow-back" size={24} color={getRoleColor(role)} />
-        </TouchableOpacity>
-        <View style={styles.headerContent}>
-          <Text style={[styles.headerTitle, { color: theme.textColor }]}>Mission Map</Text>
-          <Text style={[styles.headerSubtitle, { color: theme.secondaryText }]}>
-            {missions.length} active missions nearby
-          </Text>
-        </View>
-        <TouchableOpacity 
-          style={[styles.filterButton, { backgroundColor: theme.background }]}
-          onPress={loadMissions}
-        >
-          <Ionicons name="refresh" size={20} color={getRoleColor(role)} />
-        </TouchableOpacity>
-      </View>
+      <UnifiedHeader
+        title="Mission Map"
+        subtitle={`${missions.length} active missions nearby`}
+        role={role}
+        onMenuPress={() => setShowMenuModal(true)}
+        onNotificationPress={() => {}}
+        onProfilePress={() => {}}
+        showBackButton={true}
+        onBackPress={handleBack}
+        rightIcon="refresh"
+        onRightIconPress={loadMissions}
+      />
 
       {/* Map View */}
       <View style={styles.mapContainer}>
@@ -687,6 +683,14 @@ const MapScreen: React.FC<MapScreenProps> = ({ navigation, route }) => {
         difficulty={selectedEcoStation?.level >= 4 ? 'hard' : selectedEcoStation?.level >= 3 ? 'medium' : 'easy'}
         timeLimit={3}
       />
+
+      {/* Menu Modal */}
+      <MenuModal
+        visible={showMenuModal}
+        onClose={() => setShowMenuModal(false)}
+        navigation={navigation}
+        role={role}
+      />
     </ScreenLayout>
   );
 };
@@ -694,41 +698,6 @@ const MapScreen: React.FC<MapScreenProps> = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: THEME.SPACING.md + 4,
-    paddingTop: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: THEME.SPACING.md,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  headerContent: {
-    flex: 1,
-  },
-  headerTitle: {
-    fontSize: THEME.TYPOGRAPHY.fontSize["2xl"],
-    fontWeight: '700',
-  },
-  headerSubtitle: {
-    fontSize: THEME.TYPOGRAPHY.fontSize.base,
-    marginTop: THEME.SPACING.xs,
   },
   mapContainer: {
     flex: 1,
@@ -744,13 +713,6 @@ const styles = StyleSheet.create({
     fontSize: THEME.TYPOGRAPHY.fontSize.lg,
     color: '#6b7280',
     marginTop: THEME.SPACING.md,
-  },
-  filterButton: {
-    paddingHorizontal: THEME.SPACING.md,
-    paddingVertical: THEME.SPACING.sm,
-    borderRadius: THEME.BORDER_RADIUS.md,
-    backgroundColor: '#f3f4f6',
-    marginRight: THEME.SPACING.sm,
   },
   map: {
     flex: 1,

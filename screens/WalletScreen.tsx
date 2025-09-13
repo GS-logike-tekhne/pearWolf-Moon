@@ -5,15 +5,15 @@ import {
   StyleSheet,
   ScrollView,
   SafeAreaView,
+  TouchableOpacity,
 } from 'react-native';
-import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
-import { UserRole } from '../types/roles';
+import { useXP } from '../hooks/useXP';
 import UnifiedHeader from '../components/UnifiedHeader';
 import MenuModal from '../components/MenuModal';
-import { useXP } from '../hooks/useXP';
-import { useActivityTracking } from '../hooks/useActivityTracking';
-import CelebrationAnimation from '../components/animations/CelebrationAnimation';
+import WalletCard from '../components/wallet/WalletCard';
+import ActionButtons from '../components/wallet/ActionButtons';
+import TransactionItem from '../components/wallet/TransactionItem';
 
 interface WalletScreenProps {
   navigation: any;
@@ -21,131 +21,118 @@ interface WalletScreenProps {
 }
 
 const WalletScreen: React.FC<WalletScreenProps> = ({ navigation, route }) => {
-  const { theme } = useTheme();
   const { user, currentRole, logout } = useAuth();
+  const { currentLevel, getXPSummary, progressPercent } = useXP();
   const [showMenu, setShowMenu] = useState(false);
-  const [showCelebration, setShowCelebration] = useState(false);
   
-  // XP and gamification data
-  const { currentLevel, getXPSummary } = useXP();
-  const { 
-    efficiencySummary, 
-    getMissionStats,
-    refreshEfficiencySummary 
-  } = useActivityTracking();
-  const streak = 3;
   const xpSummary = getXPSummary();
   const xpTotal = xpSummary.totalXP;
-  
-  // Mission efficiency data
-  const missionStats = getMissionStats();
   
   // Use current role from auth context, fallback to route params, then to user role
   const userRole = route?.params?.role || 
                    (currentRole ? currentRole.toLowerCase().replace('_', '-') : 'trash-hero') ||
                    (user?.role ? user.role.toLowerCase().replace('_', '-') : 'trash-hero');
 
+  // Mock transaction data
+  const transactions = [
+    { id: 1, title: 'Beach Cleanup Mission', amount: '+$45', time: '2 hours ago', icon: 'star' },
+    { id: 2, title: 'Recycling Bonus', amount: '+$12', time: '1 day ago', icon: 'leaf' },
+    { id: 3, title: 'Community Event', amount: '+$28', time: '3 days ago', icon: 'people' },
+    { id: 4, title: 'Daily Quest', amount: '+$8', time: '1 week ago', icon: 'trophy' },
+  ];
+
+  const getTierName = (level: number) => {
+    if (level >= 10) return 'Eco Master';
+    if (level >= 7) return 'Guardian';
+    if (level >= 5) return 'Warrior';
+    if (level >= 3) return 'Defender';
+    return 'Rookie';
+  };
+
+  const getRoleTitle = (role: string) => {
+    switch (role) {
+      case 'trash-hero': return 'Trash Hero Pro';
+      case 'impact-warrior': return 'Impact Warrior';
+      case 'eco-defender': return 'Eco Defender';
+      case 'admin': return 'Admin';
+      default: return 'Trash Hero Pro';
+    }
+  };
+
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.background}>
+    <View style={styles.container}>
+      <SafeAreaView style={styles.safeArea}>
         {/* Unified Header */}
-        <UnifiedHeader
-          onMenuPress={() => setShowMenu(true)}
-          role={userRole}
+      <UnifiedHeader
+        onMenuPress={() => setShowMenu(true)}
+        role={userRole}
           points={xpTotal}
-          onNotificationPress={() => navigation.navigate('Notifications')}
-          onProfilePress={() => navigation.navigate('ProfileScreen', { 
-            role: userRole,
-            onSignOut: () => navigation.navigate('Login')
-          })}
-        />
+        onNotificationPress={() => navigation.navigate('Notifications')}
+        onProfilePress={() => navigation.navigate('ProfileScreen', { 
+          role: userRole,
+          onSignOut: () => navigation.navigate('Login')
+        })}
+      />
 
-        <ScrollView style={styles.scrollView}>
-          {/* Test Content */}
-          <View style={styles.testContainer}>
-            <Text style={styles.testTitle}>🎉 NEW GAMIFIED WALLET 🎉</Text>
-            <Text style={styles.testText}>This is the new wallet screen!</Text>
-            <Text style={styles.testText}>Level: {currentLevel.level}</Text>
-            <Text style={styles.testText}>XP: {xpTotal}</Text>
-            <Text style={styles.testText}>Streak: {streak}</Text>
-            <Text style={styles.testText}>Role: {userRole}</Text>
-            
-            <View style={styles.testCard}>
-              <Text style={styles.cardTitle}>TrashHero Pro</Text>
-              <Text style={styles.cardTier}>Guardian Tier</Text>
-              <Text style={styles.cardBalance}>$580.00</Text>
-              <Text style={styles.cardEco}>240 Eco Points</Text>
-            </View>
-            
-            <View style={styles.testButtons}>
-              <View style={styles.testButton}>
-                <Text style={styles.buttonText}>+ Earn More</Text>
-              </View>
-              <View style={styles.testButton}>
-                <Text style={styles.buttonText}>🌱 Redeem</Text>
-              </View>
-            </View>
-            
-            {/* Test Sign Out Button */}
-            <View style={[styles.testButton, { backgroundColor: '#dc3545', marginTop: 20 }]}>
-              <Text 
-                style={styles.buttonText}
-                onPress={async () => {
-                  console.log('Direct sign out test');
-                  try {
-                    await logout();
-                    navigation.getParent()?.reset({
-                      index: 0,
-                      routes: [{ name: 'Login' }],
-                    });
-                  } catch (error) {
-                    console.error('Direct logout failed:', error);
-                  }
-                }}
-              >
-                🚪 Test Sign Out
-              </Text>
-            </View>
+        <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+
+          {/* Main Wallet Card */}
+          <WalletCard
+            role={getRoleTitle(userRole)}
+            tier={getTierName(currentLevel.level)}
+            id={`TH-${(user?.id?.toString() || '000000003').padStart(9, '0')}`}
+            balance="580.00"
+            ecoPoints={240}
+            level={currentLevel.level}
+            levelProgress={progressPercent || 0}
+            nextTierEcoPoints={10000}
+            nextTierCash="1000"
+          />
+
+          {/* Action Buttons */}
+          <ActionButtons
+            onEarnMore={() => navigation.navigate('TrashHeroMissions')}
+            onRedeem={() => navigation.navigate('RedeemScreen')}
+          />
+
+          {/* Transactions Section */}
+        <View style={styles.transactionsSection}>
+            <Text style={styles.sectionTitle}>Recent Transactions</Text>
+            {transactions.map((transaction, index) => (
+              <TransactionItem
+                key={transaction.id}
+                icon={transaction.icon}
+                title={transaction.title}
+                amount={transaction.amount}
+                timestamp={transaction.time}
+                iconColor="#35B87F"
+                isLast={index === transactions.length - 1}
+              />
+            ))}
           </View>
+      </ScrollView>
 
-          {/* Bottom Spacing */}
-          <View style={styles.bottomSpacing} />
-        </ScrollView>
-
-        {/* Celebration Animation */}
-        <CelebrationAnimation
-          visible={showCelebration}
-          rewards={[
-            { type: 'eco_points', value: 50, source: 'redeem', timestamp: new Date() },
-            { type: 'xp', value: 25, source: 'redeem', timestamp: new Date() }
-          ]}
-          userRole={userRole}
-          onComplete={() => setShowCelebration(false)}
-        />
-
-        {/* Menu Modal */}
-        <MenuModal
-          visible={showMenu}
-          onClose={() => setShowMenu(false)}
-          userRole={userRole.toUpperCase().replace('-', '_') as any}
+      {/* Menu Modal */}
+      <MenuModal
+        visible={showMenu}
+        onClose={() => setShowMenu(false)}
+        userRole={userRole.toUpperCase().replace('-', '_') as any}
           userName="TrashHero Pro"
           userLevel={currentLevel.level}
-          onNavigate={(screen, params) => {
+        onNavigate={(screen, params) => {
             console.log('Navigating to:', screen, params);
-            navigation.navigate(screen, params);
-          }}
+          navigation.navigate(screen, params);
+        }}
           onSignOut={async () => {
             console.log('Sign out pressed');
             try {
               await logout();
-              // Use getParent() to navigate to the root navigator
               navigation.getParent()?.reset({
                 index: 0,
                 routes: [{ name: 'Login' }],
               });
             } catch (error) {
               console.error('Logout failed:', error);
-              // Still navigate to login even if logout fails
               navigation.getParent()?.reset({
                 index: 0,
                 routes: [{ name: 'Login' }],
@@ -153,100 +140,36 @@ const WalletScreen: React.FC<WalletScreenProps> = ({ navigation, route }) => {
             }
           }}
         />
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#ffffff',
   },
-  background: {
+  safeArea: {
     flex: 1,
-    backgroundColor: '#0C3F1A',
   },
   scrollView: {
     flex: 1,
-    paddingBottom: 20,
-  },
-  testContainer: {
-    padding: 20,
-    alignItems: 'center',
-  },
-  testTitle: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#F4C542',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  testText: {
-    fontSize: 16,
-    color: 'white',
-    marginBottom: 10,
-  },
-  testCard: {
-    backgroundColor: '#35B87F',
-    borderRadius: 20,
-    padding: 20,
-    marginVertical: 20,
-    width: '100%',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
-  },
-  cardTitle: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: 'white',
-    marginBottom: 5,
-  },
-  cardTier: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#F4C542',
-    marginBottom: 10,
-  },
-  cardBalance: {
-    fontSize: 36,
-    fontWeight: '700',
-    color: 'white',
-    marginBottom: 8,
-  },
-  cardEco: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: 'white',
-  },
-  testButtons: {
-    flexDirection: 'row',
-    gap: 12,
-    width: '100%',
-  },
-  testButton: {
-    flex: 1,
-    backgroundColor: '#35B87F',
-    borderRadius: 12,
-    paddingVertical: 12,
     paddingHorizontal: 16,
-    alignItems: 'center',
-    shadowColor: '#35B87F',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
-    elevation: 4,
   },
-  buttonText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: 'white',
+  transactionsSection: {
+    paddingHorizontal: 20,
+    paddingVertical: 20,
+    backgroundColor: '#ffffff',
+    marginHorizontal: 20,
+    borderRadius: 12,
+    marginBottom: 20,
   },
-  bottomSpacing: {
-    height: 40,
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#1f2937',
+    marginBottom: 16,
   },
 });
 

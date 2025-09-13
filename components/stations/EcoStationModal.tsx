@@ -36,7 +36,7 @@ const EcoStationModal: React.FC<EcoStationModalProps> = ({
     if (!station) return 'location';
     switch (station.type) {
       case 'recycling-depot':
-        return 'recycle';
+        return 'refresh';
       case 'analytics-hub':
         return 'analytics';
       case 'pearthquake-event':

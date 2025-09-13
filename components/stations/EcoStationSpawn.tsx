@@ -13,7 +13,7 @@ const EcoStationSpawn: React.FC<EcoStationSpawnProps> = ({ station, onPress }) =
   const getStationIcon = () => {
     switch (station.type) {
       case 'recycling-depot':
-        return 'recycle';
+        return 'refresh';
       case 'analytics-hub':
         return 'analytics';
       case 'pearthquake-event':
@@ -77,7 +77,7 @@ const EcoStationSpawn: React.FC<EcoStationSpawnProps> = ({ station, onPress }) =
   return (
     <Marker
       coordinate={station.location.coordinates}
-      title={`${getStationIcon() === 'globe' ? '🌍' : getStationIcon() === 'recycle' ? '🟢' : '🔵'} ${station.name}`}
+      title={`${getStationIcon() === 'globe' ? '🌍' : getStationIcon() === 'refresh' ? '🟢' : '🔵'} ${station.name}`}
       description={`Level ${station.level} • ${station.communityRating}⭐ • ${station.xpReward} XP • ${station.ecoPointsReward} Eco Points`}
       onPress={() => onPress(station)}
     >

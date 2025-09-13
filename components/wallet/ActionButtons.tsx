@@ -55,7 +55,7 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({ onEarnMore, onRedeem }) =
       </TouchableOpacity>
 
       {/* Redeem Button with Glow */}
-      <Animated.View style={redeemAnimatedStyle}>
+      <Animated.View style={[redeemAnimatedStyle, { flex: 1 }]}>
         <TouchableOpacity style={styles.redeemButton} onPress={onRedeem}>
           <View style={styles.confettiContainer}>
             {/* Confetti particles */}
@@ -65,10 +65,8 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({ onEarnMore, onRedeem }) =
             <View style={[styles.confetti, styles.confetti4]} />
           </View>
           
-          <View style={styles.redeemContent}>
-            <Ionicons name="leaf" size={16} color="white" />
-            <Text style={styles.buttonText}>Redeem</Text>
-          </View>
+          <Ionicons name="leaf" size={16} color="white" />
+          <Text style={styles.buttonText}>Redeem</Text>
         </TouchableOpacity>
       </Animated.View>
     </View>
@@ -84,7 +82,7 @@ const styles = StyleSheet.create({
   },
   earnButton: {
     flex: 1,
-    backgroundColor: '#35B87F',
+    backgroundColor: '#9AE630',
     borderRadius: 12,
     paddingVertical: 12,
     paddingHorizontal: 16,
@@ -92,37 +90,34 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
-    shadowColor: '#35B87F',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
-    elevation: 4,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 3,
     maxWidth: 160,
   },
   redeemButton: {
     flex: 1,
-    backgroundColor: '#35B87F',
+    backgroundColor: '#9AE630',
     borderRadius: 12,
     paddingVertical: 12,
     paddingHorizontal: 16,
-    borderWidth: 2,
-    borderColor: '#F4C542',
-    shadowColor: '#F4C542',
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 8,
-    elevation: 6,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 3,
     position: 'relative',
     overflow: 'hidden',
     maxWidth: 160,
   },
-  redeemContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-  },
   buttonText: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: '600',
     color: 'white',
   },

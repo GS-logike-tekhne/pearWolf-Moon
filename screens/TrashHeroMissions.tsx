@@ -12,6 +12,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { getRoleColor } from '../utils/roleColors';
 import { useTheme } from '../context/ThemeContext';
 import { THEME } from '../styles/theme';
+import { useAuth } from '../context/AuthContext';
+import { useXP } from '../hooks/useXP';
 import MenuModal from '../components/MenuModal';
 import DailyQuests from '../components/DailyQuests';
 import PEARScreen from '../components/PEARScreen';
@@ -20,9 +22,17 @@ const { width } = Dimensions.get('window');
 
 const TrashHeroMissions = ({ navigation }: any) => {
   const { theme } = useTheme();
+  const { user, currentRole, logout } = useAuth();
+  const { currentLevel, getXPSummary } = useXP();
   const [showMenu, setShowMenu] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFilter, setSelectedFilter] = useState('all');
+  
+  const xpSummary = getXPSummary();
+  const xpTotal = xpSummary.totalXP;
+  
+  // Use current role from auth context, fallback to trash-hero
+  const userRole = currentRole ? currentRole.toLowerCase().replace('_', '-') : 'trash-hero';
   
   const missions = [
     {
@@ -35,8 +45,13 @@ const TrashHeroMissions = ({ navigation }: any) => {
       type: 'paid',
       priority: 'high',
       volunteers: 8,
+      maxVolunteers: 15,
       description: 'Join us for a comprehensive beach cleanup to protect marine life and preserve our coastline.',
-      sponsor: 'Ocean Conservation Corp'
+      sponsor: 'Ocean Conservation Corp',
+      distance: '2.3 miles',
+      xpReward: 150,
+      requirements: ['Basic cleanup equipment', 'Comfortable walking shoes'],
+      status: 'available'
     },
     {
       id: 2,
@@ -48,8 +63,13 @@ const TrashHeroMissions = ({ navigation }: any) => {
       type: 'paid',
       priority: 'high',
       volunteers: 6,
+      maxVolunteers: 10,
       description: 'Critical cleanup needed to protect local watershed and wildlife habitat.',
-      sponsor: 'EcoTech Solutions'
+      sponsor: 'EcoTech Solutions',
+      distance: '1.8 miles',
+      xpReward: 120,
+      requirements: ['Waterproof boots', 'Gloves provided'],
+      status: 'available'
     },
     {
       id: 3,
@@ -61,8 +81,13 @@ const TrashHeroMissions = ({ navigation }: any) => {
       type: 'paid',
       priority: 'medium',
       volunteers: 4,
+      maxVolunteers: 8,
       description: 'Evening cleanup focusing on microplastics and debris removal.',
-      sponsor: 'Clean Seas Initiative'
+      sponsor: 'Clean Seas Initiative',
+      distance: '3.1 miles',
+      xpReward: 180,
+      requirements: ['Headlamp or flashlight', 'Collection bags provided'],
+      status: 'available'
     },
     {
       id: 4,
@@ -74,8 +99,49 @@ const TrashHeroMissions = ({ navigation }: any) => {
       type: 'paid',
       priority: 'low',
       volunteers: 12,
+      maxVolunteers: 20,
       description: 'Help restore urban green space by removing litter and maintaining trails.',
-      sponsor: 'City Environmental Dept'
+      sponsor: 'City Environmental Dept',
+      distance: '0.9 miles',
+      xpReward: 200,
+      requirements: ['Work gloves', 'Sturdy shoes'],
+      status: 'available'
+    },
+    {
+      id: 5,
+      title: 'Mountain Trail Cleanup',
+      location: 'Griffith Park',
+      date: 'Next Sunday, 8:00 AM',
+      payment: '$60',
+      duration: '5 hours',
+      type: 'paid',
+      priority: 'high',
+      volunteers: 3,
+      maxVolunteers: 12,
+      description: 'Challenging mountain trail cleanup with scenic views and wildlife encounters.',
+      sponsor: 'Mountain Conservation Alliance',
+      distance: '5.2 miles',
+      xpReward: 250,
+      requirements: ['Hiking boots', 'Water bottle', 'Sun protection'],
+      status: 'available'
+    },
+    {
+      id: 6,
+      title: 'Community Garden Cleanup',
+      location: 'Local Community Center',
+      date: 'Tomorrow, 9:00 AM',
+      payment: '$30',
+      duration: '2.5 hours',
+      type: 'paid',
+      priority: 'medium',
+      volunteers: 7,
+      maxVolunteers: 15,
+      description: 'Help maintain community garden spaces and remove invasive species.',
+      sponsor: 'Green Thumb Foundation',
+      distance: '1.2 miles',
+      xpReward: 100,
+      requirements: ['Gardening gloves', 'Knee pads recommended'],
+      status: 'available'
     }
   ];
 
@@ -102,92 +168,138 @@ const TrashHeroMissions = ({ navigation }: any) => {
     { id: 'low', label: 'Entry Level', icon: 'trending-down' }
   ];
 
-  const MissionCard = ({ mission }: any) => (
-    <TouchableOpacity 
-      style={[
-        styles.missionCard, 
-        { 
-          backgroundColor: theme.cardBackground,
-          borderColor: theme.borderColor, 
-        }
-      ]}
-    >
-      <View style={styles.missionHeader}>
-        <View style={styles.missionTitleSection}>
-          <Text style={[styles.missionTitle, { color: theme.textColor }]}>
-            {mission.title}
-          </Text>
-          <View style={styles.badgeContainer}>
-            <View style={[styles.cashBadge, { backgroundColor: theme.success }]}>
-              <Ionicons name="cash" size={12} color="white" />
-              <Text style={styles.cashBadgeText}>PAID GIG</Text>
-            </View>
-            <View style={[
-              styles.priorityBadge,
-              { backgroundColor: getPriorityColor(mission.priority) }
-            ]}>
-              <Text style={styles.priorityBadgeText}>
-                {mission.priority.toUpperCase()}
-              </Text>
+  const MissionCard = ({ mission }: any) => {
+    const handleAcceptMission = () => {
+      // Add mission acceptance logic here
+      console.log('Accepting mission:', mission.id);
+      // You could add navigation to mission details or confirmation modal
+    };
+
+    const isFull = mission.volunteers >= mission.maxVolunteers;
+    const spotsLeft = mission.maxVolunteers - mission.volunteers;
+
+    return (
+      <TouchableOpacity 
+        style={[
+          styles.missionCard, 
+          { 
+            backgroundColor: theme.cardBackground,
+            borderColor: theme.borderColor,
+            opacity: isFull ? 0.7 : 1
+          }
+        ]}
+        onPress={handleAcceptMission}
+        disabled={isFull}
+      >
+        <View style={styles.missionHeader}>
+          <View style={styles.missionTitleSection}>
+            <Text style={[styles.missionTitle, { color: theme.textColor }]}>
+              {mission.title}
+            </Text>
+            <View style={styles.badgeContainer}>
+              <View style={[styles.cashBadge, { backgroundColor: theme.success }]}>
+                <Ionicons name="cash" size={12} color="white" />
+                <Text style={styles.cashBadgeText}>PAID GIG</Text>
+              </View>
+              <View style={[
+                styles.priorityBadge,
+                { backgroundColor: getPriorityColor(mission.priority) }
+              ]}>
+                <Text style={styles.priorityBadgeText}>
+                  {mission.priority.toUpperCase()}
+                </Text>
+              </View>
+              {mission.xpReward && (
+                <View style={[styles.xpBadge, { backgroundColor: theme.warning }]}>
+                  <Ionicons name="star" size={12} color="white" />
+                  <Text style={styles.xpBadgeText}>+{mission.xpReward} XP</Text>
+                </View>
+              )}
             </View>
           </View>
         </View>
-      </View>
-      
-      <Text style={[styles.missionDescription, { color: theme.secondaryText }]}>
-        {mission.description}
-      </Text>
-      
-      <View style={styles.missionDetails}>
-        <View style={styles.detailItem}>
-          <Ionicons name="location-outline" size={16} color={theme.secondaryText} />
-          <Text style={[styles.detailText, { color: theme.secondaryText }]}>
-            {mission.location}
-          </Text>
+        
+        <Text style={[styles.missionDescription, { color: theme.secondaryText }]}>
+          {mission.description}
+        </Text>
+        
+        <View style={styles.missionDetails}>
+          <View style={styles.detailItem}>
+            <Ionicons name="location-outline" size={16} color={theme.secondaryText} />
+            <Text style={[styles.detailText, { color: theme.secondaryText }]}>
+              {mission.location} • {mission.distance}
+            </Text>
+          </View>
+          <View style={styles.detailItem}>
+            <Ionicons name="time-outline" size={16} color={theme.secondaryText} />
+            <Text style={[styles.detailText, { color: theme.secondaryText }]}>
+              {mission.date} • {mission.duration}
+            </Text>
+          </View>
+          <View style={styles.detailItem}>
+            <Ionicons name="people-outline" size={16} color={theme.secondaryText} />
+            <Text style={[styles.detailText, { color: theme.secondaryText }]}>
+              {mission.volunteers}/{mission.maxVolunteers} heroes • {spotsLeft} spots left
+            </Text>
+          </View>
         </View>
-        <View style={styles.detailItem}>
-          <Ionicons name="time-outline" size={16} color={theme.secondaryText} />
-          <Text style={[styles.detailText, { color: theme.secondaryText }]}>
-            {mission.date}
-          </Text>
-        </View>
-        <View style={styles.detailItem}>
-          <Ionicons name="people-outline" size={16} color={theme.secondaryText} />
-          <Text style={[styles.detailText, { color: theme.secondaryText }]}>
-            {mission.volunteers} heroes joined
-          </Text>
-        </View>
-      </View>
 
-      <View style={styles.sponsorSection}>
-        <Text style={[styles.sponsorLabel, { color: theme.secondaryText }]}>
-          Sponsored by:
-        </Text>
-        <Text style={[styles.sponsorName, { color: theme.primary }]}>
-          {mission.sponsor}
-        </Text>
-      </View>
-      
-      <View style={styles.missionFooter}>
-        <View style={styles.paymentSection}>
-          <Text style={[styles.missionPayment, { color: theme.primary }]}>
-            {mission.payment}
+        {mission.requirements && mission.requirements.length > 0 && (
+          <View style={styles.requirementsSection}>
+            <Text style={[styles.requirementsLabel, { color: theme.secondaryText }]}>
+              Requirements:
+            </Text>
+            <View style={styles.requirementsList}>
+              {mission.requirements.map((req: string, index: number) => (
+                <Text key={index} style={[styles.requirementItem, { color: theme.textColor }]}>
+                  • {req}
+                </Text>
+              ))}
+            </View>
+          </View>
+        )}
+
+        <View style={styles.sponsorSection}>
+          <Text style={[styles.sponsorLabel, { color: theme.secondaryText }]}>
+            Sponsored by:
           </Text>
-          <Text style={[styles.missionDuration, { color: theme.secondaryText }]}>
-            • {mission.duration}
+          <Text style={[styles.sponsorName, { color: theme.primary }]}>
+            {mission.sponsor}
           </Text>
         </View>
-        <View style={styles.actionButtons}>
-          <TouchableOpacity 
-            style={[styles.acceptButton, { backgroundColor: theme.primary }]}
-          >
-            <Text style={styles.acceptButtonText}>Accept Mission</Text>
-            <Ionicons name="checkmark" size={16} color="white" />
-          </TouchableOpacity>
+        
+        <View style={styles.missionFooter}>
+          <View style={styles.paymentSection}>
+            <Text style={[styles.missionPayment, { color: theme.primary }]}>
+              {mission.payment}
+            </Text>
+            <Text style={[styles.missionDuration, { color: theme.secondaryText }]}>
+              • {mission.duration}
+            </Text>
+          </View>
+          <View style={styles.actionButtons}>
+            {isFull ? (
+              <TouchableOpacity 
+                style={[styles.fullButton, { backgroundColor: theme.secondaryText }]}
+                disabled
+              >
+                <Text style={styles.fullButtonText}>Mission Full</Text>
+                <Ionicons name="close" size={16} color="white" />
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity 
+                style={[styles.acceptButton, { backgroundColor: theme.primary }]}
+                onPress={handleAcceptMission}
+              >
+                <Text style={styles.acceptButtonText}>Accept Mission</Text>
+                <Ionicons name="checkmark" size={16} color="white" />
+              </TouchableOpacity>
+            )}
+          </View>
         </View>
-      </View>
-    </TouchableOpacity>
-  );
+      </TouchableOpacity>
+    );
+  };
 
   const FilterChip = ({ filter }: any) => (
     <TouchableOpacity
@@ -277,10 +389,10 @@ const TrashHeroMissions = ({ navigation }: any) => {
           <View style={[styles.statDivider, { backgroundColor: theme.borderColor }]} />
           <View style={styles.statItem}>
             <Text style={[styles.statNumber, { color: theme.success }]}>
-              $175
+              ${Math.round(missions.reduce((sum, m) => sum + parseInt(m.payment.replace('$', '')), 0) / missions.length)}
             </Text>
             <Text style={[styles.statLabel, { color: theme.secondaryText }]}>
-              Avg. Daily
+              Avg. Pay
             </Text>
           </View>
           <View style={[styles.statDivider, { backgroundColor: theme.borderColor }]} />
@@ -289,7 +401,7 @@ const TrashHeroMissions = ({ navigation }: any) => {
               {missions.filter(m => m.priority === 'high').length}
             </Text>
             <Text style={[styles.statLabel, { color: theme.secondaryText }]}>
-              Urgent
+              High Priority
             </Text>
           </View>
         </View>
@@ -346,125 +458,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: THEME.SPACING.md,
-    paddingVertical: THEME.SPACING.sm + 4,
-    paddingTop: THEME.SPACING.sm,
-  },
-  menuButton: {
-    marginBottom: THEME.SPACING.sm,
-  },
-  pearLogo: {
-    paddingHorizontal: THEME.SPACING.md + 4,
-    paddingVertical: THEME.SPACING.sm,
-    borderRadius: 20,
-  },
-  pearText: {
-    // color: theme.background,
-    fontSize: THEME.TYPOGRAPHY.fontSize.base,
-    fontWeight: '700',
-    letterSpacing: 1,
-  },
-  headerRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  pointsContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  pointsText: {
-    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
-    fontWeight: '600',
-  },
-  notificationButton: {
-    position: 'relative',
-    padding: THEME.SPACING.sm,
-  },
-  notificationBadge: {
-    position: 'absolute',
-    top: 4,
-    right: 4,
-    backgroundColor: getRoleColor('impact-warrior'),
-    borderRadius: THEME.BORDER_RADIUS.md,
-    minWidth: 16,
-    height: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  notificationBadgeText: {
-    // color: theme.background,
-    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
-    fontWeight: '600',
-  },
-  profileButton: {
-    position: 'relative',
-    width: 32,
-    height: 32,
-    borderRadius: THEME.BORDER_RADIUS.xl,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  profileBadge: {
-    position: 'absolute',
-    top: -2,
-    right: -2,
-    backgroundColor: '#28a745',
-    borderRadius: THEME.BORDER_RADIUS.md,
-    minWidth: 16,
-    height: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  profileBadgeText: {
-    // color: theme.background,
-    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
-    fontWeight: '600',
-  },
   content: {
     flex: 1,
-  },
-  pageHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: THEME.SPACING.md,
-    paddingVertical: THEME.SPACING.md,
-    gap: 16,
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  headerText: {
-    flex: 1,
-  },
-  title: {
-    fontSize: THEME.TYPOGRAPHY.fontSize["2xl"],
-    fontWeight: '700',
-    marginBottom: THEME.SPACING.xs,
-  },
-  subtitle: {
-    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
-  },
-  heroIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: THEME.BORDER_RADIUS["2xl"],
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   searchContainer: {
     paddingHorizontal: THEME.SPACING.md,
@@ -535,9 +530,6 @@ const styles = StyleSheet.create({
     width: 1,
     height: 32,
   },
-  missionsList: {
-    paddingBottom: THEME.SPACING.md + 4,
-  },
   missionCard: {
     borderRadius: THEME.BORDER_RADIUS.xl,
     padding: THEME.SPACING.md + 4,
@@ -577,7 +569,7 @@ const styles = StyleSheet.create({
   cashBadgeText: {
     fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '700',
-    // color: theme.background,
+    color: 'white',
   },
   priorityBadge: {
     paddingHorizontal: THEME.SPACING.sm,
@@ -588,7 +580,20 @@ const styles = StyleSheet.create({
   priorityBadgeText: {
     fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '700',
-    // color: theme.background,
+    color: 'white',
+  },
+  xpBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: THEME.SPACING.sm,
+    paddingVertical: THEME.SPACING.xs,
+    borderRadius: 6,
+    gap: 4,
+  },
+  xpBadgeText: {
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
+    fontWeight: '700',
+    color: 'white',
   },
   missionDescription: {
     fontSize: THEME.TYPOGRAPHY.fontSize.sm,
@@ -620,6 +625,24 @@ const styles = StyleSheet.create({
   sponsorName: {
     fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '600',
+  },
+  requirementsSection: {
+    marginBottom: THEME.SPACING.sm + 4,
+    paddingTop: THEME.SPACING.sm,
+    borderTopWidth: 1,
+    borderTopColor: '#f1f5f9',
+  },
+  requirementsLabel: {
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
+    marginBottom: 4,
+    fontWeight: '600',
+  },
+  requirementsList: {
+    gap: 2,
+  },
+  requirementItem: {
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
+    lineHeight: 16,
   },
   missionFooter: {
     flexDirection: 'row',
@@ -657,7 +680,20 @@ const styles = StyleSheet.create({
   acceptButtonText: {
     fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '600',
-    // color: theme.background,
+    color: 'white',
+  },
+  fullButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: THEME.SPACING.md,
+    paddingVertical: THEME.SPACING.sm,
+    borderRadius: THEME.BORDER_RADIUS.md,
+    gap: 6,
+  },
+  fullButtonText: {
+    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
+    fontWeight: '600',
+    color: 'white',
   },
   emptyState: {
     alignItems: 'center',

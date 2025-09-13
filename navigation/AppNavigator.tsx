@@ -8,7 +8,7 @@ import TabNavigator from './TabNavigator';
 
 // Import screens
 import LoginScreen from '../screens/LoginScreen';
-import MyCard from '../screens/MyCard';
+import MyCardScreen from '../screens/MyCardScreen';
 import RewardsScreen from '../screens/RewardsScreen';
 import PearVerifiedMissions from '../screens/PearVerifiedMissions';
 import PearVerifiedMissionDetail from '../screens/PearVerifiedMissionDetail';
@@ -59,7 +59,7 @@ const AppNavigator: React.FC = () => {
       <Stack.Screen name="MainTabs" component={TabNavigator} />
       
       {/* Shared Screens */}
-      <Stack.Screen name="MyCard" component={MyCard} />
+      <Stack.Screen name="MyCard" component={MyCardScreen} />
       <Stack.Screen name="RewardsScreen" component={RewardsScreen} />
       <Stack.Screen name="PearVerifiedMissions" component={PearVerifiedMissions} />
       <Stack.Screen name="PearVerifiedMissionDetail" component={PearVerifiedMissionDetail} />

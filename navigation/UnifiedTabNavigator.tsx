@@ -1,17 +1,16 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-
-const Tab = createBottomTabNavigator();
+import { createStackNavigator } from '@react-navigation/stack';
 import { Ionicons } from '@expo/vector-icons';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { UserRole, getRoleColor, getRoleIcon } from '../types/roles';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
 import { useRoleManager } from '../hooks/useRoleManager';
 import { canAccessScreen } from '../types/rolePermissions';
 
-// Import screens
-import UnifiedHeroDashboard from '../screens/UnifiedHeroDashboard';
+// Import main tab screens
+import UnifiedHeroDashboard from '../screens/UnifiedHeroDashboardBackup';
 import EcoDefenderDashboard from '../screens/EcoDefenderDashboard';
 import AdminDashboard from '../screens/AdminDashboard';
 import MapScreen from '../screens/MapScreen';
@@ -23,7 +22,91 @@ import EcoDefenderMissions from '../screens/EcoDefenderMissions';
 import Analytics from '../screens/Analytics';
 import UserManagement from '../screens/UserManagement';
 
-const TabNavigator: React.FC = () => {
+// Import additional screens that should have tab navigation
+import MyCardScreen from '../screens/MyCardScreen';
+import RewardsScreen from '../screens/RewardsScreen';
+import PearVerifiedMissions from '../screens/PearVerifiedMissions';
+import PearVerifiedMissionDetail from '../screens/PearVerifiedMissionDetail';
+import Notifications from '../screens/Notifications';
+import JobListings from '../screens/JobListings';
+import SuggestCleanup from '../screens/SuggestCleanup';
+import EcoNewsScreen from '../screens/EcoNewsScreen';
+import EcoStationQuest from '../screens/EcoStationQuest';
+import TrashHeroEarnings from '../screens/TrashHeroEarnings';
+import ImpactWarriorImpact from '../screens/ImpactWarriorImpact';
+import EcoDefenderImpact from '../screens/EcoDefenderImpact';
+import PostJob from '../screens/PostJob';
+import AdminRewards from '../screens/AdminRewards';
+import AdminMissionControl from '../screens/AdminMissionControl';
+import AdminIssueResolution from '../screens/AdminIssueResolution';
+import AdminSuggestedSpots from '../screens/AdminSuggestedSpots';
+import AdminAnalytics from '../screens/AdminAnalytics';
+import CleanupSubmissionScreen from '../screens/CleanupSubmissionScreen';
+import BadgeSystemScreen from '../screens/BadgeSystemScreen';
+import MissionFeedScreen from '../screens/MissionFeedScreen';
+import PlaceholderScreen from '../screens/PlaceholderScreen';
+import ParkRestorationLabScreen from '../screens/ParkRestorationLabScreen';
+
+const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator();
+
+// Create a Stack Navigator for each tab to handle nested screens
+const DashboardStack = () => (
+  <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Screen name="DashboardMain" component={UnifiedHeroDashboard} />
+    <Stack.Screen name="MyCard" component={MyCardScreen} />
+    <Stack.Screen name="RewardsScreen" component={RewardsScreen} />
+    <Stack.Screen name="Notifications" component={Notifications} />
+    <Stack.Screen name="EcoNewsScreen" component={EcoNewsScreen} />
+    <Stack.Screen name="BadgeSystemScreen" component={BadgeSystemScreen} />
+  </Stack.Navigator>
+);
+
+const MissionsStack = () => (
+  <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Screen name="MissionsMain" component={TrashHeroMissions} />
+    <Stack.Screen name="PearVerifiedMissions" component={PearVerifiedMissions} />
+    <Stack.Screen name="PearVerifiedMissionDetail" component={PearVerifiedMissionDetail} />
+    <Stack.Screen name="JobListings" component={JobListings} />
+    <Stack.Screen name="SuggestCleanup" component={SuggestCleanup} />
+    <Stack.Screen name="EcoStationQuest" component={EcoStationQuest} />
+    <Stack.Screen name="CleanupSubmission" component={CleanupSubmissionScreen} />
+    <Stack.Screen name="MissionFeedScreen" component={MissionFeedScreen} />
+    <Stack.Screen name="PlaceholderScreen" component={PlaceholderScreen} />
+    <Stack.Screen name="ParkRestorationLabScreen" component={ParkRestorationLabScreen} />
+  </Stack.Navigator>
+);
+
+const MapStack = () => (
+  <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Screen name="MapMain" component={MapScreen} />
+  </Stack.Navigator>
+);
+
+const WalletStack = () => (
+  <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Screen name="WalletMain" component={WalletScreen} />
+    <Stack.Screen name="TrashHeroEarnings" component={TrashHeroEarnings} />
+    <Stack.Screen name="ImpactWarriorImpact" component={ImpactWarriorImpact} />
+    <Stack.Screen name="EcoDefenderImpact" component={EcoDefenderImpact} />
+  </Stack.Navigator>
+);
+
+const ProfileStack = () => (
+  <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Screen name="ProfileMain" component={ProfileScreen} />
+    <Stack.Screen name="PostJob" component={PostJob} />
+    <Stack.Screen name="AdminRewards" component={AdminRewards} />
+    <Stack.Screen name="AdminMissionControl" component={AdminMissionControl} />
+    <Stack.Screen name="AdminIssueResolution" component={AdminIssueResolution} />
+    <Stack.Screen name="AdminSuggestedSpots" component={AdminSuggestedSpots} />
+    <Stack.Screen name="AdminAnalytics" component={AdminAnalytics} />
+    <Stack.Screen name="UserManagement" component={UserManagement} />
+    <Stack.Screen name="Analytics" component={Analytics} />
+  </Stack.Navigator>
+);
+
+const UnifiedTabNavigator: React.FC = () => {
   const { theme } = useTheme();
   const insets = useSafeAreaInsets();
   const { currentRole, getNavigationConfig } = useRoleManager();
@@ -50,12 +133,6 @@ const TabNavigator: React.FC = () => {
       case 'Profile':
         iconName = focused ? 'person' : 'person-outline';
         break;
-      case 'Analytics':
-        iconName = focused ? 'analytics' : 'analytics-outline';
-        break;
-      case 'Users':
-        iconName = focused ? 'people' : 'people-outline';
-        break;
       default:
         iconName = 'help-outline';
     }
@@ -70,15 +147,15 @@ const TabNavigator: React.FC = () => {
   const getMissionsScreen = () => {
     switch (currentRole) {
       case 'TRASH_HERO':
-        return TrashHeroMissions;
+        return MissionsStack;
       case 'IMPACT_WARRIOR':
-        return ImpactWarriorMissions;
+        return MissionsStack;
       case 'ECO_DEFENDER':
-        return EcoDefenderMissions;
+        return MissionsStack;
       case 'ADMIN':
-        return UserManagement; // Admin uses UserManagement as their "missions"
+        return ProfileStack; // Admin uses ProfileStack for user management
       default:
-        return TrashHeroMissions;
+        return MissionsStack;
     }
   };
 
@@ -86,13 +163,13 @@ const TabNavigator: React.FC = () => {
     switch (currentRole) {
       case 'TRASH_HERO':
       case 'IMPACT_WARRIOR':
-        return UnifiedHeroDashboard;
+        return DashboardStack;
       case 'ECO_DEFENDER':
-        return EcoDefenderDashboard;
+        return DashboardStack;
       case 'ADMIN':
-        return AdminDashboard;
+        return DashboardStack;
       default:
-        return UnifiedHeroDashboard;
+        return DashboardStack;
     }
   };
 
@@ -112,7 +189,7 @@ const TabNavigator: React.FC = () => {
       case 'Dashboard':
         return canAccessScreen(currentRole, 'AdminDashboard') || 
                canAccessScreen(currentRole, 'EcoDefenderDashboard') ||
-               canAccessScreen(currentRole, 'TrashHeroMissions'); // UnifiedHeroDashboard
+               canAccessScreen(currentRole, 'TrashHeroMissions');
       case 'Missions':
         return canAccessScreen(currentRole, 'TrashHeroMissions') ||
                canAccessScreen(currentRole, 'ImpactWarriorMissions') ||
@@ -156,7 +233,7 @@ const TabNavigator: React.FC = () => {
           name="Dashboard" 
           component={getDashboardScreen()}
           options={{
-            tabBarLabel: 'Home',
+            tabBarLabel: 'Dashboard',
           }}
         />
       )}
@@ -174,7 +251,7 @@ const TabNavigator: React.FC = () => {
       {shouldShowTab('Map') && (
         <Tab.Screen 
           name="Map" 
-          component={MapScreen}
+          component={MapStack}
           options={{
             tabBarLabel: 'Map',
           }}
@@ -184,7 +261,7 @@ const TabNavigator: React.FC = () => {
       {shouldShowTab('Wallet') && (
         <Tab.Screen 
           name="Wallet" 
-          component={WalletScreen}
+          component={WalletStack}
           options={{
             tabBarLabel: 'Wallet',
           }}
@@ -194,7 +271,7 @@ const TabNavigator: React.FC = () => {
       {shouldShowTab('Profile') && (
         <Tab.Screen 
           name="Profile" 
-          component={ProfileScreen}
+          component={ProfileStack}
           options={{
             tabBarLabel: 'Profile',
           }}
@@ -204,4 +281,4 @@ const TabNavigator: React.FC = () => {
   );
 };
 
-export default TabNavigator;
+export default UnifiedTabNavigator;

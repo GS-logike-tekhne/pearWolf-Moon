@@ -169,7 +169,7 @@ const SortingGame: React.FC<SortingGameProps> = ({
   const getBinIcon = (category: 'recycle' | 'trash' | 'compost') => {
     switch (category) {
       case 'recycle':
-        return 'recycle';
+        return 'refresh';
       case 'trash':
         return 'trash';
       case 'compost':
@@ -249,7 +249,7 @@ const SortingGame: React.FC<SortingGameProps> = ({
                   onPress={() => handleSort('recycle')}
                   disabled={!isGameActive}
                 >
-                  <Ionicons name="recycle" size={32} color="white" />
+                  <Ionicons name="refresh" size={32} color="white" />
                   <Text style={styles.binLabel}>Recycle</Text>
                 </TouchableOpacity>
 

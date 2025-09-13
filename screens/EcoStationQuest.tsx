@@ -6,7 +6,6 @@ import {
   TouchableOpacity, 
   StyleSheet, 
   Dimensions,
-  StatusBar,
   Animated,
   ImageBackground
 } from 'react-native';
@@ -26,8 +25,11 @@ const LinearGradient: React.FC<{
   );
 };
 import { useTheme } from '../context/ThemeContext';
+import { useRoleManager } from '../hooks/useRoleManager';
 import { THEME } from '../styles/theme';
 import ScreenLayout from '../components/ScreenLayout';
+import UnifiedHeader from '../components/UnifiedHeader';
+import MenuModal from '../components/MenuModal';
 import { useXP } from '../context/XPContext';
 import { useMissions } from '../context/MissionContext';
 
@@ -51,6 +53,7 @@ interface QuestZone {
 
 const EcoStationQuest: React.FC<{ navigation: any }> = ({ navigation }) => {
   const { theme } = useTheme();
+  const { currentRole } = useRoleManager();
   const { state: xpState } = useXP();
   const level = xpState.currentLevel;
   const xp = xpState.totalXP;
@@ -58,7 +61,11 @@ const EcoStationQuest: React.FC<{ navigation: any }> = ({ navigation }) => {
   const { activeMissions } = missionState;
   
   const [selectedZone, setSelectedZone] = useState<string | null>(null);
+  const [showMenu, setShowMenu] = useState(false);
   const scrollY = new Animated.Value(0);
+
+  // Use current role from role manager, fallback to default
+  const role = currentRole ? currentRole.toLowerCase().replace('_', '-') : 'impact-warrior';
 
   // Quest zones data - unlocked based on user level
   const questZones: QuestZone[] = [
@@ -242,32 +249,14 @@ const EcoStationQuest: React.FC<{ navigation: any }> = ({ navigation }) => {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
-      
-      {/* Header */}
-      <LinearGradient
-        colors={[theme.primary, `${theme.primary}E6`]}
-        style={styles.header}
-      >
-        <View style={styles.headerContent}>
-          <TouchableOpacity 
-            onPress={() => navigation.goBack()}
-            style={styles.backButton}
-          >
-            <Ionicons name="arrow-back" size={24} color="white" />
-          </TouchableOpacity>
-          
-          <View style={styles.headerCenter}>
-            <Text style={styles.headerTitle}>Eco Quest Zones</Text>
-            <Text style={styles.headerSubtitle}>Choose Your Environmental Adventure</Text>
-          </View>
-          
-          <View style={styles.headerStats}>
-            <Text style={styles.levelText}>Lv.{level}</Text>
-          </View>
-        </View>
-      </LinearGradient>
+    <ScreenLayout>
+      <UnifiedHeader
+        onMenuPress={() => setShowMenu(true)}
+        role={role}
+        points={xp}
+        onNotificationPress={() => navigation.navigate('Notifications')}
+        onProfilePress={() => navigation.navigate('ProfileScreen')}
+      />
 
       {/* Progress Indicator */}
       <View style={[styles.progressContainer, { backgroundColor: theme.card }]}>
@@ -313,49 +302,24 @@ const EcoStationQuest: React.FC<{ navigation: any }> = ({ navigation }) => {
           </Text>
         </View>
       )}
-    </View>
+
+      {/* Menu Modal */}
+      <MenuModal
+        visible={showMenu}
+        onClose={() => setShowMenu(false)}
+        userRole={currentRole || 'IMPACT_WARRIOR'}
+        userName="User"
+        userLevel={level}
+        onNavigate={(screen, params) => {
+          navigation.navigate(screen, params);
+        }}
+        onSignOut={() => navigation.navigate('Login')}
+      />
+    </ScreenLayout>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    paddingTop: StatusBar.currentHeight ? StatusBar.currentHeight + 20 : 50,
-    paddingBottom: THEME.SPACING.md + 4,
-    paddingHorizontal: THEME.SPACING.md + 4,
-  },
-  headerContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  backButton: {
-    padding: THEME.SPACING.sm,
-  },
-  headerCenter: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  headerTitle: {
-    fontSize: THEME.TYPOGRAPHY.fontSize.xl,
-    fontWeight: '700',
-    // color: theme.background,
-  },
-  headerSubtitle: {
-    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
-    color: 'rgba(255,255,255,0.8)',
-    marginTop: 2,
-  },
-  headerStats: {
-    alignItems: 'center',
-  },
-  levelText: {
-    fontSize: THEME.TYPOGRAPHY.fontSize.base,
-    fontWeight: '600',
-    // color: theme.background,
-  },
   progressContainer: {
     margin: THEME.SPACING.md + 4,
     padding: THEME.SPACING.md + 4,

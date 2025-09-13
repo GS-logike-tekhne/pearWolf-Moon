@@ -1,8 +1,6 @@
-import React from 'react';
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, Dimensions, TouchableOpacity, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import LinearGradient from 'expo-linear-gradient';
-import XPLevelRing from './XPLevelRing';
 
 const { width } = Dimensions.get('window');
 
@@ -29,197 +27,401 @@ const WalletCard: React.FC<WalletCardProps> = ({
   nextTierEcoPoints,
   nextTierCash,
 }) => {
+  const [showComparison, setShowComparison] = useState(false);
+  const fadeAnim = new Animated.Value(0);
+  const slideAnim = new Animated.Value(50);
+
+  const handleCardPress = () => {
+    if (showComparison) {
+      // Hide animation
+      Animated.parallel([
+        Animated.timing(fadeAnim, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+        Animated.timing(slideAnim, {
+          toValue: 50,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+      ]).start(() => {
+        setShowComparison(false);
+      });
+    } else {
+      // Show animation
+      setShowComparison(true);
+      Animated.parallel([
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+        Animated.timing(slideAnim, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    }
+  };
+
   return (
     <View style={styles.container}>
-      {/* Glow effect background */}
-      <View style={styles.glowBackground} />
-      
-      <LinearGradient
-        colors={['#35B87F', '#2A9D6F']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
+      <TouchableOpacity 
         style={styles.card}
+        onPress={handleCardPress}
+        activeOpacity={0.9}
       >
-        {/* Header with XP Ring and Role Info */}
+        {/* Card Header */}
         <View style={styles.header}>
-          <View style={styles.xpSection}>
-            <XPLevelRing 
-              level={level} 
-              progress={levelProgress} 
-              size={70} 
-            />
+          <View style={styles.cardType}>
+            <Text style={styles.cardTypeText}>PEAR</Text>
           </View>
-          
-          <View style={styles.roleSection}>
-            <View style={styles.roleHeader}>
-              <Text style={styles.roleTitle}>{role}</Text>
-              <View style={styles.roleIcon}>
-                <View style={styles.iconRing}>
-                  <Ionicons name="leaf" size={16} color="white" />
-                </View>
+          <View style={styles.chip}>
+            <View style={styles.chipInner}>
+              <View style={styles.chipLines}>
+                <View style={styles.chipLine1} />
+                <View style={styles.chipLine2} />
+                <View style={styles.chipLine3} />
+                <View style={styles.chipLine4} />
               </View>
             </View>
-            <Text style={styles.tierText}>{tier}</Text>
-            <Text style={styles.idText}>ID: {id}</Text>
           </View>
         </View>
 
-        {/* Balance Section */}
-        <View style={styles.balanceSection}>
-          <Text style={styles.balanceAmount}>{balance}</Text>
-          <View style={styles.ecoPointsRow}>
-            <View style={styles.ecoIcon}>
-              <Text style={styles.ecoIconText}>💎</Text>
+        {/* Wallet ID (where card number would be) */}
+        <View style={styles.cardNumberSection}>
+          <Text style={styles.cardNumber}>{id}</Text>
+        </View>
+
+        {/* User Info Section */}
+        <View style={styles.userInfoSection}>
+          <View style={styles.userInfoRow}>
+            <Text style={styles.userInfoLabel}>ROLE</Text>
+            <Text style={styles.userInfoValue}>{role}</Text>
+          </View>
+          <View style={styles.userInfoRow}>
+            <Text style={styles.userInfoLabel}>LEVEL</Text>
+            <Text style={styles.userInfoValue}>{level}</Text>
+          </View>
+          <View style={styles.userInfoRow}>
+            <Text style={styles.userInfoLabel}>ACCOUNT BALANCE</Text>
+            <Text style={styles.userInfoValue}>{balance}</Text>
+          </View>
+        </View>
+
+        {/* Card Footer */}
+        <View style={styles.footer}>
+          <View style={styles.cardholderSection}>
+            <Text style={styles.cardholderLabel}>CARDHOLDER</Text>
+            <Text style={styles.cardholderName}>{role}</Text>
+          </View>
+          <View style={styles.expirySection}>
+            <Text style={styles.expiryLabel}>VALID THRU</Text>
+            <Text style={styles.expiryDate}>12/28</Text>
+          </View>
+        </View>
+
+        {/* Decorative Elements */}
+        <View style={styles.decorativeCircle1} />
+        <View style={styles.decorativeCircle2} />
+
+        {/* Animated Comparison Overlay */}
+        {showComparison && (
+          <Animated.View 
+            style={[
+              styles.comparisonOverlay,
+              {
+                opacity: fadeAnim,
+                transform: [{ translateY: slideAnim }],
+              }
+            ]}
+          >
+            <View style={styles.comparisonContent}>
+              <Text style={styles.comparisonTitle}>Weekly Comparison</Text>
+              <View style={styles.comparisonRow}>
+                <View style={styles.comparisonItem}>
+                  <Text style={styles.comparisonLabel}>This Week</Text>
+                  <Text style={styles.comparisonValue}>$127</Text>
+                </View>
+                <View style={styles.comparisonItem}>
+                  <Text style={styles.comparisonLabel}>Last Week</Text>
+                  <Text style={styles.comparisonValue}>$113</Text>
+                </View>
+              </View>
+              <View style={styles.comparisonFooter}>
+                <Ionicons name="trending-up" size={16} color="#9AE630" />
+                <Text style={styles.comparisonChange}>+12% vs last week</Text>
+              </View>
             </View>
-            <Text style={styles.ecoPointsText}>{ecoPoints} Eco Points</Text>
-          </View>
-        </View>
-
-        {/* Progress Bar */}
-        <View style={styles.progressSection}>
-          <View style={styles.progressBar}>
-            <View 
-              style={[
-                styles.progressFill, 
-                { width: `${(ecoPoints / nextTierEcoPoints) * 100}%` }
-              ]} 
-            />
-          </View>
-          
-          <View style={styles.progressLabels}>
-            <Text style={styles.progressLabel}>Next Tier: Eco {nextTierEcoPoints.toLocaleString()}</Text>
-            <Text style={styles.progressLabel}>Next: {nextTierCash}</Text>
-          </View>
-        </View>
-      </LinearGradient>
+          </Animated.View>
+        )}
+      </TouchableOpacity>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    position: 'relative',
     marginHorizontal: 20,
-    marginVertical: 10,
-  },
-  glowBackground: {
-    position: 'absolute',
-    top: -5,
-    left: -5,
-    right: -5,
-    bottom: -5,
-    backgroundColor: '#35B87F',
-    borderRadius: 25,
-    opacity: 0.3,
-    shadowColor: '#35B87F',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.5,
-    shadowRadius: 12,
-    elevation: 12,
+    marginVertical: 20,
   },
   card: {
-    borderRadius: 20,
-    padding: 20,
+    backgroundColor: '#000000',
+    borderRadius: 16,
+    padding: 24,
+    aspectRatio: 1.6, // Standard credit card ratio
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
+    shadowRadius: 12,
+    elevation: 12,
+    position: 'relative',
+    overflow: 'hidden',
   },
   header: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 20,
+    marginBottom: 30,
   },
-  xpSection: {
-    marginRight: 15,
+  cardType: {
+    backgroundColor: '#ffffff',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
   },
-  roleSection: {
-    flex: 1,
-    marginTop: 5,
-  },
-  roleHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 4,
-  },
-  roleTitle: {
-    fontSize: 24,
+  cardTypeText: {
+    fontSize: 16,
     fontWeight: '700',
-    color: 'white',
-    marginRight: 10,
+    color: '#000000',
+    letterSpacing: 1,
   },
-  roleIcon: {
-    position: 'relative',
-  },
-  iconRing: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+  chip: {
+    width: 40,
+    height: 30,
+    backgroundColor: '#C0C0C0',
+    borderRadius: 6,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 2,
-    borderColor: '#F4C542',
+    shadowColor: '#A0A0A0',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 4,
   },
-  tierText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#F4C542',
-    marginBottom: 2,
+  chipInner: {
+    width: 30,
+    height: 20,
+    backgroundColor: '#E8E8E8',
+    borderRadius: 4,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative',
   },
-  idText: {
+  chipLines: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  chipLine1: {
+    position: 'absolute',
+    width: 2,
+    height: 8,
+    backgroundColor: '#9AE630',
+    top: 2,
+    left: 4,
+  },
+  chipLine2: {
+    position: 'absolute',
+    width: 2,
+    height: 6,
+    backgroundColor: '#9AE630',
+    top: 4,
+    right: 4,
+  },
+  chipLine3: {
+    position: 'absolute',
+    width: 2,
+    height: 8,
+    backgroundColor: '#9AE630',
+    bottom: 2,
+    left: 6,
+  },
+  chipLine4: {
+    position: 'absolute',
+    width: 2,
+    height: 6,
+    backgroundColor: '#9AE630',
+    bottom: 4,
+    right: 6,
+  },
+  cardNumberSection: {
+    marginBottom: 20,
+  },
+  cardNumber: {
+    fontSize: 20,
+    fontWeight: '500',
+    color: '#ffffff',
+    letterSpacing: 2,
+  },
+  userInfoSection: {
+    marginBottom: 20,
+  },
+  userInfoRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 6,
+  },
+  userInfoLabel: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: '#888888',
+    letterSpacing: 1,
+  },
+  userInfoValue: {
     fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.8)',
+    fontWeight: '600',
+    color: '#9AE630',
+    letterSpacing: 0.5,
   },
   balanceSection: {
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 30,
+  },
+  balanceLabel: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: '#888888',
+    letterSpacing: 1,
+    marginBottom: 8,
   },
   balanceAmount: {
-    fontSize: 36,
+    fontSize: 32,
     fontWeight: '700',
-    color: 'white',
-    marginBottom: 8,
+    color: '#ffffff',
+    letterSpacing: 1,
   },
-  ecoPointsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  ecoIcon: {
-    marginRight: 6,
-  },
-  ecoIconText: {
-    fontSize: 16,
-  },
-  ecoPointsText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: 'white',
-  },
-  progressSection: {
-    marginBottom: 5,
-  },
-  progressBar: {
-    height: 6,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    borderRadius: 3,
-    overflow: 'hidden',
-    marginBottom: 8,
-  },
-  progressFill: {
-    height: '100%',
-    backgroundColor: '#F4C542',
-    borderRadius: 3,
-  },
-  progressLabels: {
+  footer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'flex-end',
   },
-  progressLabel: {
-    fontSize: 12,
-    color: 'rgba(255, 255, 255, 0.8)',
+  cardholderSection: {
+    flex: 1,
+  },
+  cardholderLabel: {
+    fontSize: 10,
     fontWeight: '500',
+    color: '#888888',
+    letterSpacing: 1,
+    marginBottom: 4,
+  },
+  cardholderName: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#ffffff',
+    letterSpacing: 1,
+  },
+  expirySection: {
+    alignItems: 'flex-end',
+  },
+  expiryLabel: {
+    fontSize: 10,
+    fontWeight: '500',
+    color: '#888888',
+    letterSpacing: 1,
+    marginBottom: 4,
+  },
+  expiryDate: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#ffffff',
+    letterSpacing: 1,
+  },
+  decorativeCircle1: {
+    position: 'absolute',
+    top: -50,
+    right: -50,
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  decorativeCircle2: {
+    position: 'absolute',
+    bottom: -30,
+    left: -30,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+  },
+  comparisonOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.95)',
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  comparisonContent: {
+    alignItems: 'center',
+    width: '100%',
+  },
+  comparisonTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#ffffff',
+    marginBottom: 20,
+    letterSpacing: 1,
+  },
+  comparisonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+    marginBottom: 20,
+  },
+  comparisonItem: {
+    alignItems: 'center',
+  },
+  comparisonLabel: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: '#888888',
+    marginBottom: 8,
+    letterSpacing: 1,
+  },
+  comparisonValue: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#9AE630',
+    letterSpacing: 1,
+  },
+  comparisonFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(154, 230, 48, 0.1)',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#9AE630',
+  },
+  comparisonChange: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#9AE630',
+    marginLeft: 6,
+    letterSpacing: 0.5,
   },
 });
 

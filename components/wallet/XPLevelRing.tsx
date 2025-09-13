@@ -5,8 +5,11 @@ import Animated, {
   useAnimatedStyle,
   withTiming,
   interpolate,
+  useAnimatedProps,
 } from 'react-native-reanimated';
-import Svg, { Circle } from 'react-native-svg';
+import Svg, { Circle, Defs, LinearGradient, Stop } from 'react-native-svg';
+
+const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 const { width } = Dimensions.get('window');
 
@@ -15,8 +18,6 @@ interface XPLevelRingProps {
   progress: number; // 0-1
   size?: number;
 }
-
-const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 const XPLevelRing: React.FC<XPLevelRingProps> = ({ 
   level, 
@@ -32,17 +33,6 @@ const XPLevelRing: React.FC<XPLevelRingProps> = ({
     animatedProgress.value = withTiming(progress, { duration: 1500 });
   }, [progress]);
 
-  const animatedStyle = useAnimatedStyle(() => {
-    const strokeDashoffset = interpolate(
-      animatedProgress.value,
-      [0, 1],
-      [circumference, 0]
-    );
-
-    return {
-      strokeDashoffset,
-    };
-  });
 
   return (
     <View style={[styles.container, { width: size, height: size }]}>
@@ -68,16 +58,22 @@ const XPLevelRing: React.FC<XPLevelRingProps> = ({
           strokeDasharray={circumference}
           strokeLinecap="round"
           transform={`rotate(-90 ${size / 2} ${size / 2})`}
-          style={animatedStyle}
+          animatedProps={useAnimatedProps(() => ({
+            strokeDashoffset: interpolate(
+              animatedProgress.value,
+              [0, 1],
+              [circumference, 0]
+            ),
+          }))}
         />
         
         {/* Gradient definition */}
-        <defs>
-          <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#F4C542" />
-            <stop offset="100%" stopColor="#FF6A00" />
-          </linearGradient>
-        </defs>
+        <Defs>
+          <LinearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <Stop offset="0%" stopColor="#F4C542" />
+            <Stop offset="100%" stopColor="#FF6A00" />
+          </LinearGradient>
+        </Defs>
       </Svg>
       
       {/* Level text */}
