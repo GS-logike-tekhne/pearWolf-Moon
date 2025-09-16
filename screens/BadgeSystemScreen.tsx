@@ -5,7 +5,6 @@ import { useTheme } from '../context/ThemeContext';
 import { useRoleManager } from '../hooks/useRoleManager';
 import { THEME } from '../styles/theme';
 import ScreenLayout from '../components/ScreenLayout';
-import UnifiedHeader from '../components/UnifiedHeader';
 import MenuModal from '../components/MenuModal';
 
 interface BadgeSystemScreenProps {
@@ -23,13 +22,6 @@ const BadgeSystemScreen: React.FC<BadgeSystemScreenProps> = ({ navigation, route
 
   return (
     <ScreenLayout>
-      <UnifiedHeader
-        onMenuPress={() => setShowMenu(true)}
-        role={role}
-        points={role === 'admin' ? 0 : (role === 'trash-hero' ? 1240 : (role === 'business' ? 3450 : 2450))}
-        onNotificationPress={() => navigation.navigate('Notifications')}
-        onProfilePress={() => navigation.navigate('ProfileScreen')}
-      />
       
       <BadgeSystem 
         navigation={navigation}

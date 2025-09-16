@@ -14,7 +14,6 @@ import LabProgressCard from '../components/LabProgressCard';
 import { formatCO2Offset } from '../utils/weightUtils';
 import { getUserStatsByRole } from '../utils/mockData';
 import { EvolutionAnimation } from '../components/EvolutionAnimation';
-import UnifiedHeader from '../components/UnifiedHeader';
 import MenuModal from '../components/MenuModal';
 
 const { width } = Dimensions.get('window');
@@ -259,16 +258,6 @@ const MyCard: React.FC<MyCardProps> = ({ navigation, route }) => {
   return (
     <ScreenLayout>
       {/* Unified Header */}
-      <UnifiedHeader
-        onMenuPress={() => setShowMenu(true)}
-        role={role}
-        points={xpState.totalXP || 0}
-        onNotificationPress={() => navigation.navigate('Notifications')}
-        onProfilePress={() => navigation.navigate('ProfileScreen', { 
-          role: role,
-          onSignOut: () => navigation.navigate('Login')
-        })}
-      />
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Verification Badge Section */}
@@ -321,8 +310,8 @@ const MyCard: React.FC<MyCardProps> = ({ navigation, route }) => {
               <Text style={[styles.progressTitle, { color: theme.textColor }]}>
                 Progress to 🏆 {roleConfig.nextRank}
               </Text>
-              <View style={[styles.evolutionBadge, { backgroundColor: roleConfig.color }]}>
-                <Ionicons name="trending-up" size={12} color="white" />
+              <View style={styles.evolutionBadge}>
+                <Ionicons name="trending-up" size={12} color="#9AE630" />
                 <Text style={styles.evolutionText}>Evolution</Text>
               </View>
             </View>
@@ -602,9 +591,10 @@ const styles = StyleSheet.create({
     paddingVertical: THEME.SPACING.xs,
     borderRadius: THEME.BORDER_RADIUS.lg,
     gap: 4,
+    backgroundColor: '#000000', // Black background
   },
   evolutionText: {
-    // color: theme.background,
+    color: '#9AE630', // Trash hero green
     fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '600',
   },

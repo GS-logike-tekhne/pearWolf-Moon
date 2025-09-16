@@ -10,7 +10,6 @@ import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../context/ThemeContext";
 import { THEME } from '../styles/theme';
 import { useAuth } from "../context/AuthContext";
-import UnifiedHeader from "../components/UnifiedHeader";
 import MenuModal from "../components/MenuModal";
 import PEARScreen from "../components/PEARScreen";
 import { UserRole } from "../types/roles";
@@ -67,16 +66,6 @@ const UnifiedHeroDashboardBackup: React.FC<UnifiedHeroDashboardBackupProps> = ({
       }}
       refreshing={false}
     >
-      <UnifiedHeader
-        onMenuPress={() => setShowMenu(true)}
-        role={userRole.toLowerCase().replace('_', '-')}
-        points={roleConfig.points}
-        onNotificationPress={() => navigation.navigate('Notifications')}
-        onProfilePress={() => navigation.navigate('ProfileScreen', { 
-          role: userRole.toLowerCase().replace('_', '-'),
-          onSignOut: () => navigation.navigate('Login')
-        })}
-      />
 
       <View style={styles.content}>
         {/* My Card Section */}

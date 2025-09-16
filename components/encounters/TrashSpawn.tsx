@@ -13,11 +13,11 @@ const TrashSpawn: React.FC<TrashSpawnProps> = ({ encounter, onPress }) => {
   const getTrashIcon = () => {
     switch (encounter.type) {
       case 'plastic_bottle':
-        return 'bottle';
+        return 'water';
       case 'candy_wrapper':
         return 'trash';
       case 'cigarette_butt':
-        return 'cigarette';
+        return 'close-circle';
       case 'broken_glass':
         return 'warning';
       case 'metal_can':
@@ -25,7 +25,7 @@ const TrashSpawn: React.FC<TrashSpawnProps> = ({ encounter, onPress }) => {
       case 'styrofoam':
         return 'square';
       case 'large_debris':
-        return 'construct';
+        return 'build';
       case 'hazardous_waste':
         return 'skull';
       default:

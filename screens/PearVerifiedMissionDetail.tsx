@@ -4,7 +4,6 @@ import ScreenLayout from '../components/ScreenLayout';
 import { sharedStyles } from '../styles/shared';
 
 // Import the new modular components
-import MissionHeader from '../components/verified/MissionHeader';
 import MissionInfo from '../components/verified/MissionInfo';
 import FundingSection from '../components/verified/FundingSection';
 import PhotoGallery from '../components/verified/PhotoGallery';
@@ -53,10 +52,6 @@ const PearVerifiedMissionDetail: React.FC<PearVerifiedMissionDetailProps> = ({
   return (
     <ScreenLayout>
       <ScrollView style={sharedStyles.container} showsVerticalScrollIndicator={false}>
-        <MissionHeader 
-          mission={mission} 
-          onBack={() => navigation.goBack()} 
-        />
         
         <MissionInfo mission={mission} />
         

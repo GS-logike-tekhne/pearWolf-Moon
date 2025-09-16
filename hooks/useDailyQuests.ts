@@ -36,30 +36,12 @@ const defaultQuests: Quest[] = [
   },
   { 
     id: '3', 
-    title: 'Report illegal dump', 
-    description: 'Report environmental violations',
-    xp: 50, 
-    completed: false,
-    category: 'reporting',
-    icon: 'warning'
-  },
-  { 
-    id: '4', 
     title: 'Complete 3 missions', 
     description: 'Finish any 3 missions today',
     xp: 150, 
     completed: false,
     category: 'engagement',
     icon: 'checkmark-circle'
-  },
-  { 
-    id: '5', 
-    title: 'Earn $25+ today', 
-    description: 'Make money through cleanup jobs',
-    xp: 125, 
-    completed: false,
-    category: 'cleanup',
-    icon: 'cash'
   },
 ];
 
@@ -68,7 +50,7 @@ export const useDailyQuests = () => {
   const [xpEarnedToday, setXpEarnedToday] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   
-  const XP_DAILY_CAP = 300; // Increased cap for more quest variety
+  const XP_DAILY_CAP = 325; // Cap for 3 quests (100 + 75 + 150)
 
   // Reset if more than 24 hours have passed
   const checkReset = async () => {

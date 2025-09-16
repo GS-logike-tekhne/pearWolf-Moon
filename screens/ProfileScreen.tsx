@@ -10,10 +10,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { getRoleColor } from '../utils/roleColors';
 import { useTheme } from '../context/ThemeContext';
 import { THEME } from '../styles/theme';
-import ScreenLayout from '../components/ScreenLayout';
+import PEARScreen from '../components/PEARScreen';
+import UnifiedHeader from '../components/UnifiedHeader';
 import { useAuth } from '../context/AuthContext';
 import { useRoleManager } from '../hooks/useRoleManager';
-import UnifiedHeader from '../components/UnifiedHeader';
 import MenuModal from '../components/MenuModal';
 import { generateWalletId } from '../utils/generateWalletId';
 
@@ -85,28 +85,26 @@ const ProfileScreen = ({ navigation, route }: { navigation: any; route: any }) =
   );
 
   return (
-    <ScreenLayout>
+    <PEARScreen
+      title="Profile Information"
+      role={role.toUpperCase().replace('-', '_') as any}
+      showHeader={false}
+      showScroll={true}
+      enableRefresh={true}
+      onRefresh={() => {
+        console.log('Refreshing profile...');
+      }}
+      refreshing={false}
+      navigation={navigation}
+      backgroundColor="white"
+    >
+      {/* Unified Header */}
       <UnifiedHeader
         onMenuPress={() => setShowMenu(true)}
-        role={role}
-        points={role === 'admin' ? 0 : (role === 'trash-hero' ? 1240 : (role === 'business' ? 3450 : 2450))}
+        role={role.toUpperCase().replace('-', '_') as any}
         onNotificationPress={() => navigation.navigate('Notifications')}
-        onProfilePress={() => {}}
+        onProfilePress={() => navigation.goBack()}
       />
-      
-      {/* Page Header */}
-      <View style={styles.pageHeader}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
-          <Ionicons name="arrow-back" size={24} color={getRoleColor(role)} />
-        </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: theme.textColor }]}>
-          Profile Information
-        </Text>
-        <View style={{ width: 40 }} />
-      </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Profile Card */}
@@ -195,25 +193,13 @@ const ProfileScreen = ({ navigation, route }: { navigation: any; route: any }) =
           }
         }}
       />
-    </ScreenLayout>
+    </PEARScreen>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  pageHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: THEME.SPACING.md,
-    paddingVertical: THEME.SPACING.sm + 4,
-  },
-  backButton: {},
-  headerTitle: {
-    fontSize: THEME.TYPOGRAPHY.fontSize.xl,
-    fontWeight: '700',
   },
   content: {
     flex: 1,

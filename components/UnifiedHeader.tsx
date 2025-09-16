@@ -4,94 +4,101 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
+  Dimensions,
+  Image,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
-import { getRoleColor } from '../utils/roleColors';
+import { useXP } from '../hooks/useXP';
+import { UserRole } from '../types/roles';
+import { THEME } from '../styles/theme';
+
+const { width } = Dimensions.get('window');
 
 interface UnifiedHeaderProps {
   onMenuPress: () => void;
-  role?: string;
-  points?: number;
-  onNotificationPress?: () => void;
-  onProfilePress?: () => void;
+  role: UserRole;
+  onNotificationPress: () => void;
+  onProfilePress: () => void;
 }
 
 const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
   onMenuPress,
   role,
-  points = 2450,
   onNotificationPress,
   onProfilePress,
 }) => {
   const { theme } = useTheme();
   const { user } = useAuth();
+  const { currentLevel } = useXP();
 
-  // Get role-specific configuration
-  const getRoleConfig = () => {
-    const userRole = role || user?.role || 'admin';
-    const normalizedRole = userRole.toUpperCase();
-    
-    switch (normalizedRole) {
+  // Get role-based colors
+  const getRoleColor = (userRole: UserRole): string => {
+    switch (userRole) {
       case 'TRASH_HERO':
-      case 'TRASH-HERO':
-        return { color: getRoleColor('trash-hero'), points: points };
-      case 'VOLUNTEER':
+        return '#4CAF50';
       case 'IMPACT_WARRIOR':
-      case 'IMPACT-WARRIOR':
-        return { color: getRoleColor('impact-warrior'), points: points };
-      case 'BUSINESS':
+        return '#dc2626';
       case 'ECO_DEFENDER':
-      case 'ECO-DEFENDER':
-        return { color: getRoleColor('business'), points: points };
+        return '#2196F3';
       case 'ADMIN':
-        return { color: getRoleColor('admin'), points: points };
+        return '#9C27B0';
       default:
-        return { color: getRoleColor('admin'), points: points };
+        return theme.primary;
     }
   };
 
-  const roleConfig = getRoleConfig();
+  const roleColor = getRoleColor(role);
+  const roleInitial = role.charAt(0);
 
   return (
-    <View style={[styles.header, { backgroundColor: theme.background }]}>
-      <TouchableOpacity 
-        style={styles.menuButton}
-        onPress={onMenuPress}
-      >
-        <Ionicons name="menu" size={24} color={theme.textColor} />
-      </TouchableOpacity>
-      
-      <View style={[styles.pearLogo, { backgroundColor: roleConfig.color }]}>
-        <Text style={styles.pearText}>PEAR</Text>
-      </View>
-      
-      <View style={styles.headerRight}>
-        <View style={styles.pointsContainer}>
-          <Ionicons name="star" size={16} color="#ffc107" />
-          <Text style={[styles.pointsText, { color: theme.textColor }]}>
-            {roleConfig.points.toLocaleString()}
-          </Text>
-          <Ionicons name="help-circle" size={16} color={theme.secondaryText} />
+    <View style={[styles.header, { backgroundColor: 'white' }]}>
+      <View style={styles.headerContent}>
+        {/* Left - Menu Button */}
+        <TouchableOpacity
+          style={styles.menuButton}
+          onPress={onMenuPress}
+          activeOpacity={0.7}
+        >
+          <Ionicons name="menu" size={24} color="black" />
+        </TouchableOpacity>
+
+        {/* Center - PEAR Button (shifted right) */}
+        <View style={styles.headerCenter}>
+          <TouchableOpacity
+            style={[styles.pearButton, { backgroundColor: roleColor }]}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.pearText}>PEAR</Text>
+          </TouchableOpacity>
         </View>
-        
-        <TouchableOpacity 
-          style={styles.notificationButton}
-          onPress={onNotificationPress}
-        >
-          <Ionicons name="notifications" size={20} color={theme.textColor} />
-          <View style={styles.notificationBadge}>
-            <Text style={styles.notificationBadgeText}>3</Text>
-          </View>
-        </TouchableOpacity>
-        
-        <TouchableOpacity 
-          style={[styles.profileButton, { backgroundColor: roleConfig.color }]}
-          onPress={onProfilePress}
-        >
-          <Ionicons name="person" size={20} color="white" />
-        </TouchableOpacity>
+
+        {/* Right - Notifications & Profile */}
+        <View style={styles.headerRight}>
+          {/* Notifications */}
+          <TouchableOpacity
+            style={styles.notificationButton}
+            onPress={onNotificationPress}
+            activeOpacity={0.7}
+          >
+            <Ionicons name="notifications" size={20} color="black" />
+            <View style={styles.notificationBadge}>
+              <Text style={styles.badgeText}>3</Text>
+            </View>
+          </TouchableOpacity>
+          
+              {/* Profile */}
+              <TouchableOpacity
+                style={styles.profileButton}
+                onPress={onProfilePress}
+                activeOpacity={0.7}
+              >
+                <View style={[styles.profileIcon, { backgroundColor: roleColor }]}>
+                  <Ionicons name="person" size={20} color="white" />
+                </View>
+              </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
@@ -99,67 +106,78 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
 
 const styles = StyleSheet.create({
   header: {
+    paddingTop: 40,
+    paddingBottom: 16,
+    paddingHorizontal: 16,
+  },
+  headerContent: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255,255,255,0.1)',
   },
-  menuButton: {
-    padding: 8,
-  },
-  pearLogo: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-  },
-  pearText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
+  headerCenter: {
+    flex: 1,
+    alignItems: 'center',
+    marginLeft: 50,
   },
   headerRight: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: 8,
+    justifyContent: 'flex-end',
   },
-  pointsContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
+  menuButton: {
+    padding: 8,
+    width: 40,
   },
-  pointsText: {
-    fontSize: 14,
-    fontWeight: '600',
+  title: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'white',
   },
   notificationButton: {
     position: 'relative',
+    padding: 8,
   },
   notificationBadge: {
     position: 'absolute',
-    top: -4,
-    right: -4,
-    backgroundColor: '#dc3545',
+    top: 4,
+    right: 4,
+    backgroundColor: '#FF4444',
     borderRadius: 8,
-    width: 16,
+    minWidth: 16,
     height: 16,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  notificationBadgeText: {
+  badgeText: {
     color: 'white',
     fontSize: 10,
     fontWeight: 'bold',
   },
-  profileButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+      profileButton: {
+        padding: 8,
+      },
+      profileIcon: {
+        width: 32,
+        height: 32,
+        borderRadius: 16,
+        alignItems: 'center',
+        justifyContent: 'center',
+      },
+      pearButton: {
+        borderRadius: 20,
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        alignItems: 'center',
+        justifyContent: 'center',
+      },
+      pearText: {
+        color: 'white',
+        fontSize: 16,
+        fontWeight: 'bold',
+      },
 });
 
 export default UnifiedHeader;
+ 

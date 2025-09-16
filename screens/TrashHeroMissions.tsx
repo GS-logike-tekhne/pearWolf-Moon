@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,16 +7,21 @@ import {
   TouchableOpacity,
   TextInput,
   Dimensions,
+  Animated,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { getRoleColor } from '../utils/roleColors';
 import { useTheme } from '../context/ThemeContext';
 import { THEME } from '../styles/theme';
+
 import { useAuth } from '../context/AuthContext';
 import { useXP } from '../hooks/useXP';
+import { useRoleManager } from '../hooks/useRoleManager';
 import MenuModal from '../components/MenuModal';
 import DailyQuests from '../components/DailyQuests';
-import PEARScreen from '../components/PEARScreen';
+import ScreenLayout from '../components/ScreenLayout';
+import UnifiedHeader from '../components/UnifiedHeader';
 
 const { width } = Dimensions.get('window');
 
@@ -24,15 +29,36 @@ const TrashHeroMissions = ({ navigation }: any) => {
   const { theme } = useTheme();
   const { user, currentRole, logout } = useAuth();
   const { currentLevel, getXPSummary } = useXP();
+  const { currentRole: roleFromManager } = useRoleManager();
   const [showMenu, setShowMenu] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFilter, setSelectedFilter] = useState('all');
   
+  // Animation refs
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(50)).current;
+  
   const xpSummary = getXPSummary();
   const xpTotal = xpSummary.totalXP;
   
-  // Use current role from auth context, fallback to trash-hero
-  const userRole = currentRole ? currentRole.toLowerCase().replace('_', '-') : 'trash-hero';
+  // Use current role from role manager, fallback to trash-hero
+  const userRole = roleFromManager || 'TRASH_HERO';
+  
+  // Start animations on component mount
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 800,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 800,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, []);
   
   const missions = [
     {
@@ -329,18 +355,27 @@ const TrashHeroMissions = ({ navigation }: any) => {
   );
 
   return (
-    <PEARScreen
-      title="Trash Hero Missions"
-      role="TRASH_HERO"
-      showHeader={true}
-      showScroll={true}
-      enableRefresh={true}
-      onRefresh={() => {
-        // Refresh missions data
-        console.log('Refreshing missions...');
-      }}
-      refreshing={false}
-    >
+    <ScreenLayout scrollable={true} padding={{ horizontal: 0, vertical: 0 }}>
+      {/* Unified Header */}
+      <UnifiedHeader
+        onMenuPress={() => setShowMenu(true)}
+        role={userRole}
+        onNotificationPress={() => navigation.navigate('Notifications')}
+        onProfilePress={() => navigation.navigate('ProfileScreen', { 
+          role: userRole,
+          onSignOut: () => navigation.navigate('Login')
+        })}
+      />
+
+      {/* Screen Title */}
+      <View style={styles.titleContainer}>
+        <Text style={[styles.screenTitle, { color: theme.textColor }]}>
+          Trash Hero Missions
+        </Text>
+        <Text style={[styles.screenSubtitle, { color: theme.secondaryText }]}>
+          {missions.length} available missions
+        </Text>
+      </View>
 
         {/* Search Bar */}
         <View style={styles.searchContainer}>
@@ -376,35 +411,59 @@ const TrashHeroMissions = ({ navigation }: any) => {
         {/* Daily Quests */}
         <DailyQuests />
 
-        {/* Stats Banner */}
-        <View style={[styles.statsBanner, { backgroundColor: theme.cardBackground }]}>
-          <View style={styles.statItem}>
-            <Text style={[styles.statNumber, { color: theme.primary }]}>
-              {missions.length}
-            </Text>
-            <Text style={[styles.statLabel, { color: theme.secondaryText }]}>
-              Available
-            </Text>
-          </View>
-          <View style={[styles.statDivider, { backgroundColor: theme.borderColor }]} />
-          <View style={styles.statItem}>
-            <Text style={[styles.statNumber, { color: theme.success }]}>
-              ${Math.round(missions.reduce((sum, m) => sum + parseInt(m.payment.replace('$', '')), 0) / missions.length)}
-            </Text>
-            <Text style={[styles.statLabel, { color: theme.secondaryText }]}>
-              Avg. Pay
-            </Text>
-          </View>
-          <View style={[styles.statDivider, { backgroundColor: theme.borderColor }]} />
-          <View style={styles.statItem}>
-            <Text style={[styles.statNumber, { color: theme.warning }]}>
-              {missions.filter(m => m.priority === 'high').length}
-            </Text>
-            <Text style={[styles.statLabel, { color: theme.secondaryText }]}>
-              High Priority
-            </Text>
-          </View>
-        </View>
+        {/* Enhanced Stats Banner */}
+        <Animated.View 
+          style={[
+            styles.statsBannerContainer,
+            {
+              opacity: fadeAnim,
+              transform: [{ translateY: slideAnim }]
+            }
+          ]}
+        >
+          <LinearGradient
+            colors={['#9AE630', '#7BC832', '#5FAE34']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.statsBanner}
+          >
+            <View style={styles.statItem}>
+              <View style={styles.statIconContainer}>
+                <Ionicons name="list" size={20} color="white" />
+              </View>
+              <Text style={styles.statNumber}>
+                {missions.length}
+              </Text>
+              <Text style={styles.statLabel}>
+                Available
+              </Text>
+            </View>
+            <View style={styles.statDivider} />
+            <View style={styles.statItem}>
+              <View style={styles.statIconContainer}>
+                <Ionicons name="cash" size={20} color="white" />
+              </View>
+              <Text style={styles.statNumber}>
+                ${Math.round(missions.reduce((sum, m) => sum + parseInt(m.payment.replace('$', '')), 0) / missions.length)}
+              </Text>
+              <Text style={styles.statLabel}>
+                Avg. Pay
+              </Text>
+            </View>
+            <View style={styles.statDivider} />
+            <View style={styles.statItem}>
+              <View style={styles.statIconContainer}>
+                <Ionicons name="flash" size={20} color="white" />
+              </View>
+              <Text style={styles.statNumber}>
+                {missions.filter(m => m.priority === 'high').length}
+              </Text>
+              <Text style={styles.statLabel}>
+                High Priority
+              </Text>
+            </View>
+          </LinearGradient>
+        </Animated.View>
 
         {/* Mission Cards */}
         <View style={styles.missionsContainer}>
@@ -436,13 +495,37 @@ const TrashHeroMissions = ({ navigation }: any) => {
 
         <View style={styles.bottomSpacing} />
 
+        {/* Floating Action Buttons */}
+        <View style={styles.fabContainer}>
+          <TouchableOpacity 
+            style={[styles.fab, { backgroundColor: '#9AE630' }]}
+            onPress={() => navigation.navigate('MapScreen')}
+          >
+            <Ionicons name="map" size={24} color="white" />
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={[styles.fab, { backgroundColor: '#FF6B6B' }]}
+            onPress={() => navigation.navigate('SuggestCleanup')}
+          >
+            <Ionicons name="add" size={24} color="white" />
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={[styles.fab, { backgroundColor: '#8B5CF6' }]}
+            onPress={() => navigation.navigate('BadgeSystem')}
+          >
+            <Ionicons name="medal" size={24} color="white" />
+          </TouchableOpacity>
+        </View>
+
       {/* Menu Modal */}
       <MenuModal
         visible={showMenu}
         onClose={() => setShowMenu(false)}
-        userRole="TRASH_HERO"
+        userRole={userRole}
         userName="TrashHero Pro"
-        userLevel={6}
+        userLevel={typeof currentLevel === 'number' ? currentLevel : 1}
         onNavigate={(screen, params) => {
           navigation.navigate(screen, params);
         }}
@@ -450,7 +533,7 @@ const TrashHeroMissions = ({ navigation }: any) => {
           navigation.navigate('Login');
         }}
       />
-    </PEARScreen>
+    </ScreenLayout>
   );
 };
 
@@ -460,6 +543,19 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+  },
+  titleContainer: {
+    paddingHorizontal: THEME.SPACING.md,
+    paddingVertical: THEME.SPACING.sm,
+    marginBottom: THEME.SPACING.sm,
+  },
+  screenTitle: {
+    fontSize: THEME.TYPOGRAPHY.fontSize["2xl"],
+    fontWeight: '700',
+    marginBottom: THEME.SPACING.xs,
+  },
+  screenSubtitle: {
+    fontSize: THEME.TYPOGRAPHY.fontSize.base,
   },
   searchContainer: {
     paddingHorizontal: THEME.SPACING.md,
@@ -501,34 +597,51 @@ const styles = StyleSheet.create({
     fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '600',
   },
+  statsBannerContainer: {
+    marginHorizontal: THEME.SPACING.md,
+    marginBottom: THEME.SPACING.lg,
+  },
   statsBanner: {
     flexDirection: 'row',
-    borderRadius: THEME.BORDER_RADIUS.lg,
-    padding: THEME.SPACING.md,
-    marginBottom: THEME.SPACING.md + 4,
     alignItems: 'center',
     justifyContent: 'space-around',
+    paddingVertical: THEME.SPACING.lg,
+    paddingHorizontal: THEME.SPACING.md,
+    borderRadius: THEME.BORDER_RADIUS.lg,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
   },
   statItem: {
     alignItems: 'center',
     flex: 1,
   },
+  statIconContainer: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: THEME.SPACING.xs,
+  },
   statNumber: {
     fontSize: THEME.TYPOGRAPHY.fontSize.xl,
     fontWeight: '800',
+    color: 'white',
     marginBottom: THEME.SPACING.xs,
   },
   statLabel: {
     fontSize: THEME.TYPOGRAPHY.fontSize.xs,
+    color: 'rgba(255, 255, 255, 0.9)',
+    fontWeight: '600',
   },
   statDivider: {
     width: 1,
     height: 32,
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
   },
   missionCard: {
     borderRadius: THEME.BORDER_RADIUS.xl,
@@ -731,6 +844,25 @@ const styles = StyleSheet.create({
   },
   bottomSpacing: {
     height: 40,
+  },
+  fabContainer: {
+    position: 'absolute' as const,
+    bottom: 20,
+    right: 20,
+    flexDirection: 'column' as const,
+    gap: 12,
+  },
+  fab: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    justifyContent: 'center' as const,
+    alignItems: 'center' as const,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
   },
 });
 

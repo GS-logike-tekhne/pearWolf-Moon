@@ -13,7 +13,6 @@ import { getRoleColor } from '../utils/roleColors';
 import { useTheme } from '../context/ThemeContext';
 import { THEME } from '../styles/theme';
 import ScreenLayout from '../components/ScreenLayout';
-import UnifiedHeader from '../components/UnifiedHeader';
 import MenuModal from '../components/MenuModal';
 
 const { width } = Dimensions.get('window');
@@ -280,15 +279,6 @@ const Analytics = ({ navigation }: { navigation: any }) => {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <UnifiedHeader
-        onMenuPress={() => setShowMenu(true)}
-        role="admin"
-        onNotificationPress={() => navigation.navigate('Notifications')}
-        onProfilePress={() => navigation.navigate('ProfileScreen', { 
-          role: 'admin',
-          onSignOut: () => navigation.navigate('Login')
-        })}
-      />
       
       {/* Page Header */}
       <View style={[styles.pageHeader, { backgroundColor: theme.cardBackground }]}>

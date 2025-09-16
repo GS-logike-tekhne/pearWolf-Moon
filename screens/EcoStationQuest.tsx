@@ -28,7 +28,6 @@ import { useTheme } from '../context/ThemeContext';
 import { useRoleManager } from '../hooks/useRoleManager';
 import { THEME } from '../styles/theme';
 import ScreenLayout from '../components/ScreenLayout';
-import UnifiedHeader from '../components/UnifiedHeader';
 import MenuModal from '../components/MenuModal';
 import { useXP } from '../context/XPContext';
 import { useMissions } from '../context/MissionContext';
@@ -250,13 +249,6 @@ const EcoStationQuest: React.FC<{ navigation: any }> = ({ navigation }) => {
 
   return (
     <ScreenLayout>
-      <UnifiedHeader
-        onMenuPress={() => setShowMenu(true)}
-        role={role}
-        points={xp}
-        onNotificationPress={() => navigation.navigate('Notifications')}
-        onProfilePress={() => navigation.navigate('ProfileScreen')}
-      />
 
       {/* Progress Indicator */}
       <View style={[styles.progressContainer, { backgroundColor: theme.card }]}>

@@ -40,9 +40,9 @@ const MissionCardContent: React.FC<MissionCardContentProps> = ({ mission }) => {
 
       {/* Rewards */}
       <View style={styles.rewardsContainer}>
-        <View style={styles.rewardItem}>
-          <Text style={[styles.rewardIcon, { color: roleColor }]}>⭐</Text>
-          <Text style={[styles.rewardText, { color: theme.textColor }]}>
+        <View style={[styles.rewardItem, styles.xpRewardItem]}>
+          <Text style={[styles.rewardIcon, { color: '#FFD700' }]}>⭐</Text>
+          <Text style={[styles.rewardText, styles.xpRewardText]}>
             {mission.xpReward} XP
           </Text>
         </View>
@@ -112,6 +112,16 @@ const styles = StyleSheet.create({
   rewardText: {
     fontSize: THEME.TYPOGRAPHY.fontSize.sm,
     fontWeight: '600',
+  },
+  xpRewardItem: {
+    backgroundColor: 'rgba(255, 215, 0, 0.6)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  xpRewardText: {
+    color: '#FFFFFF',
+    fontWeight: '700',
   },
 });
 

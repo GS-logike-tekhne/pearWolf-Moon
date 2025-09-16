@@ -1,19 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View,
-  Text,
   StyleSheet,
-  ScrollView,
-  SafeAreaView,
+  Text,
+  Dimensions,
   TouchableOpacity,
+  Animated,
 } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import { useXP } from '../hooks/useXP';
-import UnifiedHeader from '../components/UnifiedHeader';
+import { useRoleManager } from '../hooks/useRoleManager';
+import PEARScreen from '../components/PEARScreen';
 import MenuModal from '../components/MenuModal';
-import WalletCard from '../components/wallet/WalletCard';
-import ActionButtons from '../components/wallet/ActionButtons';
-import TransactionItem from '../components/wallet/TransactionItem';
+import UnifiedHeader from '../components/UnifiedHeader';
 
 interface WalletScreenProps {
   navigation: any;
@@ -21,52 +20,60 @@ interface WalletScreenProps {
 }
 
 const WalletScreen: React.FC<WalletScreenProps> = ({ navigation, route }) => {
-  const { user, currentRole, logout } = useAuth();
-  const { currentLevel, getXPSummary, progressPercent } = useXP();
+  const { user, logout } = useAuth();
+  const { currentLevel, getXPSummary } = useXP();
+  const { currentRole } = useRoleManager();
   const [showMenu, setShowMenu] = useState(false);
+  const [isFlipped, setIsFlipped] = useState(false);
   
   const xpSummary = getXPSummary();
   const xpTotal = xpSummary.totalXP;
   
-  // Use current role from auth context, fallback to route params, then to user role
-  const userRole = route?.params?.role || 
-                   (currentRole ? currentRole.toLowerCase().replace('_', '-') : 'trash-hero') ||
-                   (user?.role ? user.role.toLowerCase().replace('_', '-') : 'trash-hero');
-
-  // Mock transaction data
-  const transactions = [
-    { id: 1, title: 'Beach Cleanup Mission', amount: '+$45', time: '2 hours ago', icon: 'star' },
-    { id: 2, title: 'Recycling Bonus', amount: '+$12', time: '1 day ago', icon: 'leaf' },
-    { id: 3, title: 'Community Event', amount: '+$28', time: '3 days ago', icon: 'people' },
-    { id: 4, title: 'Daily Quest', amount: '+$8', time: '1 week ago', icon: 'trophy' },
-  ];
-
-  const getTierName = (level: number) => {
-    if (level >= 10) return 'Eco Master';
-    if (level >= 7) return 'Guardian';
-    if (level >= 5) return 'Warrior';
-    if (level >= 3) return 'Defender';
-    return 'Rookie';
+  // Use current role from role manager
+  const userRole = currentRole || 'TRASH_HERO';
+  
+  // Animation values
+  const flipAnimation = useRef(new Animated.Value(0)).current;
+  
+  const flipCard = () => {
+    const toValue = isFlipped ? 0 : 1;
+    setIsFlipped(!isFlipped);
+    
+    Animated.timing(flipAnimation, {
+      toValue,
+      duration: 600,
+      useNativeDriver: true,
+    }).start();
   };
-
-  const getRoleTitle = (role: string) => {
-    switch (role) {
-      case 'trash-hero': return 'Trash Hero Pro';
-      case 'impact-warrior': return 'Impact Warrior';
-      case 'eco-defender': return 'Eco Defender';
-      case 'admin': return 'Admin';
-      default: return 'Trash Hero Pro';
-    }
-  };
+  
+  const frontInterpolate = flipAnimation.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '180deg'],
+  });
+  
+  const backInterpolate = flipAnimation.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['180deg', '360deg'],
+  });
 
   return (
-    <View style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        {/* Unified Header */}
+    <PEARScreen
+      title="Wallet"
+      role={userRole}
+      showHeader={false}
+      showScroll={true}
+      enableRefresh={true}
+      onRefresh={() => {
+        console.log('Refreshing wallet...');
+      }}
+      refreshing={false}
+      navigation={navigation}
+      backgroundColor="white"
+    >
+      {/* Unified Header */}
       <UnifiedHeader
         onMenuPress={() => setShowMenu(true)}
         role={userRole}
-          points={xpTotal}
         onNotificationPress={() => navigation.navigate('Notifications')}
         onProfilePress={() => navigation.navigate('ProfileScreen', { 
           role: userRole,
@@ -74,102 +81,283 @@ const WalletScreen: React.FC<WalletScreenProps> = ({ navigation, route }) => {
         })}
       />
 
-        <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-
-          {/* Main Wallet Card */}
-          <WalletCard
-            role={getRoleTitle(userRole)}
-            tier={getTierName(currentLevel.level)}
-            id={`TH-${(user?.id?.toString() || '000000003').padStart(9, '0')}`}
-            balance="580.00"
-            ecoPoints={240}
-            level={currentLevel.level}
-            levelProgress={progressPercent || 0}
-            nextTierEcoPoints={10000}
-            nextTierCash="1000"
-          />
-
-          {/* Action Buttons */}
-          <ActionButtons
-            onEarnMore={() => navigation.navigate('TrashHeroMissions')}
-            onRedeem={() => navigation.navigate('RedeemScreen')}
-          />
-
-          {/* Transactions Section */}
-        <View style={styles.transactionsSection}>
-            <Text style={styles.sectionTitle}>Recent Transactions</Text>
-            {transactions.map((transaction, index) => (
-              <TransactionItem
-                key={transaction.id}
-                icon={transaction.icon}
-                title={transaction.title}
-                amount={transaction.amount}
-                timestamp={transaction.time}
-                iconColor="#35B87F"
-                isLast={index === transactions.length - 1}
-              />
-            ))}
-          </View>
-      </ScrollView>
+      {/* Wallet Content */}
+      <View style={styles.container}>
+        {/* Credit Card Container */}
+        <TouchableOpacity style={styles.cardContainer} onPress={flipCard} activeOpacity={0.9}>
+          {/* Front Side */}
+          <Animated.View 
+            style={[
+              styles.creditCard,
+              styles.cardFront,
+              { transform: [{ rotateY: frontInterpolate }] }
+            ]}
+          >
+            {/* Card Header */}
+            <View style={styles.cardHeader}>
+              <Text style={styles.cardTitle}>PEAR WALLET</Text>
+              <Text style={styles.cardSubtitle}>Digital Card</Text>
+            </View>
+            
+            {/* Wallet ID */}
+            <View style={styles.cardNumberContainer}>
+              <Text style={styles.cardNumber}>{user?.walletId || 'WALLET-001'}</Text>
+            </View>
+            
+            {/* Card Footer */}
+            <View style={styles.cardFooter}>
+              <View style={styles.cardInfo}>
+                <Text style={styles.cardLabel}>CARDHOLDER</Text>
+                <Text style={styles.cardValue}>{user?.name || 'Trash Hero'}</Text>
+              </View>
+              <View style={styles.cardInfo}>
+                <Text style={styles.cardLabel}>MEMBER SINCE</Text>
+                <Text style={styles.cardValue}>{user?.memberSince || '2024'}</Text>
+              </View>
+            </View>
+            
+            {/* Card Chip */}
+            <View style={styles.cardChip} />
+          </Animated.View>
+          
+          {/* Back Side */}
+          <Animated.View 
+            style={[
+              styles.creditCard,
+              styles.cardBack,
+              { transform: [{ rotateY: backInterpolate }] }
+            ]}
+          >
+            {/* Magnetic Strip */}
+            <View style={styles.magneticStrip} />
+            
+            {/* Security Code */}
+            <View style={styles.securityCodeContainer}>
+              <Text style={styles.securityCodeLabel}>SECURITY CODE</Text>
+              <Text style={styles.securityCode}>123</Text>
+            </View>
+            
+            {/* Card Info */}
+            <View style={styles.backInfo}>
+              <Text style={styles.backText}>
+                This card is property of PEAR Wallet
+              </Text>
+              <Text style={styles.backText}>
+                If found, please return to nearest PEAR station
+              </Text>
+            </View>
+            
+            {/* Signature Strip */}
+            <View style={styles.signatureStrip}>
+              <Text style={styles.signatureLabel}>SIGNATURE</Text>
+              <View style={styles.signatureLine} />
+            </View>
+          </Animated.View>
+        </TouchableOpacity>
+        
+        {/* Flip Instruction */}
+        <Text style={styles.flipInstruction}>Tap card to flip</Text>
+      </View>
 
       {/* Menu Modal */}
       <MenuModal
         visible={showMenu}
         onClose={() => setShowMenu(false)}
         userRole={userRole.toUpperCase().replace('-', '_') as any}
-          userName="TrashHero Pro"
-          userLevel={currentLevel.level}
+        userName="TrashHero Pro"
+        userLevel={currentLevel.level}
         onNavigate={(screen, params) => {
-            console.log('Navigating to:', screen, params);
+          console.log('Navigating to:', screen, params);
           navigation.navigate(screen, params);
         }}
-          onSignOut={async () => {
-            console.log('Sign out pressed');
-            try {
-              await logout();
-              navigation.getParent()?.reset({
-                index: 0,
-                routes: [{ name: 'Login' }],
-              });
-            } catch (error) {
-              console.error('Logout failed:', error);
-              navigation.getParent()?.reset({
-                index: 0,
-                routes: [{ name: 'Login' }],
-              });
-            }
-          }}
-        />
-      </SafeAreaView>
-    </View>
+        onSignOut={async () => {
+          console.log('Sign out pressed');
+          try {
+            await logout();
+            navigation.getParent()?.reset({
+              index: 0,
+              routes: [{ name: 'Login' }],
+            });
+          } catch (error) {
+            console.error('Logout failed:', error);
+            navigation.getParent()?.reset({
+              index: 0,
+              routes: [{ name: 'Login' }],
+            });
+          }
+        }}
+      />
+    </PEARScreen>
   );
 };
+
+const { width } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    padding: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  safeArea: {
-    flex: 1,
+  cardContainer: {
+    width: width * 0.85,
+    height: 220,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  scrollView: {
-    flex: 1,
-    paddingHorizontal: 16,
+  creditCard: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#000000',
+    borderRadius: 16,
+    padding: 24,
+    justifyContent: 'space-between',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 8,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 12,
+    position: 'absolute',
+    backfaceVisibility: 'hidden',
   },
-  transactionsSection: {
-    paddingHorizontal: 20,
-    paddingVertical: 20,
-    backgroundColor: '#ffffff',
-    marginHorizontal: 20,
-    borderRadius: 12,
-    marginBottom: 20,
+  cardFront: {
+    zIndex: 2,
   },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#1f2937',
-    marginBottom: 16,
+  cardBack: {
+    zIndex: 1,
+  },
+  cardHeader: {
+    alignItems: 'flex-start',
+  },
+  cardTitle: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: 'bold',
+    letterSpacing: 1,
+  },
+  cardSubtitle: {
+    color: '#CCCCCC',
+    fontSize: 12,
+    marginTop: 4,
+    letterSpacing: 0.5,
+  },
+  cardNumberContainer: {
+    alignItems: 'center',
+    marginVertical: 20,
+  },
+  cardNumber: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: '600',
+    letterSpacing: 1,
+    textAlign: 'center',
+  },
+  cardFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
+  },
+  cardInfo: {
+    alignItems: 'flex-start',
+  },
+  cardLabel: {
+    color: '#999999',
+    fontSize: 10,
+    fontWeight: '500',
+    letterSpacing: 1,
+    marginBottom: 4,
+  },
+  cardValue: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '600',
+    letterSpacing: 0.5,
+  },
+  cardChip: {
+    position: 'absolute',
+    top: 24,
+    right: 24,
+    width: 32,
+    height: 24,
+    backgroundColor: '#FFD700',
+    borderRadius: 4,
+  },
+  // Back side styles
+  magneticStrip: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 40,
+    backgroundColor: '#333333',
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+  },
+  securityCodeContainer: {
+    position: 'absolute',
+    top: 60,
+    right: 24,
+    alignItems: 'center',
+  },
+  securityCodeLabel: {
+    color: '#999999',
+    fontSize: 8,
+    fontWeight: '500',
+    letterSpacing: 1,
+    marginBottom: 4,
+  },
+  securityCode: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
+    letterSpacing: 2,
+    backgroundColor: '#FFFFFF',
+    color: '#000000',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 4,
+  },
+  backInfo: {
+    position: 'absolute',
+    bottom: 80,
+    left: 24,
+    right: 24,
+    alignItems: 'center',
+  },
+  backText: {
+    color: '#CCCCCC',
+    fontSize: 10,
+    textAlign: 'center',
+    marginBottom: 4,
+    lineHeight: 14,
+  },
+  signatureStrip: {
+    position: 'absolute',
+    bottom: 24,
+    left: 24,
+    right: 24,
+  },
+  signatureLabel: {
+    color: '#999999',
+    fontSize: 8,
+    fontWeight: '500',
+    letterSpacing: 1,
+    marginBottom: 8,
+  },
+  signatureLine: {
+    height: 20,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 2,
+  },
+  flipInstruction: {
+    color: '#666666',
+    fontSize: 14,
+    marginTop: 20,
+    textAlign: 'center',
   },
 });
 

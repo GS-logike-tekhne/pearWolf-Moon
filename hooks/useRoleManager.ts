@@ -76,7 +76,7 @@ export const useRoleManager = () => {
         return {
           title: 'TrashHero Pro',
           subtitle: 'Professional Cleaner',
-          color: getRoleColor('TRASH_HERO'),
+          color: '#4CAF50',
           icon: getRoleIcon('TRASH_HERO'),
           canToggle: canSwitchToRole('IMPACT_WARRIOR'),
         };
@@ -84,7 +84,7 @@ export const useRoleManager = () => {
         return {
           title: 'Impact Warrior',
           subtitle: 'Community Volunteer',
-          color: getRoleColor('IMPACT_WARRIOR'),
+          color: '#dc2626',
           icon: getRoleIcon('IMPACT_WARRIOR'),
           canToggle: canSwitchToRole('TRASH_HERO'),
         };
@@ -92,7 +92,7 @@ export const useRoleManager = () => {
         return {
           title: 'EcoDefender Corp',
           subtitle: 'Environmental Sponsor',
-          color: getRoleColor('ECO_DEFENDER'),
+          color: '#2196F3',
           icon: getRoleIcon('ECO_DEFENDER'),
           canToggle: false,
         };
@@ -100,7 +100,7 @@ export const useRoleManager = () => {
         return {
           title: 'Platform Admin',
           subtitle: 'System Administrator',
-          color: getRoleColor('ADMIN'),
+          color: '#9C27B0',
           icon: getRoleIcon('ADMIN'),
           canToggle: false,
         };
@@ -108,7 +108,7 @@ export const useRoleManager = () => {
         return {
           title: 'PEAR User',
           subtitle: 'Environmental Champion',
-          color: '#6b7280',
+          color: '#4CAF50',
           icon: 'person',
           canToggle: false,
         };

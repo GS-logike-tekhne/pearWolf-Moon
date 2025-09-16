@@ -75,7 +75,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ navigation }) => {
 
   const getRoleColor = (role: string) => {
     switch (role) {
-      case 'TRASH_HERO': return '#28A745';
+      case 'TRASH_HERO': return '#4CAF50';
       case 'VOLUNTEER': return '#007bff';
       case 'BUSINESS': return '#8b5cf6';
       case 'ADMIN': return '#dc3545';

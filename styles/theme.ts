@@ -6,8 +6,8 @@ import { UserRole } from '../types/roles';
 
 // Role Colors - Primary brand colors for each user role
 export const ROLE_COLORS = {
-  TRASH_HERO: '#28A745',      // Green - Environmental action
-  IMPACT_WARRIOR: '#dc3545',   // Red - Social impact
+  TRASH_HERO: '#4CAF50',      // Green - Environmental action
+  IMPACT_WARRIOR: '#dc2626',   // Red - Social impact
   ECO_DEFENDER: '#007bff',     // Blue - Business/defense
   VOLUNTEER: '#6f42c1',        // Purple - Community service
   BUSINESS: '#fd7e14',         // Orange - Commercial

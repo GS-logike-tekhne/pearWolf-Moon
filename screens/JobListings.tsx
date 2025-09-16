@@ -13,7 +13,6 @@ import { getRoleColor } from '../utils/roleColors';
 import { useTheme } from '../context/ThemeContext';
 import { THEME } from '../styles/theme';
 import ScreenLayout from '../components/ScreenLayout';
-import UnifiedHeader from '../components/UnifiedHeader';
 import MenuModal from '../components/MenuModal';
 
 const { width } = Dimensions.get('window');
@@ -219,16 +218,6 @@ const JobListings = ({ navigation, route, onSignOut }: { navigation: any; route:
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <UnifiedHeader
-        onMenuPress={() => setShowMenu(true)}
-        role={userRole}
-        points={userRole === 'business' ? 3450 : (userRole === 'admin' ? 0 : 1240)}
-        onNotificationPress={() => navigation.navigate('Notifications')}
-        onProfilePress={() => navigation.navigate('ProfileScreen', { 
-          role: userRole,
-          onSignOut: route?.params?.onSignOut || onSignOut
-        })}
-      />
       
       <ScrollView 
         style={styles.scrollContainer}

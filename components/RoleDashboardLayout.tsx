@@ -13,7 +13,6 @@ import { getRoleColor } from '../utils/roleColors';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
 import { UserRole } from '../types/roles';
-import UnifiedHeader from './UnifiedHeader';
 import MenuModal from './MenuModal';
 
 const { width } = Dimensions.get('window');
@@ -129,133 +128,18 @@ const RoleDashboardLayout: React.FC<RoleDashboardLayoutProps> = ({
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
-      {/* Header */}
-      {customHeader || (
-        <UnifiedHeader
-          onMenuPress={() => setShowMenu(true)}
-          role={role}
-          points={roleConfig.points}
-          onNotificationPress={() => navigation.navigate('Notifications')}
-          onProfilePress={() => navigation.navigate('ProfileScreen', { 
-            role: role.toLowerCase().replace('_', '-'),
-            onSignOut: () => navigation.navigate('Login')
-          })}
-        />
-      )}
-
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Role Toggle Section (if enabled) */}
-        {showToggle && onToggleRole && (
-          <View style={[styles.toggleSection, { backgroundColor: theme.cardBackground }]}>
-            <View style={styles.toggleHeader}>
-              <Text style={[styles.toggleTitle, { color: theme.textColor }]}>Switch Role</Text>
-              <View style={[styles.toggleSwitch, { backgroundColor: role === 'IMPACT_WARRIOR' ? roleConfig.color : '#e0e0e0' }]}>
-                <TouchableOpacity
-                  style={[styles.toggleThumb, { backgroundColor: role === 'IMPACT_WARRIOR' ? 'white' : '#f0f0f0' }]}
-                  onPress={onToggleRole}
-                >
-                  <Ionicons 
-                    name={role === 'IMPACT_WARRIOR' ? 'flame' : 'leaf'} 
-                    size={16} 
-                    color={role === 'IMPACT_WARRIOR' ? roleConfig.color : '#666'} 
-                  />
-                </TouchableOpacity>
-              </View>
-            </View>
-            <Text style={[styles.toggleSubtitle, { color: theme.secondaryText }]}>
-              {role === 'IMPACT_WARRIOR' ? 'Impact Warrior Mode' : 'Trash Hero Mode'}
-            </Text>
-          </View>
-        )}
-
-        {/* My Card Section */}
-        <View style={[styles.myCard, { backgroundColor: theme.cardBackground }]}>
-          <View style={styles.cardHeader}>
-            <Text style={[styles.cardTitle, { color: theme.textColor }]}>My Card</Text>
-            <View style={styles.verifiedBadge}>
-              <Ionicons name="checkmark-circle" size={16} color={roleConfig.color} />
-              <Text style={[styles.verifiedText, { color: roleConfig.color }]}>PEAR Verified</Text>
-            </View>
-          </View>
-          
-          <View style={styles.profileSection}>
-            <View style={[styles.profileAvatar, { backgroundColor: roleConfig.color }]}>
-              <Text style={styles.avatarText}>{roleConfig.badgeIcon}</Text>
-              <View style={styles.avatarBadge}>
-                <Ionicons name="checkmark" size={12} color="white" />
-              </View>
-            </View>
-            
-            <View style={styles.profileInfo}>
-              <Text style={[styles.profileName, { color: theme.textColor }]}>{roleConfig.title}</Text>
-              <Text style={[styles.profileRole, { color: theme.secondaryText }]}>{roleConfig.subtitle}</Text>
-              <View style={styles.badgeContainer}>
-                <Text style={styles.badgeEmoji}>{roleConfig.badgeIcon}</Text>
-                <Text style={[styles.badgeText, { color: roleConfig.color }]}>{roleConfig.badge}</Text>
-              </View>
-            </View>
-          </View>
-        </View>
-
-        {/* Key Metrics */}
-        <View style={styles.metricsSection}>
-          <Text style={[styles.sectionTitle, { color: theme.textColor }]}>Key Metrics</Text>
-          <View style={styles.metricsGrid}>
-            {keyMetrics.map((metric, index) => (
-              <MetricCard key={index} metric={metric} index={index} />
-            ))}
-          </View>
-        </View>
-
-        {/* Quick Actions */}
-        <View style={styles.actionsSection}>
-          <Text style={[styles.sectionTitle, { color: theme.textColor }]}>Quick Actions</Text>
-          <View style={styles.actionsGrid}>
-            {quickActions.map((action, index) => (
-              <QuickActionCard key={index} action={action} index={index} />
-            ))}
-          </View>
-        </View>
-
-        {/* Recent Activity */}
-        <View style={styles.activitySection}>
-          <View style={styles.activityHeader}>
-            <Text style={[styles.sectionTitle, { color: theme.textColor }]}>Recent Activity</Text>
-            <TouchableOpacity>
-              <Text style={[styles.viewAllText, { color: roleConfig.color }]}>View All</Text>
-            </TouchableOpacity>
-          </View>
-          
-          <View style={styles.activityList}>
-            {recentActivity.map(activity => (
-              <ActivityCard key={activity.id} activity={activity} />
-            ))}
-          </View>
-        </View>
-
-        {/* Custom Content */}
-        {customContent}
-
-        {/* Children Content */}
-        {children}
-
-        <View style={styles.bottomSpacing} />
-      </ScrollView>
-
-      {/* Menu Modal */}
-      <MenuModal
-        visible={showMenu}
-        onClose={() => setShowMenu(false)}
-        userRole={role}
-        userName={roleConfig.title}
-        userLevel={roleConfig.level}
-        onNavigate={(screen, params) => {
-          navigation.navigate(screen, params);
-        }}
-        onSignOut={() => {
-          navigation.navigate('Login');
-        }}
-      />
+      {/* MINIMAL VERSION - Add components back one by one */}
+      <View style={styles.content}>
+        <Text style={[styles.debugText, { color: theme.textColor }]}>
+          RoleDashboardLayout - Debug Mode
+        </Text>
+        <Text style={[styles.debugText, { color: theme.textColor }]}>
+          Role: {role}
+        </Text>
+        <Text style={[styles.debugText, { color: theme.textColor }]}>
+          Title: {roleConfig.title}
+        </Text>
+      </View>
     </SafeAreaView>
   );
 };
@@ -264,8 +148,64 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  defaultHeader: {
+    paddingHorizontal: 16,
+    paddingTop: 20,
+    paddingBottom: 12,
+    borderBottomWidth: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  headerContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  headerLeft: {
+    width: 40,
+  },
+  headerCenter: {
+    flex: 1,
+    alignItems: 'center',
+    marginHorizontal: 16,
+  },
+  headerRight: {
+    width: 40,
+    alignItems: 'flex-end',
+  },
+  menuButton: {
+    padding: 8,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    textAlign: 'center',
+  },
+  roleIndicator: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  roleText: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: '700',
+  },
   content: {
     flex: 1,
+    padding: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  debugText: {
+    fontSize: 16,
+    marginBottom: 10,
+    textAlign: 'center',
   },
   toggleSection: {
     margin: 16,

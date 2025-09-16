@@ -13,7 +13,6 @@ import { useTheme } from '../context/ThemeContext';
 import { THEME } from '../styles/theme';
 import ScreenLayout from '../components/ScreenLayout';
 import { useAuth } from '../context/AuthContext';
-import UnifiedHeader from '../components/UnifiedHeader';
 import MenuModal from '../components/MenuModal';
 
 const { width } = Dimensions.get('window');
@@ -170,15 +169,6 @@ const EcoNewsScreen = ({ navigation, route }: any) => {
 
   return (
     <ScreenLayout>
-      <UnifiedHeader
-        onMenuPress={() => setShowMenu(true)}
-        role={userRole}
-        onNotificationPress={() => navigation.navigate('Notifications')}
-        onProfilePress={() => navigation.navigate('ProfileScreen', { 
-          role: userRole,
-          onSignOut: () => navigation.navigate('Login')
-        })}
-      />
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Header */}

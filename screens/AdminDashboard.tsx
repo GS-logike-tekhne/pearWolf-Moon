@@ -14,7 +14,6 @@ import { THEME } from '../styles/theme';
 import ScreenLayout from '../components/ScreenLayout';
 import { useAuth } from '../context/AuthContext';
 import { RoleGuard } from '../components/RoleGuard';
-import UnifiedHeader from '../components/UnifiedHeader';
 import MenuModal from '../components/MenuModal';
 
 const { width } = Dimensions.get('window');
@@ -133,16 +132,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigation }) => {
   return (
     <RoleGuard allowedRoles={['ADMIN']}>
       <ScreenLayout>
-        <UnifiedHeader
-          onMenuPress={() => setShowMenu(true)}
-          role="admin"
-          points={roleConfig.points}
-          onNotificationPress={() => navigation.navigate('Notifications')}
-          onProfilePress={() => navigation.navigate('ProfileScreen', { 
-            role: 'admin',
-            onSignOut: () => navigation.navigate('Login')
-          })}
-        />
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* My Card Section */}

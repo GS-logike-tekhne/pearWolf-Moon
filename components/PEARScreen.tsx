@@ -8,13 +8,13 @@ import {
   RefreshControl,
   StatusBar,
   Dimensions,
+  TouchableOpacity,
 } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
 import { useXP } from '../hooks/useXP';
 import { THEME } from '../styles/theme';
 import { UserRole } from '../types/roles';
-import UnifiedHeader from './UnifiedHeader';
 
 const { width, height } = Dimensions.get('window');
 
@@ -88,7 +88,7 @@ export const PEARScreen: React.FC<PEARScreenProps> = ({
         <ScrollView
           style={[
             styles.scrollView, 
-            { backgroundColor: theme.background },
+            { backgroundColor: 'transparent' },
             styles.scrollContent,
             contentPadding && styles.contentPadding,
           ]}
@@ -104,7 +104,7 @@ export const PEARScreen: React.FC<PEARScreenProps> = ({
         style={[
           styles.content,
           contentPadding && styles.contentPadding,
-          { backgroundColor: theme.background },
+          { backgroundColor: 'transparent' },
         ]}
       >
         {children}
@@ -116,7 +116,7 @@ export const PEARScreen: React.FC<PEARScreenProps> = ({
     <SafeAreaView
       style={[
         styles.container,
-        { backgroundColor: finalStatusBarColor },
+        { backgroundColor: backgroundColor || 'transparent' },
       ]}
     >
       <StatusBar
@@ -125,37 +125,41 @@ export const PEARScreen: React.FC<PEARScreenProps> = ({
         translucent={false}
       />
       
-      {/* Role-based background overlay */}
-      {role && (
-        <View
-          style={[
-            styles.roleBackground,
-            {
-              backgroundColor: role === 'TRASH_HERO' ? '#4CAF50' :
-                              role === 'IMPACT_WARRIOR' ? '#FF5722' :
-                              role === 'ECO_DEFENDER' ? '#2196F3' :
-                              role === 'ADMIN' ? '#9C27B0' : theme.primary,
-              opacity: 0.05,
-            },
-          ]}
-        />
-      )}
+      {/* Role-based background overlay - removed */}
 
-      {/* Unified Header */}
-      {showHeader && navigation && (
-        <UnifiedHeader
-          onMenuPress={() => {
-            // Handle menu press - could be passed as prop or use navigation
-            console.log('Menu pressed');
-          }}
-          role={userRole}
-          points={xpTotal}
-          onNotificationPress={() => navigation.navigate('Notifications')}
-          onProfilePress={() => navigation.navigate('ProfileScreen', { 
-            role: userRole,
-            onSignOut: () => navigation.navigate('Login')
-          })}
-        />
+      {/* Simple Header */}
+      {showHeader && (
+        <View style={[styles.header, { backgroundColor: theme.background, borderBottomColor: theme.borderColor }]}>
+          <View style={styles.headerContent}>
+            <View style={styles.headerLeft}>
+              {navigation && (
+                <TouchableOpacity
+                  style={styles.menuButton}
+                  onPress={() => {
+                    console.log('Menu pressed');
+                  }}
+                >
+                  <Text style={[styles.menuIcon, { color: theme.text }]}>☰</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+            <View style={styles.headerCenter}>
+              <Text style={[styles.headerTitle, { color: theme.text }]}>
+                {title || 'PEAR'}
+              </Text>
+            </View>
+            <View style={styles.headerRight}>
+              <View style={styles.headerStats}>
+                <Text style={[styles.headerStatText, { color: theme.secondaryText }]}>
+                  Level {currentLevel.level}
+                </Text>
+                <Text style={[styles.headerStatText, { color: theme.secondaryText }]}>
+                  {xpTotal} XP
+                </Text>
+              </View>
+            </View>
+          </View>
+        </View>
       )}
 
       {/* Main Content */}
@@ -185,50 +189,40 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 4,
   },
+  menuButton: {
+    padding: 8,
+  },
+  menuIcon: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
   headerContent: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
   headerLeft: {
-    width: 40,
+    flex: 1,
+    alignItems: 'flex-start',
   },
   headerCenter: {
-    flex: 1,
+    flex: 2,
     alignItems: 'center',
-    marginHorizontal: THEME.SPACING.sm,
   },
   headerRight: {
-    width: 40,
+    flex: 1,
     alignItems: 'flex-end',
-  },
-  pearBadge: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  pearIcon: {
-    fontSize: 18,
-    color: 'white',
   },
   headerTitle: {
     fontSize: THEME.TYPOGRAPHY.fontSize.lg,
-    fontWeight: '700',
-    textAlign: 'center',
+    fontWeight: 'bold',
   },
-  roleIndicator: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
+  headerStats: {
+    alignItems: 'flex-end',
   },
-  roleText: {
-    color: 'white',
+  headerStatText: {
     fontSize: THEME.TYPOGRAPHY.fontSize.xs,
-    fontWeight: '700',
+    fontWeight: '500',
   },
   scrollView: {
     flex: 1,
@@ -240,8 +234,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   contentPadding: {
-    paddingHorizontal: THEME.SPACING.md,
-    paddingVertical: THEME.SPACING.sm,
+    paddingHorizontal: THEME.SPACING.xs,
+    paddingVertical: THEME.SPACING.xs,
   },
 });
 

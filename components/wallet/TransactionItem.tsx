@@ -24,7 +24,7 @@ const TransactionItem: React.FC<TransactionItemProps> = ({
   return (
     <TouchableOpacity style={[styles.container, isLast && styles.lastContainer]} onPress={onPress}>
       <View style={[styles.iconContainer, { backgroundColor: '#000000' }]}>
-        <Ionicons name={icon as any} size={20} color="white" />
+        <Ionicons name={icon as any} size={20} color="#35B87F" />
       </View>
       
       <View style={styles.content}>
@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#9AE630',
+    backgroundColor: '#000000',
     borderRadius: 12,
     padding: 16,
     marginBottom: 8,
@@ -67,17 +67,17 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#000000',
+    color: '#ffffff',
     marginBottom: 2,
   },
   timestamp: {
     fontSize: 12,
-    color: 'rgba(0, 0, 0, 0.6)',
+    color: 'rgba(255, 255, 255, 0.7)',
   },
   amount: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#000000',
+    color: '#35B87F',
   },
 });
 

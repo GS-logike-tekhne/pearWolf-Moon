@@ -25,13 +25,13 @@ interface EncounterResult {
 }
 
 export const TRASH_TYPES = {
-  plastic_bottle: { name: 'Plastic Bottle', icon: 'bottle', rarity: 'common', xp: 5, ecoPoints: 2 },
+  plastic_bottle: { name: 'Plastic Bottle', icon: 'water', rarity: 'common', xp: 5, ecoPoints: 2 },
   candy_wrapper: { name: 'Candy Wrapper', icon: 'trash', rarity: 'common', xp: 3, ecoPoints: 1 },
-  cigarette_butt: { name: 'Cigarette Butt', icon: 'cigarette', rarity: 'common', xp: 2, ecoPoints: 1 },
+  cigarette_butt: { name: 'Cigarette Butt', icon: 'close-circle', rarity: 'common', xp: 2, ecoPoints: 1 },
   broken_glass: { name: 'Broken Glass', icon: 'warning', rarity: 'uncommon', xp: 15, ecoPoints: 5 },
   metal_can: { name: 'Metal Can', icon: 'cube', rarity: 'uncommon', xp: 12, ecoPoints: 4 },
   styrofoam: { name: 'Styrofoam', icon: 'square', rarity: 'uncommon', xp: 10, ecoPoints: 3 },
-  large_debris: { name: 'Large Debris', icon: 'construct', rarity: 'rare', xp: 50, ecoPoints: 15 },
+  large_debris: { name: 'Large Debris', icon: 'build', rarity: 'rare', xp: 50, ecoPoints: 15 },
   hazardous_waste: { name: 'Hazardous Waste', icon: 'skull', rarity: 'rare', xp: 100, ecoPoints: 25 }
 };
 

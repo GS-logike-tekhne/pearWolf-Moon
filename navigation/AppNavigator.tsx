@@ -30,6 +30,9 @@ import AdminAnalytics from '../screens/AdminAnalytics';
 import CleanupSubmissionScreen from '../screens/CleanupSubmissionScreen';
 import UserManagement from '../screens/UserManagement';
 import MapScreen from '../screens/MapScreen';
+import LiveMapScreen from '../screens/LiveMapScreen';
+// Map screens - keeping only main ones
+// import ConsoleMapTest from '../screens/ConsoleMapTest';
 import WalletScreen from '../screens/WalletScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import TrashHeroMissions from '../screens/TrashHeroMissions';
@@ -69,6 +72,9 @@ const AppNavigator: React.FC = () => {
       <Stack.Screen name="EcoNewsScreen" component={EcoNewsScreen} />
       <Stack.Screen name="EcoStationQuest" component={EcoStationQuest} />
       <Stack.Screen name="MapScreen" component={MapScreen} />
+      <Stack.Screen name="LiveMapScreen" component={LiveMapScreen} />
+      {/* Map screens - keeping only main ones */}
+      {/* <Stack.Screen name="ConsoleMapTest" component={ConsoleMapTest} /> */}
       <Stack.Screen name="WalletScreen" component={WalletScreen} />
       <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
       <Stack.Screen name="Analytics" component={Analytics} />

@@ -15,6 +15,7 @@ import UnifiedHeroDashboard from '../screens/UnifiedHeroDashboard';
 import EcoDefenderDashboard from '../screens/EcoDefenderDashboard';
 import AdminDashboard from '../screens/AdminDashboard';
 import MapScreen from '../screens/MapScreen';
+import LiveMapScreen from '../screens/LiveMapScreen';
 import WalletScreen from '../screens/WalletScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import TrashHeroMissions from '../screens/TrashHeroMissions';
@@ -174,7 +175,7 @@ const TabNavigator: React.FC = () => {
       {shouldShowTab('Map') && (
         <Tab.Screen 
           name="Map" 
-          component={MapScreen}
+          component={LiveMapScreen}
           options={{
             tabBarLabel: 'Map',
           }}

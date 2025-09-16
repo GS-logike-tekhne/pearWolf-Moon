@@ -4,7 +4,6 @@ import { Mission } from '../../types/missions';
 import { useTheme } from '../../context/ThemeContext';
 import { THEME } from '../../styles/theme';
 import { getRoleColor } from '../../utils/roleColors';
-import MissionCardHeader from './MissionCardHeader';
 import MissionCardContent from './MissionCardContent';
 import MissionCardActions from './MissionCardActions';
 import MissionDetailsModal from './MissionDetailsModal';
@@ -86,7 +85,6 @@ const MissionCard: React.FC<MissionCardProps> = ({
         onPress={() => setShowDetailsModal(true)}
         activeOpacity={0.7}
       >
-        <MissionCardHeader mission={mission} isCompleted={isCompleted} />
         <MissionCardContent mission={mission} />
         <MissionCardActions
           mission={mission}

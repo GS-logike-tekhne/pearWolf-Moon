@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -7,9 +7,10 @@ import {
   TouchableOpacity,
   Alert,
   Dimensions,
+  Animated,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { Marker, PROVIDER_GOOGLE, PROVIDER_DEFAULT } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { getRoleColor } from '../utils/roleColors';
 import { mockVerifiedMissions } from '../utils/mockData';
@@ -17,8 +18,8 @@ import { useTheme } from '../context/ThemeContext';
 import { THEME } from '../styles/theme';
 import { missionsAPI, Mission, apiUtils } from '../services/api';
 import ScreenLayout from '../components/ScreenLayout';
-import UnifiedHeader from '../components/UnifiedHeader';
 import MenuModal from '../components/MenuModal';
+import UnifiedHeader from '../components/UnifiedHeader';
 import { useRoleManager } from '../hooks/useRoleManager';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
@@ -56,6 +57,10 @@ const MapScreen: React.FC<MapScreenProps> = ({ navigation, route }) => {
   const [selectedMission, setSelectedMission] = useState<Mission | null>(null);
   const [selectedVerifiedMission, setSelectedVerifiedMission] = useState<any>(null);
   const [showMenuModal, setShowMenuModal] = useState(false);
+  
+  // Animation refs
+  const pulseAnim = useRef(new Animated.Value(1)).current;
+  const bounceAnim = useRef(new Animated.Value(0)).current;
 
   // Trash Encounter state
   const [selectedTrashEncounter, setSelectedTrashEncounter] = useState<TrashEncounter | null>(null);
@@ -187,11 +192,13 @@ const MapScreen: React.FC<MapScreenProps> = ({ navigation, route }) => {
   const loadMissions = async () => {
     try {
       setIsLoading(true);
+      console.log('Loading missions...');
       
       // Try API first, fallback to mock data
       try {
         const response = await missionsAPI.getAvailableMissions();
         if (response.success && response.data) {
+          console.log('API missions loaded:', response.data.length);
           setMissions(response.data);
           return;
         }
@@ -200,6 +207,7 @@ const MapScreen: React.FC<MapScreenProps> = ({ navigation, route }) => {
       }
       
       // Use mock data
+      console.log('Using mock missions:', mockMissions.length);
       setMissions(mockMissions);
     } catch (error) {
       console.error('Error loading missions:', error);
@@ -212,6 +220,54 @@ const MapScreen: React.FC<MapScreenProps> = ({ navigation, route }) => {
   useEffect(() => {
     getCurrentLocation();
     loadMissions();
+    
+    // Fallback: ensure missions are loaded after a delay
+    const fallbackTimer = setTimeout(() => {
+      if (missions.length === 0) {
+        console.log('Fallback: Loading mock missions');
+        setMissions(mockMissions);
+      }
+    }, 2000);
+    
+    // Start pulsing animation for user marker
+    const pulseAnimation = Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, {
+          toValue: 1.3,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulseAnim, {
+          toValue: 1,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+      ])
+    );
+    pulseAnimation.start();
+    
+    // Start bounce animation for mission markers
+    const bounceAnimation = Animated.loop(
+      Animated.sequence([
+        Animated.timing(bounceAnim, {
+          toValue: 1,
+          duration: 2000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(bounceAnim, {
+          toValue: 0,
+          duration: 2000,
+          useNativeDriver: true,
+        }),
+      ])
+    );
+    bounceAnimation.start();
+    
+    return () => {
+      pulseAnimation.stop();
+      bounceAnimation.stop();
+      clearTimeout(fallbackTimer);
+    };
   }, []);
 
   const getMissionIcon = (priority: Mission['priority']) => {
@@ -364,29 +420,30 @@ const MapScreen: React.FC<MapScreenProps> = ({ navigation, route }) => {
 
   return (
     <ScreenLayout scrollable={false} padding={{ horizontal: 0, vertical: 0 }}>
+      {/* Unified Header */}
       <UnifiedHeader
-        title="Mission Map"
-        subtitle={`${missions.length} active missions nearby`}
-        role={role}
         onMenuPress={() => setShowMenuModal(true)}
-        onNotificationPress={() => {}}
-        onProfilePress={() => {}}
-        showBackButton={true}
-        onBackPress={handleBack}
-        rightIcon="refresh"
-        onRightIconPress={loadMissions}
+        role={role || 'TRASH_HERO'}
+        onNotificationPress={() => navigation.navigate('Notifications')}
+        onProfilePress={() => navigation.navigate('ProfileScreen', { 
+          role: role || 'TRASH_HERO',
+          onSignOut: () => navigation.navigate('Login')
+        })}
       />
 
       {/* Map View */}
       <View style={styles.mapContainer}>
         <MapView
-          provider={PROVIDER_GOOGLE}
+          provider={PROVIDER_DEFAULT}
           style={styles.map}
           initialRegion={initialRegion}
           showsUserLocation={true}
           showsMyLocationButton={true}
           showsCompass={true}
           showsScale={true}
+          onMapReady={() => {
+            console.log('MapScreen map is ready!');
+          }}
         >
           {/* User Location Marker */}
           {userLocation && (
@@ -398,13 +455,23 @@ const MapScreen: React.FC<MapScreenProps> = ({ navigation, route }) => {
               title="Your Location"
               description="You are here"
             >
-              <View style={[styles.userMarker, { backgroundColor: getRoleColor(role) }]}>
+              <Animated.View 
+                style={[
+                  styles.userMarker as any, 
+                  { 
+                    backgroundColor: getRoleColor(role),
+                    transform: [{ scale: pulseAnim }]
+                  }
+                ]}
+              >
                 <Ionicons name="person" size={20} color="white" />
-              </View>
+                <View style={[styles.userMarkerPulse, { backgroundColor: getRoleColor(role) }]} />
+              </Animated.View>
             </Marker>
           )}
 
           {/* Regular Mission Markers */}
+          {console.log('Rendering missions:', missions.length, missions)}
           {missions.map((mission) => {
             const icon = getMissionIcon(mission.priority);
             const distance = userLocation 
@@ -427,9 +494,21 @@ const MapScreen: React.FC<MapScreenProps> = ({ navigation, route }) => {
                   setSelectedVerifiedMission(null);
                 }}
               >
-                <View style={[styles.missionMarker, { backgroundColor: icon.color }]}>
+                <Animated.View 
+                  style={[
+                    styles.missionMarker as any, 
+                    { 
+                      backgroundColor: icon.color,
+                      transform: [{ translateY: bounceAnim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0, -5]
+                      })}]
+                    }
+                  ]}
+                >
                   <Ionicons name={icon.name} size={16} color="white" />
-                </View>
+                  <View style={[styles.missionMarkerGlow, { backgroundColor: icon.color }]} />
+                </Animated.View>
               </Marker>
             );
           })}
@@ -456,14 +535,25 @@ const MapScreen: React.FC<MapScreenProps> = ({ navigation, route }) => {
                   setSelectedMission(null);
                 }}
               >
-                <View style={styles.verifiedMissionMarker}>
+                <Animated.View 
+                  style={[
+                    styles.verifiedMissionMarker as any,
+                    {
+                      transform: [{ scale: bounceAnim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [1, 1.1]
+                      })}]
+                    }
+                  ]}
+                >
                   <View style={styles.verifiedMissionInner}>
                     <Ionicons name="shield-checkmark" size={18} color="white" />
+                    <View style={styles.verifiedMissionGlow} />
                   </View>
                   <View style={styles.verifiedMissionBadge}>
                     <Text style={styles.verifiedMissionText}>🍐</Text>
                   </View>
-                </View>
+                </Animated.View>
               </Marker>
             );
           })}
@@ -486,6 +576,30 @@ const MapScreen: React.FC<MapScreenProps> = ({ navigation, route }) => {
             />
           ))}
         </MapView>
+        
+        {/* Floating Action Buttons */}
+        <View style={styles.fabContainer}>
+          <TouchableOpacity 
+            style={[styles.fab, { backgroundColor: getRoleColor(role) }]}
+            onPress={getCurrentLocation}
+          >
+            <Ionicons name="locate" size={24} color="white" />
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={[styles.fab, { backgroundColor: '#9AE630' }]}
+            onPress={loadMissions}
+          >
+            <Ionicons name="refresh" size={24} color="white" />
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={[styles.fab, { backgroundColor: '#FF6B6B' }]}
+            onPress={() => navigation.navigate('SuggestCleanup')}
+          >
+            <Ionicons name="add" size={24} color="white" />
+          </TouchableOpacity>
+        </View>
         </View>
         
       {/* PEAR Verified Mission Details Panel */}
@@ -688,8 +802,15 @@ const MapScreen: React.FC<MapScreenProps> = ({ navigation, route }) => {
       <MenuModal
         visible={showMenuModal}
         onClose={() => setShowMenuModal(false)}
-        navigation={navigation}
-        role={role}
+        userRole={role}
+        userName="Map User"
+        userLevel={1}
+        onNavigate={(screen, params) => {
+          navigation.navigate(screen, params);
+        }}
+        onSignOut={() => {
+          navigation.navigate('Login');
+        }}
       />
     </ScreenLayout>
   );
@@ -718,22 +839,52 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   userMarker: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     backgroundColor: '#3b82f6',
-    borderWidth: 3,
-    borderColor: 'white',
-  },
-  missionMarker: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    backgroundColor: '#10b981',
-    borderWidth: 2,
+    borderWidth: 4,
     borderColor: 'white',
     justifyContent: 'center',
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+    position: 'relative',
+  },
+  userMarkerPulse: {
+    position: 'absolute',
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    opacity: 0.3,
+    zIndex: -1,
+  },
+  missionMarker: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: '#10b981',
+    borderWidth: 3,
+    borderColor: 'white',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.4,
+    shadowRadius: 6,
+    elevation: 6,
+    position: 'relative',
+  },
+  missionMarkerGlow: {
+    position: 'absolute',
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    opacity: 0.2,
+    zIndex: -1,
   },
   verifiedMissionMarker: {
     width: 40,
@@ -743,19 +894,29 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   verifiedMissionInner: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     backgroundColor: '#10b981',
-    borderWidth: 3,
+    borderWidth: 4,
     borderColor: 'white',
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 5,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 8,
+    elevation: 8,
+    position: 'relative',
+  },
+  verifiedMissionGlow: {
+    position: 'absolute',
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#10b981',
+    opacity: 0.2,
+    zIndex: -1,
   },
   verifiedMissionBadge: {
     position: 'absolute',
@@ -951,6 +1112,25 @@ const styles = StyleSheet.create({
   jobDistance: {
     color: '#bfdbfe',
     fontSize: THEME.TYPOGRAPHY.fontSize.xs,
+  },
+  fabContainer: {
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+    flexDirection: 'column',
+    gap: 12,
+  },
+  fab: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
   },
 });
 

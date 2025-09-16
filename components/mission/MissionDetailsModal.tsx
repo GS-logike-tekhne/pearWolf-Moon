@@ -173,9 +173,9 @@ const MissionDetailsModal: React.FC<MissionDetailsModalProps> = ({
               Rewards
             </Text>
             <View style={styles.rewardsList}>
-              <View style={styles.rewardItem}>
-                <Text style={[styles.rewardIcon, { color: roleColor }]}>⭐</Text>
-                <Text style={[styles.rewardText, { color: theme.textColor }]}>
+              <View style={[styles.rewardItem, styles.xpRewardItem]}>
+                <Text style={[styles.rewardIcon, { color: '#FFD700' }]}>⭐</Text>
+                <Text style={[styles.rewardText, styles.xpRewardText]}>
                   {mission.xpReward} XP Points
                 </Text>
               </View>
@@ -355,6 +355,16 @@ const styles = StyleSheet.create({
   rewardText: {
     fontSize: THEME.TYPOGRAPHY.fontSize.base,
     fontWeight: '600',
+  },
+  xpRewardItem: {
+    backgroundColor: 'rgba(255, 215, 0, 0.6)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+  },
+  xpRewardText: {
+    color: '#FFFFFF',
+    fontWeight: '700',
   },
   footer: {
     padding: THEME.SPACING.md,

@@ -14,9 +14,10 @@ import { useTheme } from "../context/ThemeContext";
 import { THEME } from '../styles/theme';
 import { useAuth } from "../context/AuthContext";
 import { useRoleManager } from "../hooks/useRoleManager";
-import UnifiedHeader from "../components/UnifiedHeader";
+import { useXP } from "../hooks/useXP";
 import MenuModal from "../components/MenuModal";
 import PEARScreen from "../components/PEARScreen";
+import UnifiedHeader from "../components/UnifiedHeader";
 import { UserRole } from "../types/roles";
 
 const { width } = Dimensions.get('window');
@@ -33,7 +34,12 @@ const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({
   const { theme } = useTheme();
   const { user, isAuthenticated, logout } = useAuth();
   const { currentRole, toggleHeroRoles, getRoleConfig } = useRoleManager();
+  const { currentLevel, getXPSummary } = useXP();
   const [showMenu, setShowMenu] = useState(false);
+  
+  // Get XP data
+  const xpSummary = getXPSummary();
+  const xpTotal = xpSummary.totalXP;
   
   // Debug logging
   console.log('UnifiedHeroDashboard: Rendering with role:', currentRole);
@@ -57,13 +63,13 @@ const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({
     };
   }
   
-  // Extend role config with additional properties
+  // Extend role config with additional properties using actual XP data
   const roleConfig = {
     ...baseRoleConfig,
-    level: 6,
-    points: 2450,
-    progress: 85,
-    nextLevelPoints: 150,
+    level: currentLevel.level,
+    points: xpTotal,
+    progress: Math.min((xpTotal % 1000) / 10, 100),
+    nextLevelPoints: 1000 - (xpTotal % 1000),
     badgeIcon: '🏆',
     badge: 'Eco Champion',
   };
@@ -80,31 +86,31 @@ const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({
         return [
           { label: 'Jobs Completed', value: '47', icon: 'briefcase', color: getRoleColor('trash-hero') },
           { label: 'Total Earned', value: '$2,340', icon: 'cash', color: getRoleColor('trash-hero') },
-          { label: 'Success Rate', value: '97%', icon: 'trophy', color: '#8b5cf6' },
+          { label: 'Success Rate', value: '97%', icon: 'trophy', color: '#4CAF50' },
         ];
       case 'IMPACT_WARRIOR':
         return [
           { label: 'Events Joined', value: '34', icon: 'people', color: getRoleColor('impact-warrior') },
           { label: 'Volunteer Hours', value: '128h', icon: 'time', color: getRoleColor('impact-warrior') },
-          { label: 'Impact Score', value: '4.9★', icon: 'star', color: '#8b5cf6' },
+          { label: 'Impact Score', value: '4.9★', icon: 'star', color: '#4CAF50' },
         ];
       case 'ECO_DEFENDER':
         return [
           { label: 'Jobs Created', value: '47', icon: 'briefcase', color: getRoleColor('eco-defender') },
           { label: 'CO₂ Offset', value: '850 kg', icon: 'leaf', color: getRoleColor('eco-defender') },
-          { label: 'ESG Rank', value: '#8', icon: 'trophy', color: '#8b5cf6' },
+          { label: 'ESG Rank', value: '#8', icon: 'trophy', color: '#4CAF50' },
         ];
       case 'ADMIN':
         return [
           { label: 'Users Managed', value: '1,247', icon: 'people', color: getRoleColor('admin') },
           { label: 'Issues Resolved', value: '156', icon: 'checkmark-circle', color: getRoleColor('admin') },
-          { label: 'Platform Health', value: '98%', icon: 'analytics', color: '#8b5cf6' },
+          { label: 'Platform Health', value: '98%', icon: 'analytics', color: '#4CAF50' },
         ];
       default:
         return [
           { label: 'Activities', value: '0', icon: 'star', color: theme.primary },
           { label: 'Points', value: '0', icon: 'trophy', color: theme.primary },
-          { label: 'Level', value: '1', icon: 'ribbon', color: '#8b5cf6' },
+          { label: 'Level', value: '1', icon: 'ribbon', color: '#4CAF50' },
         ];
     }
   };
@@ -118,7 +124,7 @@ const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({
           { title: 'My Earnings', icon: 'wallet', color: '#FF9800', onPress: () => navigation.navigate('TrashHeroEarnings') },
           { title: 'Performance', icon: 'analytics', color: getRoleColor('trash-hero'), onPress: () => navigation.navigate('TrashHeroEarnings') },
           { title: 'Map View', icon: 'map', color: getRoleColor('trash-hero'), onPress: () => navigation.navigate('MapScreen') },
-          { title: 'My Badges', icon: 'medal', color: '#8b5cf6', onPress: () => navigation.navigate('BadgeSystem', { userRole: 'TRASH_HERO' }) },
+          { title: 'My Badges', icon: 'medal', color: '#4CAF50', onPress: () => navigation.navigate('BadgeSystem', { userRole: 'TRASH_HERO' }) },
           { title: 'Profile', icon: 'person', color: theme.secondaryText, onPress: () => navigation.navigate('ProfileScreen') },
         ];
       case 'IMPACT_WARRIOR':
@@ -127,14 +133,14 @@ const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({
           { title: 'Restoration Lab', icon: 'flask', color: '#f97316', onPress: () => navigation.navigate('ParkRestorationLab') },
           { title: 'My Impact', icon: 'analytics', color: getRoleColor('impact-warrior'), onPress: () => navigation.navigate('ImpactWarriorImpact') },
           { title: 'PEAR Verified Missions', icon: 'people', color: getRoleColor('impact-warrior'), onPress: () => navigation.navigate('PearVerifiedMissions') },
-          { title: 'My Badges', icon: 'medal', color: '#8b5cf6', onPress: () => navigation.navigate('BadgeSystem', { userRole: 'IMPACT_WARRIOR' }) },
+          { title: 'My Badges', icon: 'medal', color: '#4CAF50', onPress: () => navigation.navigate('BadgeSystem', { userRole: 'IMPACT_WARRIOR' }) },
           { title: 'Profile', icon: 'person', color: theme.secondaryText, onPress: () => navigation.navigate('ProfileScreen') },
         ];
       case 'ECO_DEFENDER':
         return [
           { title: 'Post New Job', icon: 'add-circle', color: getRoleColor('eco-defender'), onPress: () => navigation.navigate('PostJob') },
           { title: 'Manage Missions', icon: 'list', color: getRoleColor('eco-defender'), onPress: () => navigation.navigate('EcoDefenderMissions') },
-          { title: 'Eco Missions', icon: 'rocket', color: '#8b5cf6', onPress: () => navigation.navigate('EcoDefenderMissions') },
+          { title: 'Eco Missions', icon: 'rocket', color: '#4CAF50', onPress: () => navigation.navigate('EcoDefenderMissions') },
           { title: 'Fund Wallet', icon: 'card', color: '#FF9800', onPress: () => navigation.navigate('WalletScreen', { role: 'eco-defender' }) },
           { title: 'View Impact', icon: 'analytics', color: '#FF9800', onPress: () => navigation.navigate('EcoDefenderImpact') },
           { title: 'View Map', icon: 'map', color: getRoleColor('eco-defender'), onPress: () => navigation.navigate('MapScreen') },
@@ -145,7 +151,7 @@ const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({
           { title: 'User Management', icon: 'people', color: getRoleColor('admin'), onPress: () => navigation.navigate('UserManagement') },
           { title: 'Issue Resolution', icon: 'warning', color: '#F44336', onPress: () => navigation.navigate('AdminIssueResolution') },
           { title: 'Mission Control', icon: 'desktop', color: getRoleColor('admin'), onPress: () => navigation.navigate('AdminMissionControl') },
-          { title: 'Analytics', icon: 'bar-chart', color: '#8b5cf6', onPress: () => navigation.navigate('Analytics') },
+          { title: 'Analytics', icon: 'bar-chart', color: '#4CAF50', onPress: () => navigation.navigate('Analytics') },
           { title: 'Settings', icon: 'settings', color: theme.secondaryText, onPress: () => navigation.navigate('AdminSettings') },
         ];
       default:
@@ -283,26 +289,27 @@ const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({
   );
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
-      <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
-      <PEARScreen
-        title="Dashboard"
-        role={activeRole || 'TRASH_HERO'}
-        showHeader={true}
-        showScroll={true}
-        enableRefresh={true}
-        onRefresh={() => {
-          // Refresh dashboard data
-          console.log('Refreshing dashboard...');
-        }}
-        refreshing={false}
-      >
+    <PEARScreen
+      title="Dashboard"
+      role={activeRole || 'TRASH_HERO'}
+      showHeader={false}
+      showScroll={true}
+      enableRefresh={true}
+      onRefresh={() => {
+        // Refresh dashboard data
+        console.log('Refreshing dashboard...');
+      }}
+      refreshing={false}
+      navigation={navigation}
+      backgroundColor="white"
+    >
+      {/* Unified Header */}
       <UnifiedHeader
         onMenuPress={() => setShowMenu(true)}
-        role={activeRole}
-        points={roleConfig.points}
+        role={activeRole || 'TRASH_HERO'}
         onNotificationPress={() => navigation.navigate('Notifications')}
         onProfilePress={() => navigation.navigate('ProfileScreen', { 
+          role: activeRole || 'TRASH_HERO',
           onSignOut: () => navigation.navigate('Login')
         })}
       />
@@ -474,7 +481,6 @@ const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({
         }}
       />
     </PEARScreen>
-    </SafeAreaView>
   );
 };
 

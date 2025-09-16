@@ -13,7 +13,6 @@ import { THEME } from '../styles/theme';
 import PEARScreen from '../components/PEARScreen';
 import { useAuth } from '../context/AuthContext';
 import MenuModal from '../components/MenuModal';
-import UnifiedHeader from '../components/UnifiedHeader';
 import { RoleGuard } from '../components/RoleGuard';
 
 const { width } = Dimensions.get('window');
@@ -143,17 +142,6 @@ const EcoDefenderDashboard: React.FC<EcoDefenderDashboardProps> = ({ navigation 
         }}
         refreshing={false}
       >
-        {/* Unified Header */}
-        <UnifiedHeader
-          onMenuPress={() => setShowMenu(true)}
-          role={userRole}
-          points={roleConfig.points}
-          onNotificationPress={() => navigation.navigate('Notifications')}
-          onProfilePress={() => navigation.navigate('ProfileScreen', { 
-            role: 'eco-defender',
-            onSignOut: () => navigation.navigate('Login')
-          })}
-        />
         {/* My Card Section */}
         <View style={[styles.myCard, { backgroundColor: theme.cardBackground }]}>
           <View style={styles.cardHeader}>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,80 +7,141 @@ import {
   TouchableOpacity,
   TextInput,
   Dimensions,
+  RefreshControl,
+  Animated,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { getRoleColor } from '../utils/roleColors';
 import { useTheme } from '../context/ThemeContext';
+import { useAuth } from '../context/AuthContext';
 import { THEME } from '../styles/theme';
-import PEARScreen from '../components/PEARScreen';
+import ScreenLayout from '../components/ScreenLayout';
 import MenuModal from '../components/MenuModal';
+import UnifiedHeader from '../components/UnifiedHeader';
 
 const { width } = Dimensions.get('window');
 
 const ImpactWarriorMissions = ({ navigation }: any) => {
   const { theme } = useTheme();
+  const { user } = useAuth();
   const [showMenu, setShowMenu] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFilter, setSelectedFilter] = useState('all');
+  const [refreshing, setRefreshing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const fadeAnim = useState(new Animated.Value(0))[0];
   
-  const missions = [
+  const [missions, setMissions] = useState([
     {
       id: 1,
       title: 'Community Beach Day',
       location: 'Venice Beach',
       date: 'Saturday, 9:00 AM',
-      ecoPoints: '120 points',
+      ecoPoints: 120,
       duration: '4 hours',
       type: 'community',
       impact: 'high',
       volunteers: 24,
+      maxVolunteers: 50,
       description: 'Join fellow warriors for a massive community cleanup to protect our marine ecosystem.',
       organizer: 'Ocean Guardians Coalition',
-      category: 'Marine Conservation'
+      category: 'Marine Conservation',
+      status: 'available',
+      distance: '2.3 km',
+      difficulty: 'medium',
+      requirements: ['Gloves', 'Water bottle', 'Comfortable shoes'],
+      rewards: ['Eco points', 'Community badge', 'Ocean protector certificate']
     },
     {
       id: 2,
       title: 'Urban Forest Restoration',
       location: 'Griffith Park',
       date: 'Sunday, 8:00 AM',
-      ecoPoints: '95 points',
+      ecoPoints: 95,
       duration: '5 hours',
       type: 'conservation',
       impact: 'high',
       volunteers: 18,
+      maxVolunteers: 30,
       description: 'Help restore native habitat by removing invasive species and planting native trees.',
       organizer: 'City Conservation Team',
-      category: 'Forest Restoration'
+      category: 'Forest Restoration',
+      status: 'available',
+      distance: '5.1 km',
+      difficulty: 'hard',
+      requirements: ['Work gloves', 'Sturdy boots', 'Long pants'],
+      rewards: ['Eco points', 'Tree planter badge', 'Conservation certificate']
     },
     {
       id: 3,
       title: 'Neighborhood Cleanup Drive',
       location: 'Westwood Village',
       date: 'Next Monday, 3:00 PM',
-      ecoPoints: '75 points',
+      ecoPoints: 75,
       duration: '2 hours',
       type: 'community',
       impact: 'medium',
       volunteers: 12,
+      maxVolunteers: 25,
       description: 'Quick neighborhood cleanup to maintain our community spaces.',
       organizer: 'Westwood Residents Assoc.',
-      category: 'Community Care'
+      category: 'Community Care',
+      status: 'available',
+      distance: '1.2 km',
+      difficulty: 'easy',
+      requirements: ['Trash bags', 'Grabber tool'],
+      rewards: ['Eco points', 'Community helper badge']
     },
     {
       id: 4,
       title: 'River Trail Restoration',
       location: 'LA River Trail',
       date: 'Next Wednesday, 7:00 AM',
-      ecoPoints: '85 points',
+      ecoPoints: 85,
       duration: '3 hours',
       type: 'conservation',
       impact: 'high',
       volunteers: 8,
+      maxVolunteers: 20,
       description: 'Early morning mission to restore critical river ecosystem pathways.',
       organizer: 'River Restoration Alliance',
-      category: 'Water Conservation'
+      category: 'Water Conservation',
+      status: 'available',
+      distance: '3.7 km',
+      difficulty: 'medium',
+      requirements: ['Waterproof boots', 'Rain jacket', 'Work gloves'],
+      rewards: ['Eco points', 'River guardian badge', 'Water conservation certificate']
+    },
+    {
+      id: 5,
+      title: 'Wildlife Habitat Cleanup',
+      location: 'Malibu Creek State Park',
+      date: 'Next Friday, 6:00 AM',
+      ecoPoints: 110,
+      duration: '6 hours',
+      type: 'conservation',
+      impact: 'high',
+      volunteers: 6,
+      maxVolunteers: 15,
+      description: 'Help protect wildlife by cleaning up critical habitat areas and removing harmful debris.',
+      organizer: 'Wildlife Protection Society',
+      category: 'Wildlife Conservation',
+      status: 'available',
+      distance: '12.5 km',
+      difficulty: 'hard',
+      requirements: ['Hiking boots', 'Binoculars', 'Field guide'],
+      rewards: ['Eco points', 'Wildlife protector badge', 'Nature conservation certificate']
     }
-  ];
+  ]);
+
+  useEffect(() => {
+    // Animate content on load
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 800,
+      useNativeDriver: true,
+    }).start();
+  }, []);
 
   const getImpactColor = (impact: string) => {
     switch (impact) {
@@ -97,8 +158,26 @@ const ImpactWarriorMissions = ({ navigation }: any) => {
       case 'Forest Restoration': return '#10b981';
       case 'Community Care': return '#8b5cf6';
       case 'Water Conservation': return '#06b6d4';
+      case 'Wildlife Conservation': return '#f59e0b';
       default: return '#64748b';
     }
+  };
+
+  const getDifficultyColor = (difficulty: string) => {
+    switch (difficulty) {
+      case 'easy': return '#10b981';
+      case 'medium': return '#f59e0b';
+      case 'hard': return '#dc2626';
+      default: return '#64748b';
+    }
+  };
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    // Simulate API call
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 1500);
   };
 
   const filteredMissions = missions.filter(mission => {
@@ -114,98 +193,157 @@ const ImpactWarriorMissions = ({ navigation }: any) => {
     { id: 'conservation', label: 'Conservation', icon: 'leaf' }
   ];
 
+  const sortOptions = [
+    { id: 'distance', label: 'Distance', icon: 'location' },
+    { id: 'points', label: 'Eco Points', icon: 'trophy' },
+    { id: 'date', label: 'Date', icon: 'calendar' },
+    { id: 'impact', label: 'Impact', icon: 'trending-up' }
+  ];
+
   const MissionCard = ({ mission }: any) => (
-    <TouchableOpacity 
-      style={[
-        styles.missionCard, 
-        { 
-          backgroundColor: theme.cardBackground,
-          borderColor: theme.borderColor, 
-        }
-      ]}
-    >
-      <View style={styles.missionHeader}>
-        <View style={styles.missionTitleSection}>
-          <Text style={[styles.missionTitle, { color: theme.textColor }]}>
-            {mission.title}
-          </Text>
-          <View style={styles.badgeContainer}>
-            <View style={[styles.volunteerBadge, { backgroundColor: theme.primary }]}>
-              <Ionicons name="heart" size={12} color="white" />
-              <Text style={styles.volunteerBadgeText}>VOLUNTEER</Text>
-            </View>
-            <View style={[
-              styles.impactBadge,
-              { backgroundColor: getImpactColor(mission.impact) }
-            ]}>
-              <Text style={styles.impactBadgeText}>
-                {mission.impact.toUpperCase()} IMPACT
-              </Text>
+    <Animated.View style={{ opacity: fadeAnim }}>
+      <TouchableOpacity 
+        style={[
+          styles.missionCard, 
+          { 
+            backgroundColor: theme.cardBackground,
+            borderColor: theme.borderColor, 
+          }
+        ]}
+        onPress={() => {
+          navigation.navigate('JobDetails', { mission });
+        }}
+        activeOpacity={0.8}
+      >
+        {/* Mission Header */}
+        <View style={styles.missionHeader}>
+          <View style={styles.missionTitleSection}>
+            <Text style={[styles.missionTitle, { color: theme.textColor }]}>
+              {mission.title}
+            </Text>
+            <View style={styles.badgeContainer}>
+              <View style={[styles.volunteerBadge, { backgroundColor: theme.primary }]}>
+                <Ionicons name="heart" size={12} color="white" />
+                <Text style={styles.volunteerBadgeText}>VOLUNTEER</Text>
+              </View>
+              <View style={[
+                styles.impactBadge,
+                { backgroundColor: getImpactColor(mission.impact) }
+              ]}>
+                <Text style={styles.impactBadgeText}>
+                  {mission.impact.toUpperCase()} IMPACT
+                </Text>
+              </View>
             </View>
           </View>
         </View>
-      </View>
-      
-      <View style={[styles.categoryBadge, { backgroundColor: getCategoryColor(mission.category) }]}>
-        <Text style={styles.categoryBadgeText}>{mission.category}</Text>
-      </View>
+        
+        {/* Category and Difficulty */}
+        <View style={styles.categoryRow}>
+          <View style={[styles.categoryBadge, { backgroundColor: getCategoryColor(mission.category) }]}>
+            <Text style={styles.categoryBadgeText}>{mission.category}</Text>
+          </View>
+          <View style={[styles.difficultyBadge, { backgroundColor: getDifficultyColor(mission.difficulty) }]}>
+            <Text style={styles.difficultyBadgeText}>
+              {mission.difficulty.toUpperCase()}
+            </Text>
+          </View>
+        </View>
 
-      <Text style={[styles.missionDescription, { color: theme.secondaryText }]}>
-        {mission.description}
-      </Text>
-      
-      <View style={styles.missionDetails}>
-        <View style={styles.detailItem}>
-          <Ionicons name="location-outline" size={16} color={theme.secondaryText} />
-          <Text style={[styles.detailText, { color: theme.secondaryText }]}>
-            {mission.location}
-          </Text>
+        {/* Description */}
+        <Text style={[styles.missionDescription, { color: theme.secondaryText }]}>
+          {mission.description}
+        </Text>
+        
+        {/* Mission Details */}
+        <View style={styles.missionDetails}>
+          <View style={styles.detailItem}>
+            <Ionicons name="location-outline" size={16} color={theme.secondaryText} />
+            <Text style={[styles.detailText, { color: theme.secondaryText }]}>
+              {mission.location} • {mission.distance}
+            </Text>
+          </View>
+          <View style={styles.detailItem}>
+            <Ionicons name="time-outline" size={16} color={theme.secondaryText} />
+            <Text style={[styles.detailText, { color: theme.secondaryText }]}>
+              {mission.date} • {mission.duration}
+            </Text>
+          </View>
+          <View style={styles.detailItem}>
+            <Ionicons name="people-outline" size={16} color={theme.secondaryText} />
+            <Text style={[styles.detailText, { color: theme.secondaryText }]}>
+              {mission.volunteers}/{mission.maxVolunteers} warriors joined
+            </Text>
+          </View>
         </View>
-        <View style={styles.detailItem}>
-          <Ionicons name="time-outline" size={16} color={theme.secondaryText} />
-          <Text style={[styles.detailText, { color: theme.secondaryText }]}>
-            {mission.date}
-          </Text>
-        </View>
-        <View style={styles.detailItem}>
-          <Ionicons name="people-outline" size={16} color={theme.secondaryText} />
-          <Text style={[styles.detailText, { color: theme.secondaryText }]}>
-            {mission.volunteers} warriors joined
-          </Text>
-        </View>
-      </View>
 
-      <View style={styles.organizerSection}>
-        <Text style={[styles.organizerLabel, { color: theme.secondaryText }]}>
-          Organized by:
-        </Text>
-        <Text style={[styles.organizerName, { color: theme.primary }]}>
-          {mission.organizer}
-        </Text>
-      </View>
-      
-      <View style={styles.missionFooter}>
-        <View style={styles.pointsSection}>
-          <Ionicons name="trophy" size={18} color={theme.warning} />
-          <Text style={[styles.missionPoints, { color: theme.primary }]}>
-            {mission.ecoPoints}
-          </Text>
-          <Text style={[styles.missionDuration, { color: theme.secondaryText }]}>
-            • {mission.duration}
+        {/* Progress Bar */}
+        <View style={styles.progressSection}>
+          <View style={[styles.progressBar, { backgroundColor: theme.borderColor }]}>
+            <View 
+              style={[
+                styles.progressFill, 
+                { 
+                  backgroundColor: theme.primary,
+                  width: `${(mission.volunteers / mission.maxVolunteers) * 100}%`
+                }
+              ]} 
+            />
+          </View>
+          <Text style={[styles.progressText, { color: theme.secondaryText }]}>
+            {Math.round((mission.volunteers / mission.maxVolunteers) * 100)}% full
           </Text>
         </View>
-        <TouchableOpacity 
-          style={[styles.joinButton, { backgroundColor: theme.primary }]}
-          onPress={() => {
-            // Navigate to mission details or confirmation
-            navigation.navigate('JobDetails', { mission });
-          }}
-        >
-          <Text style={styles.joinButtonText}>Join Mission</Text>
-          <Ionicons name="add" size={16} color="white" />
-        </TouchableOpacity>
-      </View>
-    </TouchableOpacity>
+
+        {/* Organizer Section */}
+        <View style={styles.organizerSection}>
+          <Text style={[styles.organizerLabel, { color: theme.secondaryText }]}>
+            Organized by:
+          </Text>
+          <Text style={[styles.organizerName, { color: theme.primary }]}>
+            {mission.organizer}
+          </Text>
+        </View>
+        
+        {/* Mission Footer */}
+        <View style={styles.missionFooter}>
+          <View style={styles.pointsSection}>
+            <Ionicons name="trophy" size={18} color={theme.warning} />
+            <Text style={[styles.missionPoints, { color: theme.primary }]}>
+              {mission.ecoPoints} points
+            </Text>
+          </View>
+          <TouchableOpacity 
+            style={[
+              styles.joinButton, 
+              { 
+                backgroundColor: mission.volunteers >= mission.maxVolunteers 
+                  ? theme.borderColor 
+                  : theme.primary 
+              }
+            ]}
+            onPress={() => {
+              if (mission.volunteers < mission.maxVolunteers) {
+                navigation.navigate('JobDetails', { mission });
+              }
+            }}
+            disabled={mission.volunteers >= mission.maxVolunteers}
+          >
+            <Text style={[
+              styles.joinButtonText,
+              { color: mission.volunteers >= mission.maxVolunteers ? theme.secondaryText : 'white' }
+            ]}>
+              {mission.volunteers >= mission.maxVolunteers ? 'Full' : 'Join Mission'}
+            </Text>
+            <Ionicons 
+              name={mission.volunteers >= mission.maxVolunteers ? "lock-closed" : "add"} 
+              size={16} 
+              color={mission.volunteers >= mission.maxVolunteers ? theme.secondaryText : 'white'} 
+            />
+          </TouchableOpacity>
+        </View>
+      </TouchableOpacity>
+    </Animated.View>
   );
 
   const FilterChip = ({ filter }: any) => (
@@ -236,25 +374,30 @@ const ImpactWarriorMissions = ({ navigation }: any) => {
   );
 
   return (
-    <PEARScreen
-      title="Impact Warrior Missions"
-      role="IMPACT_WARRIOR"
-      showHeader={true}
-      showScroll={true}
-      enableRefresh={true}
-      onRefresh={() => {
-        // Refresh missions data
-        console.log('Refreshing ImpactWarrior missions...');
-      }}
-      refreshing={false}
-    >
-      {/* Menu Button */}
-      <TouchableOpacity 
-        style={styles.menuButton}
-        onPress={() => setShowMenu(true)}
+    <ScreenLayout scrollable={false} padding={{ horizontal: 0, vertical: 0 }}>
+      {/* Unified Header */}
+      <UnifiedHeader
+        onMenuPress={() => setShowMenu(true)}
+        role="IMPACT_WARRIOR"
+        onNotificationPress={() => navigation.navigate('Notifications')}
+        onProfilePress={() => navigation.navigate('ProfileScreen', { 
+          role: "IMPACT_WARRIOR",
+          onSignOut: () => navigation.navigate('Login')
+        })}
+      />
+
+      <ScrollView
+        style={styles.scrollContainer}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={[theme.primary]}
+            tintColor={theme.primary}
+          />
+        }
+        showsVerticalScrollIndicator={false}
       >
-        <Ionicons name="menu" size={24} color={theme.textColor} />
-      </TouchableOpacity>
         {/* Page Header */}
         <View style={styles.pageHeader}>
           <TouchableOpacity 
@@ -382,6 +525,7 @@ const ImpactWarriorMissions = ({ navigation }: any) => {
         </View>
 
         <View style={styles.bottomSpacing} />
+      </ScrollView>
 
       {/* Menu Modal */}
       <MenuModal
@@ -397,12 +541,15 @@ const ImpactWarriorMissions = ({ navigation }: any) => {
           navigation.navigate('Login');
         }}
       />
-    </PEARScreen>
+    </ScreenLayout>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+  },
+  scrollContainer: {
     flex: 1,
   },
   header: {
@@ -666,17 +813,47 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     // color: theme.background,
   },
+  categoryRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: THEME.SPACING.sm + 4,
+    gap: THEME.SPACING.sm,
+  },
   categoryBadge: {
-    alignSelf: 'flex-start',
     paddingHorizontal: 10,
     paddingVertical: THEME.SPACING.xs,
     borderRadius: THEME.BORDER_RADIUS.lg,
-    marginBottom: THEME.SPACING.sm + 4,
   },
   categoryBadgeText: {
     fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     fontWeight: '600',
-    // color: theme.background,
+    color: 'white',
+  },
+  difficultyBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: THEME.SPACING.xs,
+    borderRadius: THEME.BORDER_RADIUS.md,
+  },
+  difficultyBadgeText: {
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
+    fontWeight: '600',
+    color: 'white',
+  },
+  progressSection: {
+    marginBottom: THEME.SPACING.sm + 4,
+  },
+  progressBar: {
+    height: 6,
+    borderRadius: 3,
+    marginBottom: THEME.SPACING.xs,
+  },
+  progressFill: {
+    height: '100%',
+    borderRadius: 3,
+  },
+  progressText: {
+    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
+    textAlign: 'right',
   },
   missionDescription: {
     fontSize: THEME.TYPOGRAPHY.fontSize.sm,

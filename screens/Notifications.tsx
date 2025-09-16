@@ -11,7 +11,6 @@ import { getRoleColor } from '../utils/roleColors';
 import { useTheme } from '../context/ThemeContext';
 import { THEME } from '../styles/theme';
 import ScreenLayout from '../components/ScreenLayout';
-import UnifiedHeader from '../components/UnifiedHeader';
 import MenuModal from '../components/MenuModal';
 
 const Notifications = ({ navigation, route }: { navigation: any; route: any }) => {
@@ -95,16 +94,6 @@ const Notifications = ({ navigation, route }: { navigation: any; route: any }) =
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <UnifiedHeader
-        onMenuPress={() => setShowMenu(true)}
-        role={role}
-        points={role === 'admin' ? 0 : 1240}
-        onNotificationPress={() => {}}
-        onProfilePress={() => navigation.navigate('ProfileScreen', { 
-          role,
-          onSignOut: () => navigation.navigate('Login')
-        })}
-      />
       
       {/* Page Header */}
       <View style={[styles.pageHeader, { backgroundColor: theme.cardBackground }]}>

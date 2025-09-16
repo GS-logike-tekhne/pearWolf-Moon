@@ -102,7 +102,7 @@ const LevelUpModal: React.FC<LevelUpModalProps> = ({
 
   const getRoleColor = () => {
     switch (role) {
-      case 'TRASH_HERO': return '#28A745';
+      case 'TRASH_HERO': return '#4CAF50';
       case 'VOLUNTEER': return '#007bff';
       case 'BUSINESS': return '#8b5cf6';
       default: return theme.primary;
