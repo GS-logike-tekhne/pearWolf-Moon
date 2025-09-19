@@ -37,9 +37,9 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
   const getRoleColor = (userRole: UserRole): string => {
     switch (userRole) {
       case 'TRASH_HERO':
-        return '#4CAF50';
+        return '#90E31C';
       case 'IMPACT_WARRIOR':
-        return '#dc2626';
+        return '#FF4444';
       case 'ECO_DEFENDER':
         return '#2196F3';
       case 'ADMIN':

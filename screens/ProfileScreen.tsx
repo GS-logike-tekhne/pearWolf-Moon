@@ -5,6 +5,7 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { getRoleColor } from '../utils/roleColors';
@@ -25,154 +26,186 @@ const ProfileScreen = ({ navigation, route }: { navigation: any; route: any }) =
   const [showMenu, setShowMenu] = useState(false);
 
   // Use current role from role manager, fallback to route param, then default
-  const role = currentRole ? currentRole.toLowerCase().replace('_', '-') : 'impact-warrior';
+  const role = currentRole ? currentRole.toLowerCase().replace('_', '-') : 'trash-hero';
 
   // Generate wallet ID based on user and role
   const walletId = generateWalletId(user?.id || 1, role);
 
-
-  // Sample registration data - in real app this would come from user context/API
-  const registrationData = {
+  // Sample user data - in real app this would come from user context/API
+  const userData = {
     walletId: walletId,
-    name: user?.name || 'John Doe',
-    dateOfBirth: '1995-03-15',
-    email: user?.email || 'john.doe@email.com',
-    phoneNumber: '+1 (555) 123-4567',
-    verificationStatus: 'approved' // 'pending' or 'approved'
+    name: user?.name || 'Erin Chen',
+    username: 'erinchen',
+    email: user?.email || 'erin@example.com',
+    phoneNumber: '(123) 456-7890',
+    address: '123 Oak Street, Springfield, OH 45502',
+    dateOfBirth: 'Sept 18, 1990',
+    verificationStatus: 'approved',
+    jobsCompleted: 47,
+    hoursVolunteered: 128,
+    totalEarnings: 480
   };
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
-    });
-  };
-
-  const InfoRow = ({ label, value, icon, status }: { 
+  const InfoRow = ({ label, value, icon }: { 
     label: string; 
     value: string; 
-    icon: string; 
-    status?: 'pending' | 'approved' 
+    icon: string;
   }) => (
-    <View style={[styles.infoRow, { backgroundColor: theme.cardBackground }]}>
+    <View style={styles.infoRow}>
       <View style={styles.infoLeft}>
         <View style={[styles.iconContainer, { backgroundColor: `${getRoleColor(role)}20` }]}>
-          <Ionicons name={icon as any} size={20} color={getRoleColor(role)} />
+          <Ionicons name={icon as any} size={16} color={getRoleColor(role)} />
         </View>
-        <View style={styles.infoContent}>
-          <Text style={[styles.infoLabel, { color: theme.secondaryText }]}>{label}</Text>
-          <Text style={[styles.infoValue, { color: theme.textColor }]}>{value}</Text>
-        </View>
+        <Text style={styles.infoLabel}>{label}</Text>
       </View>
-      {status && (
-        <View style={[
-          styles.statusBadge, 
-          { backgroundColor: status === 'approved' ? theme.success : theme.warning }
-        ]}>
-          <Ionicons 
-            name={status === 'approved' ? 'checkmark' : 'time'} 
-            size={12} 
-            color="white" 
-          />
-          <Text style={styles.statusText}>
-            {status === 'approved' ? 'Verified' : 'Pending'}
-          </Text>
-        </View>
-      )}
+      <Text style={styles.infoValue}>{value}</Text>
     </View>
   );
 
   return (
-    <PEARScreen
-      title="Profile Information"
-      role={role.toUpperCase().replace('-', '_') as any}
-      showHeader={false}
-      showScroll={true}
-      enableRefresh={true}
-      onRefresh={() => {
-        console.log('Refreshing profile...');
-      }}
-      refreshing={false}
-      navigation={navigation}
-      backgroundColor="white"
-    >
-      {/* Unified Header */}
-      <UnifiedHeader
-        onMenuPress={() => setShowMenu(true)}
-        role={role.toUpperCase().replace('-', '_') as any}
-        onNotificationPress={() => navigation.navigate('Notifications')}
-        onProfilePress={() => navigation.goBack()}
-      />
+    <View style={styles.screenContainer}>
+      {/* Fixed Header */}
+      <View style={styles.fixedHeader}>
+        <UnifiedHeader
+          onMenuPress={() => setShowMenu(true)}
+          role={role.toUpperCase().replace('-', '_') as any}
+          onNotificationPress={() => navigation.navigate('Notifications')}
+          onProfilePress={() => navigation.goBack()}
+        />
+      </View>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Profile Card */}
-        <View style={[styles.profileCard, { backgroundColor: theme.cardBackground }]}>
-          <View style={[styles.profileHeader, { borderBottomColor: theme.borderColor }]}>
-            <View style={[styles.avatarContainer, { backgroundColor: getRoleColor(role) }]}>
-              <Ionicons 
-                name="person" 
-                size={32} 
-                color="white" 
-              />
-            </View>
-            <View style={styles.profileInfo}>
-              <Text style={[styles.profileName, { color: theme.textColor }]}>
-                {registrationData.name}
-              </Text>
-              <Text style={[styles.profileRole, { color: theme.secondaryText }]}>
-                {role === 'admin' ? 'Platform Administrator' :
-                 role === 'trash-hero' ? 'Trash Hero Professional' :
-                 role === 'business' ? 'EcoDefender Business' :
-                 'Impact Warrior Volunteer'}
-              </Text>
-            </View>
+      {/* Scrollable Content */}
+      <ScrollView 
+        style={styles.scrollableContent}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Account Info Card */}
+        <View style={[styles.card, styles.accountInfoCard]}>
+          <View style={styles.cardHeader}>
+            <Ionicons name="person-outline" size={20} color="#666" />
+            <Text style={styles.cardTitle}>Account Info</Text>
           </View>
-        </View>
-
-        {/* Registration Information */}
-        <View style={styles.sectionContainer}>
-          <Text style={[styles.sectionTitle, { color: theme.textColor }]}>
-            Registration Information
-          </Text>
           
           <View style={styles.infoContainer}>
             <InfoRow 
-              label="Wallet ID"
-              value={registrationData.walletId}
-              icon="card"
-            />
-            
-            <InfoRow 
-              label="Full Name"
-              value={registrationData.name}
+              label="Name"
+              value={userData.name}
               icon="person"
             />
-            
             <InfoRow 
-              label="Date of Birth"
-              value={formatDate(registrationData.dateOfBirth)}
-              icon="calendar"
+              label="Username"
+              value={userData.username}
+              icon="at"
             />
-            
             <InfoRow 
-              label="Email Address"
-              value={registrationData.email}
+              label="Email"
+              value={userData.email}
               icon="mail"
-              status={registrationData.verificationStatus as 'pending' | 'approved'}
             />
-            
             <InfoRow 
               label="Phone Number"
-              value={registrationData.phoneNumber}
+              value={userData.phoneNumber}
               icon="call"
-              status={registrationData.verificationStatus as 'pending' | 'approved'}
+            />
+            <InfoRow 
+              label="Address"
+              value={userData.address}
+              icon="location"
+            />
+            <InfoRow 
+              label="Date of Birth"
+              value={userData.dateOfBirth}
+              icon="calendar"
             />
           </View>
         </View>
 
-        <View style={styles.bottomSpacing} />
+        {/* Verification & Security Card */}
+        <View style={styles.card}>
+          <View style={styles.cardHeader}>
+            <Ionicons name="shield-checkmark-outline" size={20} color="#666" />
+            <Text style={styles.cardTitle}>Verification & Security</Text>
+          </View>
+          
+          <View style={styles.infoContainer}>
+            <InfoRow 
+              label="PEAR Verified"
+              value="✓"
+              icon="checkmark-circle"
+            />
+            <InfoRow 
+              label="Wallet ID"
+              value={userData.walletId}
+              icon="card"
+            />
+            <InfoRow 
+              label="Password"
+              value="••••••••"
+              icon="lock-closed"
+            />
+            <View style={styles.infoRow}>
+              <View style={styles.infoLeft}>
+                <View style={[styles.iconContainer, { backgroundColor: `${getRoleColor(role)}20` }]}>
+                  <Ionicons name="shield" size={16} color={getRoleColor(role)} />
+                </View>
+                <Text style={styles.infoLabel}>Two-Factor Authentication</Text>
+              </View>
+              <View style={[styles.toggleSwitch, { backgroundColor: getRoleColor(role) }]}>
+                <View style={styles.toggleKnob} />
+              </View>
+            </View>
+          </View>
+        </View>
+
+        {/* Stats Card */}
+        <View style={styles.card}>
+          <View style={styles.cardHeader}>
+            <Ionicons name="bar-chart-outline" size={20} color="#666" />
+            <Text style={styles.cardTitle}>Stats</Text>
+          </View>
+          
+          <View style={styles.statsContainer}>
+            <View style={styles.statItem}>
+              <Text style={[styles.statValue, { color: getRoleColor(role) }]}>{userData.jobsCompleted}</Text>
+              <Text style={styles.statLabel}>Jobs Completed</Text>
+            </View>
+            <View style={styles.statItem}>
+              <Text style={[styles.statValue, { color: getRoleColor(role) }]}>{userData.hoursVolunteered}</Text>
+              <Text style={styles.statLabel}>Hours Volunteered</Text>
+            </View>
+            <View style={styles.statItem}>
+              <Text style={[styles.statValue, { color: getRoleColor(role) }]}>${userData.totalEarnings}</Text>
+              <Text style={styles.statLabel}>Total Earnings</Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Quick Actions Card */}
+        <View style={styles.card}>
+          <View style={styles.cardHeader}>
+            <Ionicons name="flash-outline" size={20} color="#666" />
+            <Text style={styles.cardTitle}>Quick Actions</Text>
+          </View>
+          
+          <View style={styles.quickActionsContainer}>
+            <TouchableOpacity style={styles.quickActionButton}>
+              <Ionicons name="settings-outline" size={24} color={getRoleColor(role)} />
+              <Text style={styles.quickActionText}>Settings</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity style={styles.quickActionButton}>
+              <Ionicons name="help-circle-outline" size={24} color={getRoleColor(role)} />
+              <Text style={styles.quickActionText}>Help & Support</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity style={styles.quickActionButton} onPress={onSignOut}>
+              <Ionicons name="log-out-outline" size={24} color="#FF4444" />
+              <Text style={[styles.quickActionText, { color: '#FF4444' }]}>Sign Out</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        
       </ScrollView>
 
       {/* Menu Modal */}
@@ -180,89 +213,75 @@ const ProfileScreen = ({ navigation, route }: { navigation: any; route: any }) =
         visible={showMenu}
         onClose={() => setShowMenu(false)}
         userRole={role.toUpperCase().replace('-', '_') as any}
-        userName={registrationData.name}
+        userName="TrashHero Pro"
         userLevel={6}
         onNavigate={(screen, params) => {
+          console.log('Navigating to:', screen, params);
           navigation.navigate(screen, params);
         }}
-        onSignOut={() => {
-          if (onSignOut) {
-            onSignOut();
-          } else {
-            navigation.navigate('Login');
-          }
-        }}
+        onSignOut={onSignOut}
       />
-    </PEARScreen>
+    </View>
   );
 };
 
+const { width } = Dimensions.get('window');
+
 const styles = StyleSheet.create({
-  container: {
+  screenContainer: {
     flex: 1,
+    backgroundColor: 'white',
   },
-  content: {
+  fixedHeader: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 1000,
+    backgroundColor: 'white',
+  },
+  scrollableContent: {
     flex: 1,
-    paddingHorizontal: THEME.SPACING.md,
+    paddingTop: 100, // Adjust based on header height
   },
-  profileCard: {
-    borderRadius: THEME.BORDER_RADIUS.xl,
-    padding: THEME.SPACING.md,
-    marginBottom: THEME.SPACING.lg,
+  scrollContent: {
+    flexGrow: 1,
+    paddingBottom: 100, // Increased to ensure content is visible above bottom navigation
+    paddingHorizontal: 20, // Increased horizontal padding to bring containers in from edges
+  },
+  card: {
+    backgroundColor: 'white',
+    borderRadius: 12,
+    padding: 12, // Reduced from 20 to make cards more compact
+    marginBottom: 12, // Reduced from 16 to bring cards closer together
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
+    shadowRadius: 4,
+    elevation: 3,
   },
-  profileHeader: {
+  accountInfoCard: {
+    marginTop: 20, // Push the account info container down
+  },
+  cardHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingBottom: THEME.SPACING.md,
-    borderBottomWidth: 1,
+    marginBottom: 12, // Reduced from 16
   },
-  avatarContainer: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: THEME.SPACING.md,
-  },
-  profileInfo: {
-    flex: 1,
-  },
-  profileName: {
-    fontSize: THEME.TYPOGRAPHY.fontSize.xl,
-    fontWeight: '700',
-    marginBottom: THEME.SPACING.xs,
-  },
-  profileRole: {
-    fontSize: THEME.TYPOGRAPHY.fontSize.sm,
-    fontWeight: '500',
-  },
-  sectionContainer: {
-    marginBottom: THEME.SPACING.lg,
-  },
-  sectionTitle: {
-    fontSize: THEME.TYPOGRAPHY.fontSize.lg,
+  cardTitle: {
+    fontSize: 18,
     fontWeight: '600',
-    marginBottom: THEME.SPACING.md,
+    color: '#333',
+    marginLeft: 8,
   },
   infoContainer: {
-    gap: 12,
+    gap: 8, // Reduced from 12
   },
   infoRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: THEME.SPACING.md,
-    borderRadius: THEME.BORDER_RADIUS.lg,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
+    paddingVertical: 6, // Reduced from 8
   },
   infoLeft: {
     flexDirection: 'row',
@@ -270,40 +289,72 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   iconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: THEME.SPACING.sm + 4,
-  },
-  infoContent: {
-    flex: 1,
+    marginRight: 10, // Reduced from 12
   },
   infoLabel: {
-    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
+    fontSize: 14,
+    color: '#666',
     fontWeight: '500',
-    marginBottom: 2,
   },
   infoValue: {
-    fontSize: THEME.TYPOGRAPHY.fontSize.base,
-    fontWeight: '600',
+    fontSize: 14,
+    color: '#333',
+    fontWeight: '400',
+    textAlign: 'right',
   },
-  statusBadge: {
+  toggleSwitch: {
+    width: 44,
+    height: 24,
+    borderRadius: 12,
+    padding: 2,
+    justifyContent: 'center',
+  },
+  toggleKnob: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: 'white',
+    alignSelf: 'flex-end',
+  },
+  statsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  statItem: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  statValue: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  statLabel: {
+    fontSize: 12,
+    color: '#666',
+    textAlign: 'center',
+  },
+  quickActionsContainer: {
+    gap: 8, // Reduced from 12
+  },
+  quickActionButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: THEME.SPACING.sm,
-    paddingVertical: THEME.SPACING.xs,
-    borderRadius: THEME.BORDER_RADIUS.lg,
-    gap: 4,
+    paddingVertical: 10, // Reduced from 12
+    paddingHorizontal: 12, // Reduced from 16
+    borderRadius: 8,
+    backgroundColor: '#f8f9fa',
   },
-  statusText: {
-    // color: theme.background,
-    fontSize: THEME.TYPOGRAPHY.fontSize.xs,
-    fontWeight: '600',
-  },
-  bottomSpacing: {
-    height: 40,
+  quickActionText: {
+    fontSize: 16,
+    color: '#333',
+    marginLeft: 10, // Reduced from 12
+    fontWeight: '500',
   },
 });
 

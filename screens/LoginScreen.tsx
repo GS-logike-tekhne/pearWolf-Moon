@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Alert,
   ScrollView,
+  Animated,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { getRoleColor } from '../utils/roleColors';
@@ -22,6 +23,31 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const { login, isLoading } = useAuth();
+
+  // Animated color rotation for sign in button text
+  const colorAnimation = useRef(new Animated.Value(0)).current;
+  const colors = ['#FF4444', '#90E31C', '#FF9500', '#007AFF', '#FF4444']; // Red, Green, Orange, Blue, Red (to loop back)
+
+  useEffect(() => {
+    const animateColors = () => {
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(colorAnimation, {
+            toValue: 1,
+            duration: 2000,
+            useNativeDriver: false,
+          }),
+          Animated.timing(colorAnimation, {
+            toValue: 0,
+            duration: 0,
+            useNativeDriver: false,
+          }),
+        ])
+      ).start();
+    };
+
+    animateColors();
+  }, []);
 
   const handleLogin = async () => {
     try {
@@ -90,9 +116,19 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
           onPress={handleLogin}
           disabled={isLoading}
         >
-          <Text style={styles.loginButtonText}>
+          <Animated.Text 
+            style={[
+              styles.loginButtonText,
+              {
+                color: colorAnimation.interpolate({
+                  inputRange: [0, 0.25, 0.5, 0.75, 1],
+                  outputRange: colors,
+                }),
+              }
+            ]}
+          >
             {isLoading ? 'Signing In...' : 'Sign In'}
-          </Text>
+          </Animated.Text>
         </TouchableOpacity>
       </View>
 
@@ -207,20 +243,20 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   loginButton: {
-    backgroundColor: getRoleColor('trash-hero'),
-    paddingVertical: 16,
+    backgroundColor: 'black',
+    paddingVertical: 12,
     borderRadius: 12,
     alignItems: 'center',
     marginTop: 12,
-    shadowColor: getRoleColor('trash-hero'),
+    shadowColor: 'black',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 3,
   },
   loginButtonText: {
-    // color: theme.background,
-    fontSize: 18,
+    color: 'white',
+    fontSize: 22,
     fontWeight: '600',
   },
   loginButtonDisabled: {

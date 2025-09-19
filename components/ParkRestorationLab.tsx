@@ -174,8 +174,8 @@ const ParkRestorationLab: React.FC = () => {
       style={[
         styles.questCard,
         {
-          backgroundColor: quest.isLocked ? '#1f2937' : '#111827',
-          borderColor: quest.isCompleted ? '#22c55e' : quest.isLocked ? '#374151' : '#f97316',
+          backgroundColor: quest.isLocked ? '#f3f4f6' : 'white',
+          borderColor: 'transparent',
           opacity: quest.isLocked ? 0.6 : 1,
         }
       ]}
@@ -255,7 +255,7 @@ const ParkRestorationLab: React.FC = () => {
   );
 
   const ProgressSection = () => (
-    <View style={[styles.progressSection, { backgroundColor: '#111827' }]}>
+    <View style={[styles.progressSection, { backgroundColor: 'white' }]}>
       <View style={styles.progressHeader}>
         <Ionicons name="flask" size={24} color="#f97316" />
         <Text style={[styles.progressTitle, { color: theme.textColor }]}>
@@ -315,9 +315,9 @@ const ParkRestorationLab: React.FC = () => {
   );
 
   return (
-    <View style={[styles.container, { backgroundColor: '#0f172a' }]}>
+    <View style={[styles.container, { backgroundColor: 'white' }]}>
       {/* Header */}
-      <View style={[styles.header, { backgroundColor: '#111827' }]}>
+      <View style={[styles.header, { backgroundColor: 'white' }]}>
         <View style={styles.headerContent}>
           <View style={styles.headerIcon}>
             <Ionicons name="flask" size={32} color="#f97316" />
@@ -464,8 +464,6 @@ const styles = StyleSheet.create({
     margin: 16,
     padding: 20,
     borderRadius: 16,
-    borderWidth: 1,
-    borderColor: '#374151',
   },
   progressHeader: {
     flexDirection: 'row',
@@ -527,6 +525,11 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
     borderWidth: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   questHeader: {
     flexDirection: 'row',

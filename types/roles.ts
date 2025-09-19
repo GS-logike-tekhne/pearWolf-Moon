@@ -8,14 +8,14 @@ export const ROLE_CONFIG = {
   TRASH_HERO: {
     displayName: 'Trash Hero',
     description: 'Paid cleanups and environmental restoration',
-    color: '#4CAF50',
+    color: '#90E31C',
     icon: 'trash',
     shortName: 'trash-hero',
   },
   IMPACT_WARRIOR: {
     displayName: 'Impact Warrior', 
     description: 'Volunteer environmental action',
-    color: '#dc2626',
+    color: '#FF4444',
     icon: 'leaf',
     shortName: 'impact-warrior',
   },

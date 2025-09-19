@@ -20,6 +20,7 @@ import WalletScreen from '../screens/WalletScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import TrashHeroMissions from '../screens/TrashHeroMissions';
 import ImpactWarriorMissions from '../screens/ImpactWarriorMissions';
+import MissionsScreen from '../screens/MissionsScreen';
 import EcoDefenderMissions from '../screens/EcoDefenderMissions';
 import Analytics from '../screens/Analytics';
 import UserManagement from '../screens/UserManagement';
@@ -71,15 +72,13 @@ const TabNavigator: React.FC = () => {
   const getMissionsScreen = () => {
     switch (currentRole) {
       case 'TRASH_HERO':
-        return TrashHeroMissions;
       case 'IMPACT_WARRIOR':
-        return ImpactWarriorMissions;
       case 'ECO_DEFENDER':
-        return EcoDefenderMissions;
+        return MissionsScreen; // Use the new unified missions screen
       case 'ADMIN':
         return UserManagement; // Admin uses UserManagement as their "missions"
       default:
-        return TrashHeroMissions;
+        return MissionsScreen;
     }
   };
 

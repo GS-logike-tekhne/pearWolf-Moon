@@ -67,7 +67,7 @@ export const PEARScreen: React.FC<PEARScreenProps> = ({
     
     switch (userRole) {
       case 'TRASH_HERO':
-        return 'linear-gradient(135deg, #4CAF50 0%, #81C784 100%)';
+        return 'linear-gradient(135deg, #90E31C 0%, #81C784 100%)';
       case 'IMPACT_WARRIOR':
         return 'linear-gradient(135deg, #FF5722 0%, #FF8A65 100%)';
       case 'ECO_DEFENDER':

@@ -38,6 +38,7 @@ import ProfileScreen from '../screens/ProfileScreen';
 import TrashHeroMissions from '../screens/TrashHeroMissions';
 import ImpactWarriorMissions from '../screens/ImpactWarriorMissions';
 import EcoDefenderMissions from '../screens/EcoDefenderMissions';
+import MissionsScreen from '../screens/MissionsScreen';
 import BadgeSystemScreen from '../screens/BadgeSystemScreen';
 import MissionFeedScreen from '../screens/MissionFeedScreen';
 import PlaceholderScreen from '../screens/PlaceholderScreen';
@@ -90,6 +91,7 @@ const AppNavigator: React.FC = () => {
       <Stack.Screen name="TrashHeroMissions" component={TrashHeroMissions} />
       <Stack.Screen name="ImpactWarriorMissions" component={ImpactWarriorMissions} />
       <Stack.Screen name="EcoDefenderMissions" component={EcoDefenderMissions} />
+      <Stack.Screen name="MissionsScreen" component={MissionsScreen} />
       <Stack.Screen name="BadgeSystem" component={BadgeSystemScreen} />
       <Stack.Screen name="MissionFeed" component={MissionFeedScreen} />
       <Stack.Screen name="ParkRestorationLab" component={ParkRestorationLabScreen} />

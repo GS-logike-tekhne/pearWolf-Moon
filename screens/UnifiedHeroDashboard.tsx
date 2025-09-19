@@ -6,9 +6,11 @@ import {
   TouchableOpacity,
   Dimensions,
   StatusBar,
+  ScrollView,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from 'expo-linear-gradient';
 import { getRoleColor } from '../utils/roleColors';
 import { useTheme } from "../context/ThemeContext";
 import { THEME } from '../styles/theme';
@@ -121,11 +123,9 @@ const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({
       case 'TRASH_HERO':
         return [
           { title: 'Find Jobs', icon: 'search', color: getRoleColor('trash-hero'), onPress: () => navigation.navigate('MainTabs', { screen: 'Missions' }) },
-          { title: 'My Earnings', icon: 'wallet', color: '#FF9800', onPress: () => navigation.navigate('TrashHeroEarnings') },
+          { title: 'My Earnings', icon: 'wallet', color: '#000000', onPress: () => navigation.navigate('TrashHeroEarnings') },
           { title: 'Performance', icon: 'analytics', color: getRoleColor('trash-hero'), onPress: () => navigation.navigate('TrashHeroEarnings') },
-          { title: 'Map View', icon: 'map', color: getRoleColor('trash-hero'), onPress: () => navigation.navigate('MapScreen') },
-          { title: 'My Badges', icon: 'medal', color: '#4CAF50', onPress: () => navigation.navigate('BadgeSystem', { userRole: 'TRASH_HERO' }) },
-          { title: 'Profile', icon: 'person', color: theme.secondaryText, onPress: () => navigation.navigate('ProfileScreen') },
+          { title: 'My Badges', icon: 'medal', color: '#000000', onPress: () => navigation.navigate('BadgeSystem', { userRole: 'TRASH_HERO' }) },
         ];
       case 'IMPACT_WARRIOR':
         return [
@@ -134,7 +134,6 @@ const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({
           { title: 'My Impact', icon: 'analytics', color: getRoleColor('impact-warrior'), onPress: () => navigation.navigate('ImpactWarriorImpact') },
           { title: 'PEAR Verified Missions', icon: 'people', color: getRoleColor('impact-warrior'), onPress: () => navigation.navigate('PearVerifiedMissions') },
           { title: 'My Badges', icon: 'medal', color: '#4CAF50', onPress: () => navigation.navigate('BadgeSystem', { userRole: 'IMPACT_WARRIOR' }) },
-          { title: 'Profile', icon: 'person', color: theme.secondaryText, onPress: () => navigation.navigate('ProfileScreen') },
         ];
       case 'ECO_DEFENDER':
         return [
@@ -143,7 +142,6 @@ const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({
           { title: 'Eco Missions', icon: 'rocket', color: '#4CAF50', onPress: () => navigation.navigate('EcoDefenderMissions') },
           { title: 'Fund Wallet', icon: 'card', color: '#FF9800', onPress: () => navigation.navigate('WalletScreen', { role: 'eco-defender' }) },
           { title: 'View Impact', icon: 'analytics', color: '#FF9800', onPress: () => navigation.navigate('EcoDefenderImpact') },
-          { title: 'View Map', icon: 'map', color: getRoleColor('eco-defender'), onPress: () => navigation.navigate('MapScreen') },
         ];
       case 'ADMIN':
         return [
@@ -293,7 +291,7 @@ const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({
       title="Dashboard"
       role={activeRole || 'TRASH_HERO'}
       showHeader={false}
-      showScroll={true}
+      showScroll={false}
       enableRefresh={true}
       onRefresh={() => {
         // Refresh dashboard data
@@ -301,23 +299,30 @@ const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({
       }}
       refreshing={false}
       navigation={navigation}
-      backgroundColor="white"
     >
-      {/* Unified Header */}
-      <UnifiedHeader
-        onMenuPress={() => setShowMenu(true)}
-        role={activeRole || 'TRASH_HERO'}
-        onNotificationPress={() => navigation.navigate('Notifications')}
-        onProfilePress={() => navigation.navigate('ProfileScreen', { 
-          role: activeRole || 'TRASH_HERO',
-          onSignOut: () => navigation.navigate('Login')
-        })}
-      />
+      <View style={{ flex: 1, backgroundColor: 'white' }}>
+      {/* Fixed Unified Header */}
+      <View style={styles.fixedHeader}>
+        <UnifiedHeader
+          onMenuPress={() => setShowMenu(true)}
+          role={activeRole || 'TRASH_HERO'}
+          onNotificationPress={() => navigation.navigate('Notifications')}
+          onProfilePress={() => navigation.navigate('ProfileScreen', { 
+            role: activeRole || 'TRASH_HERO',
+            onSignOut: () => navigation.navigate('Login')
+          })}
+        />
+      </View>
+
+      {/* Scrollable Content */}
+      <ScrollView 
+        style={styles.scrollableContent}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+      >
         {/* My Card Section */}
         <View style={[styles.myCard, { 
-          backgroundColor: theme.cardBackground,
-          borderTopWidth: 3,
-          borderTopColor: roleConfig.color
+          backgroundColor: theme.cardBackground
         }]}>
           <View style={styles.cardHeader}>
             <Text style={[styles.cardTitle, { color: theme.textColor }]}>My Card</Text>
@@ -403,9 +408,9 @@ const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({
                 <Text style={[styles.progressTitle, { color: theme.textColor }]}>
                   Progress to 🏆 Impact Investor
                 </Text>
-                <View style={[styles.evolutionBadge, { backgroundColor: '#007bff' }]}>
-                  <Ionicons name="trending-up" size={12} color="white" />
-                  <Text style={styles.evolutionText}>Evolution</Text>
+                <View style={[styles.evolutionBadge, { backgroundColor: 'white', borderWidth: 1, borderColor: '#90E31C' }]}>
+                  <Ionicons name="trending-up" size={12} color="#000000" />
+                  <Text style={[styles.evolutionText, { color: '#000000' }]}>Evolution</Text>
                 </View>
               </View>
               
@@ -448,7 +453,7 @@ const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({
           <View style={styles.recentHeader}>
             <Text style={[styles.sectionTitle, { color: theme.textColor }]}>Recent Missions</Text>
             <TouchableOpacity>
-              <Text style={[styles.viewAllText, { color: theme.primary }]}>View All</Text>
+              <Text style={[styles.viewAllText, { color: '#000000' }]}>View All</Text>
             </TouchableOpacity>
           </View>
           
@@ -460,6 +465,8 @@ const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({
         </View>
 
         <View style={styles.bottomSpacing} />
+      </ScrollView>
+      </View>
 
       {/* Menu Modal */}
       <MenuModal
@@ -487,7 +494,7 @@ const UnifiedHeroDashboard: React.FC<UnifiedHeroDashboardProps> = ({
 const styles = StyleSheet.create({
   myCard: {
     margin: THEME.SPACING.md,
-    marginTop: THEME.SPACING.sm,
+    marginTop: THEME.SPACING.xl,
     borderRadius: THEME.BORDER_RADIUS.xl,
     padding: THEME.SPACING.md,
     shadowColor: '#000',
@@ -822,6 +829,21 @@ const styles = StyleSheet.create({
     fontSize: THEME.TYPOGRAPHY.fontSize.xs,
     textAlign: 'center',
     fontStyle: 'italic',
+  },
+  fixedHeader: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 1000,
+    backgroundColor: 'white',
+  },
+  scrollableContent: {
+    flex: 1,
+    paddingTop: 100, // Adjust based on header height
+  },
+  scrollContent: {
+    paddingBottom: 20,
   },
 });
 

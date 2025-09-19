@@ -90,7 +90,7 @@ export const darkTheme: Theme = {
 
 export const roleColors = {
   TRASH_HERO: '#4CAF50',
-  IMPACT_WARRIOR: '#dc2626',
+  IMPACT_WARRIOR: '#dc3545',
   ECO_DEFENDER: '#2196F3',
   ADMIN: '#9C27B0',
 } as const;

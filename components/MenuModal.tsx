@@ -88,7 +88,7 @@ const MenuModal: React.FC<MenuModalProps> = ({
       case 'IMPACT_WARRIOR':
         return {
           title: 'Impact Warrior',
-          color: '#dc3545',
+          color: '#FF4444',
           icon: 'person',
         };
       case 'ECO_DEFENDER':
@@ -116,16 +116,6 @@ const MenuModal: React.FC<MenuModalProps> = ({
 
   const getFeatureItems = (): MenuItem[] => [
     {
-      id: 'wallet',
-      title: 'Wallet',
-      icon: 'wallet',
-      color: '#28a745',
-      onPress: () => {
-        onNavigate('WalletScreen', { role: userRole.toLowerCase().replace('_', '-') });
-        onClose();
-      },
-    },
-    {
       id: 'map',
       title: 'Map View',
       icon: 'map',
@@ -152,17 +142,6 @@ const MenuModal: React.FC<MenuModalProps> = ({
       color: '#8b5cf6',
       onPress: () => {
         onNavigate('EcoStationQuest');
-        onClose();
-      },
-    },
-    {
-      id: 'notifications',
-      title: 'Notifications',
-      icon: 'notifications',
-      color: '#007bff',
-      badge: 3,
-      onPress: () => {
-        onNavigate('Notifications');
         onClose();
       },
     },
@@ -216,7 +195,7 @@ const MenuModal: React.FC<MenuModalProps> = ({
       </Text>
       
       {item.badge && (
-        <View style={[styles.badge, { backgroundColor: '#dc3545' }]}>
+        <View style={[styles.badge, { backgroundColor: '#FF4444' }]}>
           <Text style={styles.badgeText}>{item.badge}</Text>
         </View>
       )}
@@ -313,7 +292,7 @@ const MenuModal: React.FC<MenuModalProps> = ({
               {onSignOut && (
                 <View style={styles.signOutSection}>
                   <TouchableOpacity
-                    style={[styles.signOutButton, { backgroundColor: '#dc3545' }]}
+                    style={[styles.signOutButton, { backgroundColor: '#FF4444' }]}
                     onPress={() => {
                       onSignOut();
                       onClose();

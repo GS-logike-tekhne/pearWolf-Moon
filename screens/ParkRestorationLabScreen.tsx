@@ -8,7 +8,7 @@ const ParkRestorationLabScreen: React.FC = () => {
   const { theme } = useTheme();
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: '#0f172a' }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: 'white' }]}>
       <ParkRestorationLab />
     </SafeAreaView>
   );

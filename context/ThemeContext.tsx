@@ -79,7 +79,7 @@ const themes: Record<UserRole, Theme> = {
     isDark: false,
   },
   IMPACT_WARRIOR: {
-    primary: '#dc2626',
+    primary: '#FF4444',
     secondary: '#991b1b',
     accent: '#fecaca',
     background: '#ffffff',

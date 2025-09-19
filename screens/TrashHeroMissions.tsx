@@ -20,7 +20,7 @@ import { useXP } from '../hooks/useXP';
 import { useRoleManager } from '../hooks/useRoleManager';
 import MenuModal from '../components/MenuModal';
 import DailyQuests from '../components/DailyQuests';
-import ScreenLayout from '../components/ScreenLayout';
+import PEARScreen from '../components/PEARScreen';
 import UnifiedHeader from '../components/UnifiedHeader';
 
 const { width } = Dimensions.get('window');
@@ -355,17 +355,39 @@ const TrashHeroMissions = ({ navigation }: any) => {
   );
 
   return (
-    <ScreenLayout scrollable={true} padding={{ horizontal: 0, vertical: 0 }}>
-      {/* Unified Header */}
-      <UnifiedHeader
-        onMenuPress={() => setShowMenu(true)}
-        role={userRole}
-        onNotificationPress={() => navigation.navigate('Notifications')}
-        onProfilePress={() => navigation.navigate('ProfileScreen', { 
-          role: userRole,
-          onSignOut: () => navigation.navigate('Login')
-        })}
-      />
+    <PEARScreen
+      title="Trash Hero Missions"
+      role={userRole}
+      showHeader={false}
+      showScroll={false}
+      enableRefresh={true}
+      onRefresh={() => {
+        console.log('Refreshing missions...');
+      }}
+      refreshing={false}
+      navigation={navigation}
+      backgroundColor="white"
+      contentPadding={false}
+    >
+      {/* Fixed Unified Header */}
+      <View style={styles.fixedHeader}>
+        <UnifiedHeader
+          onMenuPress={() => setShowMenu(true)}
+          role={userRole}
+          onNotificationPress={() => navigation.navigate('Notifications')}
+          onProfilePress={() => navigation.navigate('ProfileScreen', { 
+            role: userRole,
+            onSignOut: () => navigation.navigate('Login')
+          })}
+        />
+      </View>
+
+      {/* Scrollable Content */}
+      <ScrollView 
+        style={styles.scrollableContent}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+      >
 
       {/* Screen Title */}
       <View style={styles.titleContainer}>
@@ -491,9 +513,10 @@ const TrashHeroMissions = ({ navigation }: any) => {
               </TouchableOpacity>
             </View>
           )}
-        </View>
+         </View>
 
-        <View style={styles.bottomSpacing} />
+         <View style={styles.bottomSpacing} />
+       </ScrollView>
 
         {/* Floating Action Buttons */}
         <View style={styles.fabContainer}>
@@ -533,7 +556,7 @@ const TrashHeroMissions = ({ navigation }: any) => {
           navigation.navigate('Login');
         }}
       />
-    </ScreenLayout>
+    </PEARScreen>
   );
 };
 
@@ -546,8 +569,8 @@ const styles = StyleSheet.create({
   },
   titleContainer: {
     paddingHorizontal: THEME.SPACING.md,
-    paddingVertical: THEME.SPACING.sm,
-    marginBottom: THEME.SPACING.sm,
+    paddingVertical: THEME.SPACING.xs,
+    marginBottom: THEME.SPACING.xs,
   },
   screenTitle: {
     fontSize: THEME.TYPOGRAPHY.fontSize["2xl"],
@@ -862,8 +885,23 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
-    elevation: 8,
+     elevation: 8,
+   },
+   fixedHeader: {
+     position: 'absolute',
+     top: 0,
+     left: 0,
+     right: 0,
+     zIndex: 1000,
+     backgroundColor: 'white',
+   },
+  scrollableContent: {
+    flex: 1,
+    paddingTop: 100, // Match UnifiedHeroDashboard spacing
   },
-});
+   scrollContent: {
+     paddingBottom: 20,
+   },
+ });
 
 export default TrashHeroMissions;
